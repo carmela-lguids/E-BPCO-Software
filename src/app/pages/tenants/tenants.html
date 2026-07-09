@@ -1,0 +1,396 @@
+<app-topbar title="Tenants" />
+
+@if (view() === 'list') {
+  <section class="ring-stat-row">
+    @for (stat of ringStats; track stat.label) {
+      <div class="ring-card">
+        <app-donut-chart
+          [segments]="ringSegments(stat)"
+          [size]="72"
+          [ringWidth]="11"
+          [showLabels]="false"
+          holeColor="#fff"
+        />
+        <div class="ring-text">
+          <span class="ring-label">{{ stat.label }}</span>
+          <span class="ring-value">{{ stat.value }}</span>
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="card table-card">
+    <div class="table-toolbar">
+      <div class="search-input">
+        <app-icon name="search" [size]="16" />
+        <input type="text" placeholder="Search Here By Application ID, Application ..." />
+      </div>
+      <div class="toolbar-actions">
+        <button type="button" class="btn-outline">
+          <app-icon name="filter" [size]="15" />
+          Filters
+        </button>
+        <button type="button" class="btn-outline">
+          <app-icon name="download" [size]="15" />
+          Export
+        </button>
+        <button type="button" class="btn-primary" (click)="openCreate()">
+          <app-icon name="plus" [size]="15" />
+          Create New Tenant
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" /></th>
+            <th>Tenant ID</th>
+            <th>TENANT NAME</th>
+            <th>CONTACT PERSON</th>
+            <th>Sub Domain</th>
+            <th>DATE CREATED</th>
+            <th>User Count</th>
+            <th>STATUS</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pagedTenantRows(); track row.id) {
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td class="id-cell">{{ row.id }}</td>
+              <td>
+                <div class="applicant-cell">
+                  <app-avatar [name]="row.contactName" [size]="30" />
+                  {{ row.code }}
+                </div>
+              </td>
+              <td>
+                <div class="contact-cell">
+                  <span>{{ row.contactName }}</span>
+                  <span class="contact-phone">{{ row.contactPhone }}</span>
+                </div>
+              </td>
+              <td>{{ row.subdomain }}</td>
+              <td>{{ row.dateCreated }}</td>
+              <td>{{ row.userCount }}</td>
+              <td>
+                <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button type="button" class="icon-btn view"><app-icon name="eye" [size]="14" /></button>
+                  <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="14" /></button>
+                  <button type="button" class="icon-btn del"><app-icon name="trash" [size]="14" /></button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [totalItems]="tenantRows().length" [pageSize]="pageSize" [(page)]="page" />
+  </section>
+
+  <section class="card subtabs-card">
+    <nav class="pill-tabs">
+      <button
+        type="button"
+        class="pill-tab"
+        [class.active]="activeSubTab() === 'analytics'"
+        (click)="selectSubTab('analytics')"
+      >
+        Analytics
+      </button>
+      <button
+        type="button"
+        class="pill-tab"
+        [class.active]="activeSubTab() === 'modules'"
+        (click)="selectSubTab('modules')"
+      >
+        Modules
+      </button>
+      <button
+        type="button"
+        class="pill-tab"
+        [class.active]="activeSubTab() === 'recent-activity'"
+        (click)="selectSubTab('recent-activity')"
+      >
+        Recent Activity
+      </button>
+    </nav>
+
+    @switch (activeSubTab()) {
+      @case ('analytics') {
+        <div class="analytics-layout">
+          <div class="growth-card">
+            <div class="card-head">
+              <h2>Tenants Growth</h2>
+              <select class="filter-select">
+                <option>This Year</option>
+                <option>Last Year</option>
+              </select>
+            </div>
+
+            <div class="growth-chart-wrap">
+              <svg viewBox="0 0 1000 260" preserveAspectRatio="none" class="growth-svg">
+                @for (i of [0, 1, 2, 3]; track i) {
+                  <line x1="0" [attr.y1]="(i / 3) * 260" x2="1000" [attr.y2]="(i / 3) * 260" class="grid-line" />
+                }
+                <path [attr.d]="growthPath()" class="growth-line" />
+                @for (m of growthMarkers(); track m.label) {
+                  <circle [attr.cx]="m.x" [attr.cy]="m.y" r="6" class="growth-dot" />
+                }
+              </svg>
+
+              @if (growthMarkers().length) {
+                <div
+                  class="growth-tooltip"
+                  [style.top.%]="(growthMarkers()[growthMarkers().length - 1].y / 260) * 100"
+                >
+                  <strong>{{ growthMarkers()[growthMarkers().length - 1].label }} 2024</strong>
+                  <span><i></i>Tenants: +31</span>
+                </div>
+              }
+            </div>
+
+            <div class="growth-x-axis">
+              @for (m of growthMarkers(); track m.label) {
+                <span>{{ m.label }}</span>
+              }
+            </div>
+          </div>
+
+          <div class="metric-grid">
+            @for (m of metricTiles; track m.label) {
+              <div class="metric-tile">
+                <span class="metric-label">{{ m.label }}</span>
+                <span class="metric-value">
+                  {{ m.value }}
+                  <em [class.good]="m.direction === 'up'" [class.bad]="m.direction === 'down'">
+                    <app-icon [name]="m.direction === 'up' ? 'trend-up' : 'trend-down'" [size]="12" />
+                    {{ m.delta }}
+                  </em>
+                </span>
+                <span class="metric-footnote">Vs Previous 30 days</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @case ('modules') {
+        <div class="modules-card">
+          <div class="card-head">
+            <h2>Module Usage Across Tenants</h2>
+            <button type="button" class="btn-outline">Manage Catalog</button>
+          </div>
+
+          <div class="module-list">
+            @for (m of moduleUsage; track m.name) {
+              <div class="module-row">
+                <span class="module-name">{{ m.name }}</span>
+                <span class="module-count">{{ m.tenantCount }} Tenants</span>
+                <div class="module-bar-col">
+                  <span class="module-bar-track">
+                    <span
+                      class="module-bar-fill"
+                      [style.width.%]="m.pct"
+                      [style.background]="m.color"
+                    ></span>
+                  </span>
+                  <span class="module-pct">{{ m.pct }}%</span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @case ('recent-activity') {
+        <div class="activity-layout">
+          <div class="activity-list-card">
+            <div class="card-head">
+              <h2>Recent Activity</h2>
+              <a class="view-all-link" href="javascript:void(0)">
+                View All
+                <app-icon name="chevron-right" [size]="14" />
+              </a>
+            </div>
+
+            @for (item of recentActivity; track item.name + item.agoLabel) {
+              <div class="activity-row">
+                <span class="activity-dot" [style.background]="item.color"></span>
+                <div class="activity-body">
+                  <span class="activity-name">{{ item.name }}</span>
+                  <p class="activity-text">{{ item.text }}</p>
+                  <span class="activity-ago">{{ item.agoLabel }}</span>
+                </div>
+                <span class="activity-date">{{ item.dateLabel }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="comm-center-card">
+            <h2>Communication Center</h2>
+            <p class="comm-subtitle">Broadcast system-wide notices to tenants.</p>
+            <textarea placeholder="Compose an announcement..." rows="7"></textarea>
+            <select class="filter-select full-width">
+              <option>All Tenants 150</option>
+              <option>Active Tenants Only</option>
+            </select>
+            <button type="button" class="btn-primary full-width">Broadcast Notice</button>
+          </div>
+        </div>
+      }
+    }
+  </section>
+} @else {
+  <div class="create-header">
+    <div>
+      <h1>Create Tenant</h1>
+      <p>Register a new Tenant in the System</p>
+    </div>
+    <div class="header-actions">
+      <button type="button" class="btn-outline" (click)="backToList()">Back to List</button>
+      <button type="button" class="btn-primary" (click)="createTenant()">
+        <app-icon name="plus" [size]="15" />
+        Create New Tenant
+      </button>
+    </div>
+  </div>
+
+  <div class="create-grid">
+    <div class="create-col">
+      <div class="card">
+        <h2>Basic Information</h2>
+        <label class="field-label">Tenant Name</label>
+        <input class="text-input" type="text" placeholder="Enter Tenant Name" [(ngModel)]="newTenant.tenantName" />
+
+        <label class="field-label">Type</label>
+        <select class="select-input" [(ngModel)]="newTenant.type">
+          <option value="">Select Type</option>
+          <option value="city">City</option>
+          <option value="municipality">Municipality</option>
+          <option value="province">Province</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <h2>Contact Person</h2>
+        <label class="field-label">Full Name</label>
+        <input class="text-input" type="text" placeholder="Enter Tenant Name" [(ngModel)]="newTenant.contactName" />
+
+        <label class="field-label">Contact Number</label>
+        <input
+          class="text-input"
+          type="text"
+          placeholder="Enter Contact Number"
+          [(ngModel)]="newTenant.contactPhone"
+        />
+      </div>
+
+      <div class="card">
+        <h2>Initial Information</h2>
+        <span class="field-label">Enable Modules</span>
+
+        <label class="checkbox-row">
+          <input type="checkbox" [(ngModel)]="newTenant.modules.initialEvaluation" />
+          Initial Evaluation
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" [(ngModel)]="newTenant.modules.zoningEvaluation" />
+          Zoning Evaluation
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" [(ngModel)]="newTenant.modules.fireSafetyEvaluation" />
+          Fire Safety Evaluation
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" [(ngModel)]="newTenant.modules.locationalClearance" />
+          Locational Clearance
+        </label>
+      </div>
+    </div>
+
+    <div class="create-col">
+      <div class="card">
+        <h2>Address Information</h2>
+        <label class="field-label">Region</label>
+        <select class="select-input" [(ngModel)]="newTenant.region">
+          <option value="">Select Region</option>
+          <option value="ncr">NCR</option>
+          <option value="region-4a">Region IV-A</option>
+        </select>
+
+        <label class="field-label">Province</label>
+        <select class="select-input" [(ngModel)]="newTenant.province">
+          <option value="">Select Province</option>
+          <option value="metro-manila">Metro Manila</option>
+          <option value="cavite">Cavite</option>
+        </select>
+
+        <label class="field-label">City/Municipality</label>
+        <select class="select-input" [(ngModel)]="newTenant.cityMunicipality">
+          <option value="">Select City/Municipality</option>
+          <option value="taguig">Taguig</option>
+          <option value="quezon">Quezon City</option>
+        </select>
+
+        <label class="field-label">Barangay</label>
+        <select class="select-input" [(ngModel)]="newTenant.barangay">
+          <option value="">Select Barangay (Optional)</option>
+          <option value="brgy-1">Barangay 1</option>
+        </select>
+      </div>
+
+      <div class="card">
+        <h2>Login Credentials</h2>
+        <label class="field-label">User Name</label>
+        <input class="text-input" type="text" placeholder="Enter Tenant Name" [(ngModel)]="newTenant.userName" />
+
+        <label class="field-label">Password</label>
+        <div class="input-wrap">
+          <app-icon name="lock" [size]="16" class="input-icon" />
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="newTenant.password"
+          />
+          <button type="button" class="toggle-visibility" (click)="showPassword.set(!showPassword())">
+            <app-icon [name]="showPassword() ? 'eye-off' : 'eye'" [size]="17" />
+          </button>
+        </div>
+
+        <label class="field-label">Confirm Password</label>
+        <div class="input-wrap">
+          <app-icon name="lock" [size]="16" class="input-icon" />
+          <input
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            placeholder="••••••••"
+            [(ngModel)]="newTenant.confirmPassword"
+          />
+          <button
+            type="button"
+            class="toggle-visibility"
+            (click)="showConfirmPassword.set(!showConfirmPassword())"
+          >
+            <app-icon [name]="showConfirmPassword() ? 'eye-off' : 'eye'" [size]="17" />
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Subdomain Configuration</h2>
+        <label class="field-label">Slug/Subdomain Field</label>
+        <div class="slug-wrap">
+          <input class="text-input" type="text" placeholder="Enter Slug Name" [(ngModel)]="newTenant.slug" />
+          <span class="slug-suffix">yourapp.gov.ph</span>
+        </div>
+      </div>
+    </div>
+  </div>
+}

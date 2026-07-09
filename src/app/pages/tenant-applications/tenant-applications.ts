@@ -1,0 +1,168 @@
+import { Component, computed, signal } from '@angular/core';
+import { Topbar } from '../../shared/topbar/topbar';
+import { Icon } from '../../shared/icon/icon';
+import { Avatar } from '../../shared/avatar/avatar';
+import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
+import { Pagination } from '../../shared/pagination/pagination';
+import {
+  APP_ROWS,
+  AppRow,
+  AppDetail,
+  buildDetailFor,
+  DOCUMENTS,
+  COMMENTS,
+  TIMELINE,
+  SHARED_TIMELINE,
+  EVAL_CARDS,
+  EVAL_DETAILS,
+  EvalKey,
+} from './applications-data';
+
+function buildQrCells(): { x: number; y: number }[] {
+  const cells: { x: number; y: number }[] = [];
+  const size = 15;
+  let seed = 42;
+  const rand = () => {
+    seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+    return (seed / 0x7fffffff) % 1;
+  };
+  for (let row = 0; row < size; row++) {
+    for (let col = 0; col < size; col++) {
+      const inFinder =
+        (row < 4 && col < 4) || (row < 4 && col > size - 5) || (row > size - 5 && col < 4);
+      if (inFinder) {
+        continue;
+      }
+      if (rand() > 0.55) {
+        cells.push({ x: col * 6 + 4, y: row * 6 + 4 });
+      }
+    }
+  }
+  for (const [ox, oy] of [
+    [0, 0],
+    [size - 4, 0],
+    [0, size - 4],
+  ]) {
+    for (let r = 0; r < 4; r++) {
+      for (let c = 0; c < 4; c++) {
+        if (r === 0 || r === 3 || c === 0 || c === 3) {
+          cells.push({ x: (ox + c) * 6 + 4, y: (oy + r) * 6 + 4 });
+        }
+      }
+    }
+  }
+  return cells;
+}
+
+type View = 'list' | 'detail' | 'info' | 'evaluations' | 'evaluation-detail';
+type DetailTab = 'timeline' | 'documents' | 'comments';
+type InfoSection = 'meta' | 'project' | 'type' | 'govid' | 'professional' | 'ownership';
+
+interface RingStat {
+  label: string;
+  value: string;
+  color: string;
+  light: string;
+  pct: number;
+}
+
+@Component({
+  selector: 'app-tenant-applications',
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination],
+  templateUrl: './tenant-applications.html',
+  styleUrl: './tenant-applications.scss',
+})
+export class TenantApplications {
+  protected readonly rows = APP_ROWS;
+  protected readonly documents = DOCUMENTS;
+  protected readonly comments = COMMENTS;
+  protected readonly timeline = TIMELINE;
+  protected readonly sharedTimeline = SHARED_TIMELINE;
+  protected readonly evalCards = EVAL_CARDS;
+  protected readonly evalDetails = EVAL_DETAILS;
+
+  protected readonly ringStats: RingStat[] = [
+    { label: 'Pending', value: '524', color: '#f5c518', light: '#fdf1c7', pct: 45 },
+    { label: 'Approved', value: '849', color: '#22c55e', light: '#d7f5df', pct: 75 },
+    { label: 'Rejected', value: '376', color: '#ef4444', light: '#fbdada', pct: 30 },
+    { label: 'Total Applications', value: '1,749', color: '#3b82f6', light: '#dbe8fd', pct: 85 },
+  ];
+
+  protected ringSegments(stat: RingStat): DonutSegment[] {
+    return [
+      { label: 'value', value: stat.pct, color: stat.color },
+      { label: 'rest', value: 100 - stat.pct, color: stat.light },
+    ];
+  }
+
+  protected readonly page = signal(1);
+  protected readonly pageSize = 10;
+
+  protected readonly pagedRows = computed(() => {
+    const start = (this.page() - 1) * this.pageSize;
+    return this.rows.slice(start, start + this.pageSize);
+  });
+
+  protected readonly view = signal<View>('list');
+  protected readonly detailTab = signal<DetailTab>('timeline');
+  protected readonly openSection = signal<InfoSection | null>('meta');
+  protected readonly selectedRow = signal<AppRow | null>(null);
+  protected readonly selectedEval = signal<EvalKey | null>(null);
+  protected readonly newMessage = signal('');
+
+  protected readonly qrCells = buildQrCells();
+
+  protected readonly selectedDetail = computed<AppDetail | null>(() => {
+    const row = this.selectedRow();
+    return row ? buildDetailFor(row) : null;
+  });
+
+  protected readonly activeEvalDetail = computed(() => {
+    const key = this.selectedEval();
+    return key ? this.evalDetails[key] : null;
+  });
+
+  openDetail(row: AppRow): void {
+    this.selectedRow.set(row);
+    this.detailTab.set('timeline');
+    this.view.set('detail');
+  }
+
+  selectDetailTab(tab: DetailTab): void {
+    this.detailTab.set(tab);
+  }
+
+  backToList(): void {
+    this.view.set('list');
+    this.selectedRow.set(null);
+  }
+
+  openInfo(): void {
+    this.view.set('info');
+  }
+
+  backFromInfo(): void {
+    this.view.set('detail');
+  }
+
+  toggleSection(section: InfoSection): void {
+    this.openSection.update((current) => (current === section ? null : section));
+  }
+
+  openEvaluations(): void {
+    this.view.set('evaluations');
+  }
+
+  backFromEvaluations(): void {
+    this.view.set('detail');
+  }
+
+  openEvalDetail(key: EvalKey): void {
+    this.selectedEval.set(key);
+    this.view.set('evaluation-detail');
+  }
+
+  backFromEvalDetail(): void {
+    this.view.set('evaluations');
+  }
+}

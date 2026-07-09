@@ -1,0 +1,29 @@
+<div class="pagination">
+  <span class="range-label">{{ rangeLabel() }}</span>
+
+  <div class="page-controls">
+    <button type="button" class="page-nav" [disabled]="page() === 1" (click)="first()">
+      <app-icon name="chevrons-left" [size]="16" />
+    </button>
+
+    @for (p of pages(); track p) {
+      <button
+        type="button"
+        class="page-btn"
+        [class.active]="p === page()"
+        (click)="goTo(p)"
+      >
+        {{ p }}
+      </button>
+    }
+
+    <button
+      type="button"
+      class="page-nav"
+      [disabled]="page() === totalPages()"
+      (click)="last()"
+    >
+      <app-icon name="chevrons-right" [size]="16" />
+    </button>
+  </div>
+</div>

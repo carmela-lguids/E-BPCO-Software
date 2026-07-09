@@ -1,0 +1,160 @@
+<app-topbar title="Dashboard" />
+
+<section class="stat-row">
+  @for (c of statCards; track c.label) {
+    <app-stat-card
+      [icon]="c.icon"
+      [iconBg]="c.iconBg"
+      [cardTint]="c.tint"
+      [label]="c.label"
+      [value]="c.value"
+      [deltas]="c.deltas ?? []"
+      [footnote]="c.footnote ?? ''"
+    />
+  }
+</section>
+
+<section class="card queue-card">
+  <div class="queue-header">
+    <div>
+      <h2>Over All Applications Queue</h2>
+      <div class="legend">
+        <span><i class="dot" style="background: #f5b528"></i>Pending</span>
+        <span><i class="dot" style="background: #22c55e"></i>Approved</span>
+        <span><i class="dot" style="background: #ef4444"></i>Rejected</span>
+      </div>
+    </div>
+    <div class="queue-actions">
+      <span class="mini-bars"><i></i><i></i><i></i></span>
+      <button type="button" class="save-report-btn">
+        <app-icon name="download" [size]="16" />
+        Save Report
+      </button>
+    </div>
+  </div>
+
+  <app-lollipop-chart [categories]="queueCategories" />
+</section>
+
+<section class="mid-row">
+  <div class="card status-card">
+    <div class="card-head">
+      <h2>Applications By Status</h2>
+      <select class="filter-select">
+        <option>Yearly</option>
+        <option>Monthly</option>
+      </select>
+    </div>
+
+    <div class="status-body">
+      <app-donut-chart [segments]="statusSegments" [size]="190" />
+      <ul class="status-legend">
+        @for (seg of statusSegments; track seg.label) {
+          <li><i [style.background]="seg.color"></i>{{ seg.label }}</li>
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="card tenants-card">
+    <div class="card-head">
+      <h2>Application By Tenants</h2>
+      <select class="filter-select">
+        <option>This Month</option>
+        <option>Last Month</option>
+      </select>
+    </div>
+
+    <app-bar-list [rows]="pagedTenantRows()" />
+
+    <app-pagination
+      [totalItems]="tenantRows.length"
+      [pageSize]="tenantPageSize"
+      [(page)]="tenantPage"
+    />
+  </div>
+</section>
+
+<section class="card overview-card">
+  <div class="card-head">
+    <h2>Application Overview</h2>
+    <select class="filter-select">
+      <option>This Month</option>
+      <option>This Year</option>
+    </select>
+  </div>
+
+  <div class="overview-legend">
+    <span><i style="background: #3b82f6"></i>New Application: <strong>50</strong></span>
+    <span><i style="background: #f5b528"></i>Approved Application: <strong>500</strong></span>
+  </div>
+
+  <app-area-chart />
+</section>
+
+<section class="card recent-card">
+  <div class="recent-head">
+    <h2>Recent Tenants</h2>
+    <div class="recent-actions">
+      <button type="button" class="btn-outline">
+        <app-icon name="filter" [size]="15" />
+        Filters
+      </button>
+      <button type="button" class="btn-outline">
+        <app-icon name="download" [size]="15" />
+        Export
+      </button>
+      <button type="button" class="btn-primary">
+        <app-icon name="plus" [size]="15" />
+        Application
+      </button>
+      <a class="view-all" href="javascript:void(0)">View All</a>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th><input type="checkbox" /></th>
+          <th>APPLICATION ID</th>
+          <th>APPLICANT NAME</th>
+          <th>LOCATION</th>
+          <th>TYPE</th>
+          <th>DATE SUBMITTED</th>
+          <th>ASSIGNED OFFICER</th>
+          <th>STATUS</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of recentTenants; track row.id) {
+          <tr>
+            <td><input type="checkbox" /></td>
+            <td class="id-cell">{{ row.id }}</td>
+            <td>
+              <div class="applicant-cell">
+                <app-avatar [name]="row.applicant" [size]="30" />
+                {{ row.applicant }}
+              </div>
+            </td>
+            <td>{{ row.location }}</td>
+            <td>{{ row.type }}</td>
+            <td>{{ row.dateSubmitted }}</td>
+            <td>{{ row.officer }}</td>
+            <td>
+              <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
+            </td>
+            <td class="actions-cell">
+              <button type="button" class="icon-btn view"><app-icon name="eye" [size]="15" /></button>
+              <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="15" /></button>
+              <button type="button" class="icon-btn del"><app-icon name="trash" [size]="15" /></button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <p class="table-footer">Showing 1-7 from 196 Applications</p>
+</section>

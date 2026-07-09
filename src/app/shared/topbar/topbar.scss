@@ -1,0 +1,136 @@
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #1f2430;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: #eeeef1;
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.9rem;
+  color: #8b8f9b;
+  width: 260px;
+  transition: box-shadow 0.2s ease;
+
+  &:focus-within {
+    box-shadow: 0 0 0 2px rgba(200, 30, 44, 0.25);
+  }
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 0.88rem;
+    color: #2b2f3a;
+
+    &::placeholder {
+      color: #9a9ea8;
+    }
+  }
+}
+
+.bell-btn {
+  position: relative;
+  border: 1px solid #ececf1;
+  background: #fff;
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #565c6b;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    color 0.2s ease;
+
+  &:hover {
+    color: #c81e2c;
+    transform: translateY(-1px);
+  }
+
+  .badge {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    background: #c81e2c;
+    color: #fff;
+    font-size: 0.62rem;
+    font-weight: 800;
+    min-width: 17px;
+    height: 17px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+    border: 2px solid #fff;
+  }
+}
+
+.user-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.avatar-wrap {
+  position: relative;
+  display: inline-flex;
+
+  .status-dot {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #22c55e;
+    border: 2px solid #fff;
+  }
+}
+
+.user-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.user-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1f2430;
+}
+
+.user-role {
+  font-size: 0.76rem;
+  color: #8b8f9b;
+  font-weight: 500;
+}
+
+@media (max-width: 720px) {
+  .search-box {
+    display: none;
+  }
+}

@@ -1,0 +1,292 @@
+<app-topbar title="System Logs" />
+
+<section class="stat-row">
+  @for (s of currentStats(); track s.label) {
+    <app-stat-card
+      [icon]="s.icon"
+      [iconBg]="s.iconBg"
+      [cardTint]="s.tint"
+      [label]="s.label"
+      [value]="s.value"
+      [deltas]="s.delta ? [s.delta] : []"
+      [footnote]="s.footnote ?? ''"
+    />
+  }
+</section>
+
+<section class="card logs-card">
+  <nav class="tab-nav">
+    @for (t of tabs; track t.key) {
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === t.key"
+        (click)="selectTab(t.key)"
+      >
+        {{ t.label }}
+      </button>
+    }
+  </nav>
+
+  <div class="filter-bar">
+    <div class="filter-item date-filter">
+      <app-icon name="calendar" [size]="15" />
+      <span>May {{ dateRange }}</span>
+    </div>
+
+    <select class="filter-select">
+      <option>All Tenants</option>
+    </select>
+    <select class="filter-select">
+      <option>All Users</option>
+    </select>
+    <select class="filter-select">
+      <option>All Modules</option>
+    </select>
+    <select class="filter-select">
+      <option>All Status</option>
+    </select>
+    <select class="filter-select">
+      <option>All Severity</option>
+    </select>
+
+    <div class="spacer"></div>
+
+    <div class="live-toggle">
+      <span>Live Stream</span>
+      <button
+        type="button"
+        class="switch"
+        [class.on]="liveStream()"
+        (click)="toggleLiveStream()"
+        role="switch"
+        [attr.aria-checked]="liveStream()"
+      >
+        <span class="knob"></span>
+      </button>
+    </div>
+
+    <button type="button" class="btn-outline">
+      <app-icon name="filter" [size]="15" />
+      Filters
+    </button>
+    <button type="button" class="btn-outline">
+      <app-icon name="download" [size]="15" />
+      Export
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    @switch (activeTab()) {
+      @case ('activity') {
+        <table>
+          <thead>
+            <tr>
+              <th>Time Stamp</th>
+              <th>Event type</th>
+              <th>Description</th>
+              <th>User/Action</th>
+              <th>Tenant</th>
+              <th>Module</th>
+              <th>IP Adress</th>
+              <th>Status</th>
+              <th>Severity</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of pagedActivityRows(); track row.timestamp + row.user) {
+              <tr>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.eventType }}</td>
+                <td>{{ row.description }}</td>
+                <td>{{ row.user }}</td>
+                <td>{{ row.tenant }}</td>
+                <td>{{ row.module }}</td>
+                <td>{{ row.ip }}</td>
+                <td><span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span></td>
+                <td><span class="status-pill" [class]="row.severity.toLowerCase()">{{ row.severity }}</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button type="button" class="icon-btn view"><app-icon name="eye" [size]="14" /></button>
+                    <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="14" /></button>
+                    <button type="button" class="icon-btn del"><app-icon name="trash" [size]="14" /></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @case ('access') {
+        <table>
+          <thead>
+            <tr>
+              <th>Time Stamp</th>
+              <th>Users</th>
+              <th>Tenannt</th>
+              <th>Event</th>
+              <th>Status</th>
+              <th>IP Adress</th>
+              <th>Device/Browser</th>
+              <th>Location</th>
+              <th>Session Duration</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of pagedAccessRows(); track row.timestamp + row.user) {
+              <tr>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.user }}</td>
+                <td>{{ row.tenant }}</td>
+                <td>{{ row.event }}</td>
+                <td><span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span></td>
+                <td>{{ row.ip }}</td>
+                <td>{{ row.device }}</td>
+                <td>{{ row.location }}</td>
+                <td><span class="status-pill active">{{ row.sessionDuration }}</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button type="button" class="icon-btn view"><app-icon name="eye" [size]="14" /></button>
+                    <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="14" /></button>
+                    <button type="button" class="icon-btn del"><app-icon name="trash" [size]="14" /></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @case ('error') {
+        <table>
+          <thead>
+            <tr>
+              <th>Time Stamp</th>
+              <th>Error Type</th>
+              <th>Message</th>
+              <th>Module</th>
+              <th>Tenant</th>
+              <th>Environment</th>
+              <th>Status</th>
+              <th>Severity</th>
+              <th>Request ID</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of pagedErrorRows(); track row.timestamp + row.requestId) {
+              <tr>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.errorType }}</td>
+                <td><div class="wrap-cell">{{ row.message }}</div></td>
+                <td>{{ row.module }}</td>
+                <td>{{ row.tenant }}</td>
+                <td>{{ row.environment }}</td>
+                <td><span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span></td>
+                <td><span class="status-pill" [class]="row.severity.toLowerCase()">{{ row.severity }}</span></td>
+                <td>{{ row.requestId }}</td>
+                <td>
+                  <div class="actions-cell">
+                    <button type="button" class="icon-btn view"><app-icon name="eye" [size]="14" /></button>
+                    <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="14" /></button>
+                    <button type="button" class="icon-btn del"><app-icon name="trash" [size]="14" /></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @case ('security') {
+        <table>
+          <thead>
+            <tr>
+              <th>Time Stamp</th>
+              <th>Event Type</th>
+              <th>User</th>
+              <th>Tenant</th>
+              <th>Message</th>
+              <th>IP Address</th>
+              <th>Environment</th>
+              <th>Severity</th>
+              <th>Status</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of pagedSecurityRows(); track row.timestamp + row.user) {
+              <tr>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.eventType }}</td>
+                <td>{{ row.user }}</td>
+                <td>{{ row.tenant }}</td>
+                <td><div class="wrap-cell">{{ row.message }}</div></td>
+                <td>{{ row.ip }}</td>
+                <td>{{ row.environment }}</td>
+                <td><span class="status-pill" [class]="row.severity.toLowerCase()">{{ row.severity }}</span></td>
+                <td><span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button type="button" class="icon-btn view"><app-icon name="eye" [size]="14" /></button>
+                    <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="14" /></button>
+                    <button type="button" class="icon-btn del"><app-icon name="trash" [size]="14" /></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+
+      @case ('events') {
+        <table>
+          <thead>
+            <tr>
+              <th>Time Stamp</th>
+              <th>Event Type</th>
+              <th>Event</th>
+              <th>Module</th>
+              <th>Tenant</th>
+              <th>Environment</th>
+              <th>Severity</th>
+              <th>Status</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of pagedEventRows(); track row.timestamp + row.event) {
+              <tr>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.eventType }}</td>
+                <td>{{ row.event }}</td>
+                <td>{{ row.module }}</td>
+                <td>{{ row.tenant }}</td>
+                <td>{{ row.environment }}</td>
+                <td><span class="status-pill" [class]="row.severity.toLowerCase()">{{ row.severity }}</span></td>
+                <td><span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span></td>
+                <td>
+                  <div class="actions-cell">
+                    <button type="button" class="icon-btn view"><app-icon name="eye" [size]="14" /></button>
+                    <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="14" /></button>
+                    <button type="button" class="icon-btn del"><app-icon name="trash" [size]="14" /></button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    }
+  </div>
+
+  <app-pagination
+    class="pagination-row"
+    [totalItems]="totalItems()"
+    [pageSize]="pageSize"
+    [(page)]="page"
+  />
+</section>

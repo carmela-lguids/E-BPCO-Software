@@ -1,0 +1,14 @@
+<div
+  class="donut"
+  [style.width.px]="size()"
+  [style.height.px]="size()"
+  [style.background]="conicGradient()"
+>
+  <div class="hole" [style.background]="holeColor()" [style.inset.px]="ringWidth()"></div>
+
+  @if (showLabels()) {
+    @for (l of labelPositions(); track l.text + l.x) {
+      <span class="donut-label" [style.left.%]="l.x" [style.top.%]="l.y">{{ l.text }}</span>
+    }
+  }
+</div>

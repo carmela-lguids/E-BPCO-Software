@@ -1,0 +1,26 @@
+<div class="stat-card" [class]="cardTint()">
+  <div class="stat-top">
+    <div>
+      <p class="label">{{ label() }}</p>
+      <p class="value">{{ value() }}</p>
+    </div>
+    <span class="icon-badge" [style.background]="iconBg()">
+      <app-icon [name]="icon()" [size]="20" />
+    </span>
+  </div>
+
+  @if (deltas().length) {
+    <div class="deltas">
+      @for (d of deltas(); track d.text) {
+        <span class="delta" [class.good]="d.tone === 'good'" [class.bad]="d.tone === 'bad'">
+          <app-icon [name]="d.direction === 'up' ? 'trend-up' : 'trend-down'" [size]="13" />
+          {{ d.text }}
+        </span>
+      }
+    </div>
+  }
+
+  @if (footnote()) {
+    <p class="footnote">{{ footnote() }}</p>
+  }
+</div>

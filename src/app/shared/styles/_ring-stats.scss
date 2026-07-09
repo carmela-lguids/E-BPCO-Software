@@ -1,0 +1,60 @@
+@keyframes ring-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ring-stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.ring-card {
+  background: #fff;
+  border: 1px solid #eeeef2;
+  border-radius: 0.9rem;
+  padding: 1.25rem 1.4rem;
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  animation: ring-card-in 0.4s ease both;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(20, 20, 40, 0.08);
+  }
+}
+
+.ring-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.ring-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #7a7f8c;
+}
+
+.ring-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #1f2430;
+}
+
+@media (max-width: 1400px) {
+  .ring-stat-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

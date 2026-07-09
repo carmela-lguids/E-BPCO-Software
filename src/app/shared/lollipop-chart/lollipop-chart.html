@@ -1,0 +1,18 @@
+<div class="lollipop-scroll">
+  <div class="lollipop-row">
+    @for (cat of categories(); track cat.label) {
+      <div class="lollipop-col" [style.height.px]="height()">
+        <div class="stem"></div>
+        @for (dot of cat.dots; track $index) {
+          <span
+            class="dot"
+            [style.top.%]="dot.top"
+            [style.background]="dot.color"
+            [style.animation-delay.ms]="$index * 90"
+          ></span>
+        }
+        <span class="cat-label">{{ cat.label }}</span>
+      </div>
+    }
+  </div>
+</div>

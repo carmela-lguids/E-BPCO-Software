@@ -1,0 +1,133 @@
+<app-topbar title="Evaluations" [userRole]="'Admin'" />
+
+@if (view() === 'list') {
+  <h2 class="page-heading">List Of Evaluations</h2>
+
+  <div class="eval-type-grid">
+    @for (card of cards; track card.key) {
+      <div class="card eval-type-card">
+        <span
+          class="type-icon"
+          [class.solid]="card.solid"
+          [style.background]="card.solid ? card.accent : card.tint"
+          [style.color]="card.solid ? '#fff' : card.accent"
+        >
+          <app-icon [name]="card.icon" [size]="30" />
+        </span>
+        <h3>{{ card.title }}</h3>
+        <p>{{ card.description }}</p>
+        <span class="type-count" [style.color]="card.accent">{{ card.count }}</span>
+        <button type="button" class="view-btn" (click)="openCard(card)">View</button>
+      </div>
+    }
+  </div>
+} @else if (selectedCard(); as card) {
+  <div class="detail-head">
+    <h1>{{ card.key === 'final' ? 'Final Evaluations' : card.title }}</h1>
+    <div class="header-actions">
+      <button type="button" class="btn-primary" (click)="backToList()">Back</button>
+      <button type="button" class="icon-btn more"><app-icon name="dots-horizontal" [size]="16" /></button>
+    </div>
+  </div>
+
+  <section class="ring-stat-row">
+    @for (stat of ringStats; track stat.label) {
+      <div class="ring-card">
+        <app-donut-chart
+          [segments]="ringSegments(stat)"
+          [size]="72"
+          [ringWidth]="11"
+          [showLabels]="false"
+          holeColor="#fff"
+        />
+        <div class="ring-text">
+          <span class="ring-label">{{ stat.label }}</span>
+          <span class="ring-value">{{ stat.value }}</span>
+        </div>
+      </div>
+    }
+  </section>
+
+  <div class="stage-tabs">
+    @for (tab of stageTabs; track tab.key) {
+      <button
+        type="button"
+        class="stage-tab"
+        [class.active]="activeStage() === tab.key"
+        (click)="selectStage(tab.key)"
+      >
+        {{ tab.label }}
+      </button>
+    }
+  </div>
+
+  <section class="card table-card">
+    <div class="table-toolbar">
+      <div class="search-input">
+        <app-icon name="search" [size]="16" />
+        <input type="text" placeholder="Search Here By Application ID, Application ..." />
+      </div>
+      <div class="toolbar-actions">
+        <button type="button" class="btn-outline">
+          <app-icon name="filter" [size]="15" />
+          Filters
+        </button>
+        <button type="button" class="btn-outline">
+          <app-icon name="download" [size]="15" />
+          Export
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" /></th>
+            <th>APPLICATION ID</th>
+            <th>APPLICANT NAME</th>
+            <th>MISSING DOCUMENTS</th>
+            <th>TYPE</th>
+            <th>DATE SUBMITTED</th>
+            <th>ASSIGNED OFFICER</th>
+            <th>STATUS</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pagedRows(); track row.id) {
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td class="id-cell">{{ row.id }}</td>
+              <td>
+                <div class="applicant-cell">
+                  <app-avatar [name]="row.applicant" [size]="30" />
+                  {{ row.applicant }}
+                </div>
+              </td>
+              <td>{{ row.missingDocuments }}</td>
+              <td>{{ row.type }}</td>
+              <td>{{ row.dateSubmitted }}</td>
+              <td>{{ row.officer }}</td>
+              <td>
+                <span class="status-pill" [class]="row.status.toLowerCase().replace(/ /g, '-')">{{
+                  row.status
+                }}</span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button type="button" class="review-btn">Review</button>
+                  <button type="button" class="icon-btn more small">
+                    <app-icon name="dots-horizontal" [size]="15" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [totalItems]="stageRows().length" [pageSize]="pageSize" [(page)]="page" />
+  </section>
+}

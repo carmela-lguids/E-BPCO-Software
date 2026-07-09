@@ -1,0 +1,143 @@
+.auth-card {
+  width: 100%;
+  max-width: 460px;
+  margin-inline: auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.75rem;
+
+  .brand-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: #2b2f3a;
+    letter-spacing: 0.02em;
+  }
+}
+
+.title {
+  font-size: 1.9rem;
+  font-weight: 800;
+  color: #1f2430;
+  margin: 0 0 1.75rem;
+}
+
+.field-label {
+  display: block;
+  font-size: 0.9rem;
+  color: #2b2f3a;
+  margin-bottom: 0.4rem;
+}
+
+.input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.25rem;
+  border: 1px solid #e2e2e6;
+  border-radius: 0.4rem;
+  background: #fff;
+
+  .input-icon {
+    width: 20px;
+    height: 20px;
+    margin-inline: 0.85rem;
+    color: #c81e2c;
+    flex-shrink: 0;
+  }
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 0.85rem 0.75rem 0.85rem 0;
+    font-size: 0.95rem;
+    color: #1f2430;
+    background: transparent;
+
+    &::placeholder {
+      color: #9a9aa5;
+    }
+  }
+
+  .toggle-visibility {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem 0.85rem;
+    color: #9a9aa5;
+    display: flex;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.row-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  font-size: 0.85rem;
+
+  .remember {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #c81e2c;
+    cursor: pointer;
+
+    input {
+      accent-color: #c81e2c;
+    }
+  }
+
+  .link {
+    color: #c81e2c;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.btn-primary {
+  width: 100%;
+  border: none;
+  border-radius: 0.4rem;
+  background: linear-gradient(180deg, #d9251f, #c81e2c);
+  color: #fff;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 0.9rem;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+
+  &:hover {
+    filter: brightness(1.05);
+  }
+}
+
+.switch-auth {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #6b6b76;
+
+  a {
+    color: #1f2430;
+    font-weight: 700;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

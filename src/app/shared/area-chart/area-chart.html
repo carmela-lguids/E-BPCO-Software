@@ -1,0 +1,58 @@
+<div class="chart-shell">
+  <div class="y-axis">
+    @for (label of yLabels(); track label) {
+      <span>{{ label }}</span>
+    }
+  </div>
+
+  <div class="chart-area">
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="none" class="chart-svg">
+      <defs>
+        <linearGradient id="blueFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#3b82f6" stop-opacity="0.32" />
+          <stop offset="1" stop-color="#3b82f6" stop-opacity="0" />
+        </linearGradient>
+        <linearGradient id="amberFill" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#f5b528" stop-opacity="0.35" />
+          <stop offset="1" stop-color="#f5b528" stop-opacity="0" />
+        </linearGradient>
+      </defs>
+
+      @for (label of yLabels(); track $index) {
+        <line
+          x1="0"
+          [attr.y1]="($index / (yLabels().length - 1)) * 300"
+          x2="1000"
+          [attr.y2]="($index / (yLabels().length - 1)) * 300"
+          class="grid-line"
+        />
+      }
+
+      <path
+        class="area-fill"
+        fill="url(#blueFill)"
+        d="M0,230 C60,215 90,200 140,195 C190,190 220,165 260,150 C300,135 320,120 360,118 C400,116 420,140 450,148 C480,156 520,150 550,140 C580,130 610,120 650,118 C690,116 700,120 730,115 C760,110 790,130 820,140 C850,150 880,148 910,150 C940,152 970,148 1000,145 L1000,300 L0,300 Z"
+      />
+      <path
+        class="line-stroke blue"
+        d="M0,230 C60,215 90,200 140,195 C190,190 220,165 260,150 C300,135 320,120 360,118 C400,116 420,140 450,148 C480,156 520,150 550,140 C580,130 610,120 650,118 C690,116 700,120 730,115 C760,110 790,130 820,140 C850,150 880,148 910,150 C940,152 970,148 1000,145"
+      />
+
+      <path
+        class="area-fill"
+        fill="url(#amberFill)"
+        d="M0,255 C60,250 90,240 140,225 C190,210 210,195 250,190 C290,185 300,200 330,205 C360,210 380,215 410,210 C440,205 460,195 490,192 C520,189 540,200 570,205 C600,210 630,205 660,200 C690,195 710,185 740,180 C770,175 800,185 830,190 C860,195 900,192 930,195 C960,198 985,200 1000,198 L1000,300 L0,300 Z"
+      />
+      <path
+        class="line-stroke amber"
+        d="M0,255 C60,250 90,240 140,225 C190,210 210,195 250,190 C290,185 300,200 330,205 C360,210 380,215 410,210 C440,205 460,195 490,192 C520,189 540,200 570,205 C600,210 630,205 660,200 C690,195 710,185 740,180 C770,175 800,185 830,190 C860,195 900,192 930,195 C960,198 985,200 1000,198"
+      />
+    </svg>
+
+    <div class="x-axis">
+      @for (label of xLabels(); track label; let i = $index) {
+        <span [class.active]="i === highlightXIndex()">{{ label }}</span>
+      }
+    </div>
+  </div>
+</div>

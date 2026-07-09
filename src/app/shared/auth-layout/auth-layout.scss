@@ -1,0 +1,55 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  background: #f4f4f6;
+  background-image: radial-gradient(circle, #dcdce1 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+.auth-shell {
+  position: relative;
+  min-height: 100dvh;
+  display: flex;
+  align-items: stretch;
+}
+
+.auth-visual {
+  position: relative;
+  width: 42%;
+  min-width: 320px;
+  overflow: hidden;
+
+  .visual-shape {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .visual-seal {
+    position: absolute;
+    top: 38%;
+    left: 26%;
+    transform: translate(-50%, -50%);
+    filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+  }
+}
+
+.auth-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .auth-visual {
+    display: none;
+  }
+
+  .auth-panel {
+    width: 100%;
+  }
+}

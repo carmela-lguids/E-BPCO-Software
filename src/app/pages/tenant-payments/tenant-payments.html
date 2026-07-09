@@ -1,0 +1,248 @@
+<app-topbar title="Payments" [userRole]="'Admin'" />
+
+@if (view() === 'list') {
+  <section class="ring-stat-row">
+    @for (stat of ringStats; track stat.label) {
+      <div class="ring-card">
+        <app-donut-chart
+          [segments]="ringSegments(stat)"
+          [size]="72"
+          [ringWidth]="11"
+          [showLabels]="false"
+          holeColor="#fff"
+        />
+        <div class="ring-text">
+          <span class="ring-label">{{ stat.label }}</span>
+          <span class="ring-value">{{ stat.value }}</span>
+        </div>
+      </div>
+    }
+  </section>
+
+  <section class="card table-card">
+    <div class="table-toolbar">
+      <div class="search-input">
+        <app-icon name="search" [size]="16" />
+        <input type="text" placeholder="Search Here By Application ID, Application ..." />
+      </div>
+      <div class="toolbar-actions">
+        <button type="button" class="btn-outline">
+          <app-icon name="filter" [size]="15" />
+          Filters
+        </button>
+        <button type="button" class="btn-outline">
+          <app-icon name="download" [size]="15" />
+          Export
+        </button>
+        <button type="button" class="btn-primary">
+          <app-icon name="plus" [size]="15" />
+          Application
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th><input type="checkbox" /></th>
+            <th>APPLICATION ID</th>
+            <th>APPLICANT NAME</th>
+            <th>LOCATION</th>
+            <th>TYPE</th>
+            <th>DATE SUBMITTED</th>
+            <th>AMOUNT</th>
+            <th>STATUS</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pagedRows(); track row.id) {
+            <tr>
+              <td><input type="checkbox" /></td>
+              <td class="id-cell">{{ row.id }}</td>
+              <td>
+                <div class="applicant-cell">
+                  <app-avatar [name]="row.applicant" [size]="30" />
+                  {{ row.applicant }}
+                </div>
+              </td>
+              <td>{{ row.city }}</td>
+              <td>{{ row.type }}</td>
+              <td>{{ row.dateSubmitted }}</td>
+              <td>{{ row.amount }}</td>
+              <td>
+                <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
+              </td>
+              <td>
+                <div class="actions-cell">
+                  <button type="button" class="icon-btn view" (click)="openDetail(row)">
+                    <app-icon name="eye" [size]="15" />
+                  </button>
+                  @if (row.verified) {
+                    <button type="button" class="pill-btn verified" disabled>Verified</button>
+                  } @else {
+                    <button type="button" class="pill-btn verify" (click)="requestVerify(row)">
+                      Verify
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [totalItems]="rows().length" [pageSize]="pageSize" [(page)]="page" />
+  </section>
+} @else if (selectedRow(); as row) {
+  <div class="detail-head">
+    <h1>Payment Details</h1>
+    <div class="header-actions">
+      @if (row.verified) {
+        <span class="pill-btn verified static">Verified</span>
+      } @else {
+        <span class="pill-btn verify static">{{ row.status }}</span>
+      }
+      <button type="button" class="btn-primary" (click)="backToList()">Back to List</button>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="applicant-card">
+      <div class="banner">
+        <app-icon name="image" [size]="26" />
+        <app-avatar [name]="row.applicant" [size]="72" class="banner-avatar" />
+      </div>
+
+      <div class="applicant-info">
+        <h2>{{ row.id }} - {{ row.applicant }}</h2>
+        <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
+
+        <dl class="info-list">
+          <div><dt>City :</dt><dd>{{ row.city }}</dd></div>
+          <div><dt>Region :</dt><dd>{{ row.region }}</dd></div>
+          <div><dt>Type :</dt><dd>{{ row.type }}</dd></div>
+          <div><dt>Ref No:</dt><dd>{{ row.refNo }}</dd></div>
+          <div><dt>Amount:</dt><dd>{{ row.amount }}</dd></div>
+        </dl>
+      </div>
+
+      <div class="applicant-footer">
+        <div>
+          <strong>{{ row.dateSubmitted }}</strong>
+          <span>Date of Latest Payment</span>
+        </div>
+        <div>
+          <strong>{{ row.paymentMethod }}</strong>
+          <span>Payment Method</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="card-head">
+        <h2>Payment Summary</h2>
+        <button type="button" class="btn-outline">
+          Download Receipt
+          <app-icon name="download" [size]="15" />
+        </button>
+      </div>
+
+      <p class="verified-note">
+        This Payment Is {{ row.verified ? 'Verified' : row.status }}
+      </p>
+
+      <h3>Fee Breakdown</h3>
+      <div class="table-wrap">
+        <table class="fee-table">
+          <thead>
+            <tr>
+              <th>Processing Fee</th>
+              <th>Zoning Fee</th>
+              <th>Fire Fee</th>
+              <th>OBO Fee</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ row.fees.processing }}</td>
+              <td>{{ row.fees.zoning }}</td>
+              <td>{{ row.fees.fire }}</td>
+              <td>{{ row.fees.obo }}</td>
+              <td>{{ row.fees.total }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Payment History</h3>
+      <div class="table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Amount</th>
+              <th>Date</th>
+              <th>Status</th>
+              <th>Payment Method</th>
+              <th>Verified By</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (h of row.history; track h.ref) {
+              <tr>
+                <td class="muted">{{ h.ref }}</td>
+                <td>{{ h.amount }}</td>
+                <td>{{ h.date }}</td>
+                <td>
+                  <span class="status-pill" [class]="h.status.toLowerCase()">{{ h.status }}</span>
+                </td>
+                <td class="muted">{{ h.method }}</td>
+                <td>{{ h.verifiedBy || '—' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}
+
+@if (modal() === 'confirm') {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+      <h2>Are you sure you want to Verify this payment?</h2>
+      <p>After verifying the application will move forward to Permit Releasing.</p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn confirm" (click)="confirmVerify()">Verify</button>
+        <button type="button" class="modal-btn cancel" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (modal() === 'incomplete') {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+      <h2>Can't process verification.</h2>
+      <p>The applicant has not completed verification on their end.</p>
+    </div>
+  </div>
+}
+
+@if (modal() === 'no-authority') {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h2>No authority to process action.</h2>
+      <p>This application is handled by the other admin.</p>
+      <div class="modal-actions centered">
+        <button type="button" class="modal-btn cancel" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+}

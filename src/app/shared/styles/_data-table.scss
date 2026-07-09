@@ -1,0 +1,160 @@
+.btn-outline,
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.9rem;
+  font-size: 0.83rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    background 0.2s ease;
+  white-space: nowrap;
+
+  &:active {
+    transform: scale(0.96);
+  }
+}
+
+.btn-outline {
+  background: #fff;
+  border: 1px solid #e6e6ec;
+  color: #454a58;
+
+  &:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+  }
+}
+
+.btn-primary {
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: #fff;
+
+  &:hover {
+    background: #1d4ed8;
+  }
+}
+
+.filter-select {
+  border: 1px solid #e6e6ec;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #454a58;
+  background: #fff;
+  cursor: pointer;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px;
+}
+
+thead th {
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #9297a3;
+  letter-spacing: 0.03em;
+  padding: 0.65rem 0.75rem;
+  border-bottom: 1px solid #eeeef2;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 0.8rem 0.75rem;
+  font-size: 0.85rem;
+  color: #2b2f3a;
+  border-bottom: 1px solid #f4f4f7;
+  white-space: nowrap;
+}
+
+tbody tr {
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: #fafafc;
+  }
+}
+
+.status-pill {
+  display: inline-block;
+  padding: 0.3rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+
+  &.approved,
+  &.active,
+  &.good {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+  &.pending,
+  &.warning {
+    background: #fef3c7;
+    color: #b45309;
+  }
+  &.rejected,
+  &.inactive,
+  &.critical {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+  &.info {
+    background: #dbeafe;
+    color: #2563eb;
+  }
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.icon-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  &.view {
+    background: #e8f1ff;
+    color: #2563eb;
+  }
+  &.edit {
+    background: #e7fbef;
+    color: #16a34a;
+  }
+  &.del {
+    background: #fdeceb;
+    color: #dc2626;
+  }
+}
+
+.table-footer {
+  text-align: center;
+  margin: 1.25rem 0 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2b2f3a;
+}

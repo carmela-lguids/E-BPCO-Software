@@ -1,0 +1,54 @@
+@keyframes bar-in {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f0f0f4;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.row-name {
+  flex: 0 0 92px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2b2f3a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.row-bar-track {
+  flex: 1;
+  height: 8px;
+  border-radius: 6px;
+  background: #f1f1f5;
+  overflow: hidden;
+}
+
+.row-bar-fill {
+  display: block;
+  height: 100%;
+  border-radius: 6px;
+  transform-origin: left;
+  animation: bar-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.row-value {
+  flex: 0 0 32px;
+  text-align: right;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f2430;
+}

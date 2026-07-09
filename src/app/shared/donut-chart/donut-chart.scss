@@ -1,0 +1,31 @@
+@keyframes spin-in {
+  from {
+    transform: rotate(-90deg) scale(0.85);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.donut {
+  position: relative;
+  border-radius: 50%;
+  animation: spin-in 0.6s ease both;
+}
+
+.hole {
+  position: absolute;
+  inset: 21%;
+  border-radius: 50%;
+}
+
+.donut-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
