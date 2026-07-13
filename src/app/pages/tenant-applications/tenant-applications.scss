@@ -210,6 +210,7 @@ h3 {
   border: 1px solid #eeeef2;
   border-radius: 0.9rem;
   overflow: hidden;
+  min-width: 0;
   animation: section-in 0.4s ease both;
 }
 
@@ -334,6 +335,7 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  min-width: 0;
 }
 
 .tab-row {
@@ -657,6 +659,7 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  min-width: 0;
 }
 
 .accordion-card {
@@ -878,6 +881,7 @@ h3 {
 .eval-left {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .status-pill.for-review {
@@ -1072,6 +1076,7 @@ h3 {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-width: 0;
 }
 
 .visual-card {

@@ -18,6 +18,7 @@
   width: 42%;
   min-width: 320px;
   overflow: hidden;
+  background: #f4f4f6;
 
   .visual-shape {
     position: absolute;
@@ -27,12 +28,33 @@
     display: block;
   }
 
+  .visual-photo-img {
+    filter: brightness(0.95) contrast(1.05);
+  }
+
+  .visual-tint {
+    mix-blend-mode: multiply;
+    opacity: 0.85;
+  }
+
   .visual-seal {
     position: absolute;
     top: 38%;
     left: 26%;
     transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.35));
+
+    .seal-glow {
+      position: absolute;
+      inset: -18%;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
+      filter: blur(6px);
+      z-index: -1;
+    }
   }
 }
 
