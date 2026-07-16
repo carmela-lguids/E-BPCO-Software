@@ -1,5 +1,6 @@
 @use '../../shared/styles/data-table';
 @use '../../shared/styles/ring-stats';
+@use '../../shared/styles/tokens' as *;
 
 @keyframes section-in {
   from {
@@ -189,36 +190,42 @@
 /* Stage tabs */
 .stage-tabs {
   display: flex;
-  border: 1px solid #eeeef2;
-  border-radius: 0.6rem;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
   overflow: hidden;
-  margin-bottom: 1.5rem;
-  background: #fff;
+  margin-bottom: 1.35rem;
+  background: $color-surface;
 }
 
 .stage-tab {
   flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
   border: none;
-  border-left: 1px solid #eeeef2;
-  background: #fff;
-  padding: 1rem;
-  font-size: 0.95rem;
+  border-left: 1px solid $color-border;
+  background: $color-surface;
+  padding: 0.75rem 0.6rem;
+  font-size: 0.85rem;
   font-weight: 700;
-  color: #454a58;
+  color: $color-ink-600;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition:
+    background $ease-fast,
+    color $ease-fast;
 
   &:first-child {
     border-left: none;
   }
 
   &:hover {
-    color: #2563eb;
+    color: $color-brand-600;
   }
 
   &.active {
-    background: #eef2ff;
-    color: #2563eb;
+    background: $color-brand-tint-a;
+    color: $color-brand-600;
   }
 }
 

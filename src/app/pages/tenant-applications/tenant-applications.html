@@ -538,6 +538,16 @@
                   <td><input type="checkbox" [checked]="item.checked" disabled /></td>
                   <td>
                     <div class="doc-cell">
+                      <button
+                        type="button"
+                        class="doc-info-btn"
+                        [disabled]="!item.filename"
+                        (click)="openDocPreview(item)"
+                        [attr.aria-label]="'Preview ' + item.label"
+                        title="Preview document"
+                      >
+                        <app-icon name="info" [size]="15" />
+                      </button>
                       @if (item.filename) {
                         <span class="doc-icon"><app-icon name="file-check" [size]="18" /></span>
                       }
@@ -611,57 +621,53 @@
       </div>
 
       <div class="eval-right">
-        <div class="card visual-card">
-          @switch (cfg.rightPanel) {
-            @case ('qr') {
-              <p class="bfp-link">
-                BFP Link:<br />
-                https://www.foi.gov.ph/agencies/bfp/
-              </p>
-              <p class="or-label">OR</p>
-              <p class="scan-label">Scan the QR</p>
-              <svg viewBox="0 0 100 100" class="qr-code" aria-hidden="true">
-                <rect width="100" height="100" fill="#fff" />
-                @for (cell of qrCells; track cell) {
-                  <rect [attr.x]="cell.x" [attr.y]="cell.y" width="6" height="6" fill="#111" />
-                }
-              </svg>
-            }
-            @case ('map') {
-              <h3 class="map-title">Zoning Map</h3>
-              <div class="zoning-map">
-                <svg viewBox="0 0 400 260" class="map-svg">
-                  <rect width="400" height="260" fill="#e9eaee" />
-                  <polygon points="0,0 180,0 140,90 0,60" fill="#f5d24a" />
-                  <polygon points="180,0 400,0 400,70 140,90" fill="#f5d24a" />
-                  <polygon points="0,60 140,90 130,180 0,160" fill="#f2967a" />
-                  <polygon points="140,90 320,80 300,170 130,180" fill="#f2967a" />
-                  <polygon points="0,160 130,180 100,260 0,260" fill="#4c6ef5" />
-                  <polygon points="130,180 300,170 260,260 100,260" fill="#4c6ef5" />
-                  <text x="30" y="30" font-size="10" fill="#5c5c33">Multi-Family</text>
-                  <text x="230" y="40" font-size="10" fill="#5c5c33">Single Family</text>
-                  <text x="40" y="120" font-size="10" fill="#7a3a24">Commercial</text>
-                  <text x="20" y="220" font-size="10" fill="#1c2a6b">Industrial</text>
+        @if (cfg.rightPanel === 'qr' || cfg.rightPanel === 'map') {
+          <div class="card visual-card">
+            @switch (cfg.rightPanel) {
+              @case ('qr') {
+                <p class="bfp-link">
+                  BFP Link:<br />
+                  https://www.foi.gov.ph/agencies/bfp/
+                </p>
+                <p class="or-label">OR</p>
+                <p class="scan-label">Scan the QR</p>
+                <svg viewBox="0 0 100 100" class="qr-code" aria-hidden="true">
+                  <rect width="100" height="100" fill="#fff" />
+                  @for (cell of qrCells; track cell) {
+                    <rect [attr.x]="cell.x" [attr.y]="cell.y" width="6" height="6" fill="#111" />
+                  }
                 </svg>
-                <div class="parcel-popup">
-                  <div class="parcel-head">Parcel Information</div>
-                  <div><span>Lot no.</span><strong>123-A</strong></div>
-                  <div><span>TCT no.</span><strong>TC-123456</strong></div>
-                  <div><span>Lot Area</span><strong>800.00 m</strong></div>
-                  <div><span>Zoning</span><strong>C2 (Commercial)</strong></div>
-                  <div><span>Land Use</span><strong>Commercial</strong></div>
-                  <button type="button" class="view-docs-btn">View Property Documents</button>
+              }
+              @case ('map') {
+                <h3 class="map-title">Zoning Map</h3>
+                <div class="zoning-map">
+                  <svg viewBox="0 0 400 260" class="map-svg">
+                    <rect width="400" height="260" fill="#e9eaee" />
+                    <polygon points="0,0 180,0 140,90 0,60" fill="#f5d24a" />
+                    <polygon points="180,0 400,0 400,70 140,90" fill="#f5d24a" />
+                    <polygon points="0,60 140,90 130,180 0,160" fill="#f2967a" />
+                    <polygon points="140,90 320,80 300,170 130,180" fill="#f2967a" />
+                    <polygon points="0,160 130,180 100,260 0,260" fill="#4c6ef5" />
+                    <polygon points="130,180 300,170 260,260 100,260" fill="#4c6ef5" />
+                    <text x="30" y="30" font-size="10" fill="#5c5c33">Multi-Family</text>
+                    <text x="230" y="40" font-size="10" fill="#5c5c33">Single Family</text>
+                    <text x="40" y="120" font-size="10" fill="#7a3a24">Commercial</text>
+                    <text x="20" y="220" font-size="10" fill="#1c2a6b">Industrial</text>
+                  </svg>
+                  <div class="parcel-popup">
+                    <div class="parcel-head">Parcel Information</div>
+                    <div><span>Lot no.</span><strong>123-A</strong></div>
+                    <div><span>TCT no.</span><strong>TC-123456</strong></div>
+                    <div><span>Lot Area</span><strong>800.00 m</strong></div>
+                    <div><span>Zoning</span><strong>C2 (Commercial)</strong></div>
+                    <div><span>Land Use</span><strong>Commercial</strong></div>
+                    <button type="button" class="view-docs-btn">View Property Documents</button>
+                  </div>
                 </div>
-              </div>
+              }
             }
-            @default {
-              <div class="doc-preview">
-                <span>Document Preview</span>
-                <app-icon name="image" [size]="26" />
-              </div>
-            }
-          }
-        </div>
+          </div>
+        }
 
         <div class="card app-info-card">
           <h3 class="section-caps">APPLICATION INFORMATION</h3>
@@ -716,4 +722,56 @@
       </div>
     </div>
   }
+}
+
+@if (previewItem(); as doc) {
+  <div class="modal-backdrop" (click)="closeDocPreview()">
+    <div class="modal-box doc-preview-box" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeDocPreview()">&#10005;</button>
+
+      <h2>{{ doc.label }}</h2>
+      <p class="doc-preview-filename">{{ doc.filename }}</p>
+
+      <div class="doc-preview-sheet">
+        <span
+          class="sheet-watermark"
+          [class]="doc.status.toLowerCase().replace(' ', '-')"
+          >{{ doc.status }}</span
+        >
+
+        <div class="sheet-header">
+          <app-dilg-seal [size]="36" />
+          <div>
+            <strong>Republic of the Philippines</strong>
+            <span>Office of the Building Official</span>
+          </div>
+        </div>
+
+        <h3>{{ doc.label }}</h3>
+
+        <div class="sheet-row"><span>Document No.</span><strong>DOC-{{ doc.filename.length }}2026</strong></div>
+        <div class="sheet-row"><span>Date Uploaded</span><strong>Apr 14, 2021</strong></div>
+        <div class="sheet-row"><span>File Name</span><strong>{{ doc.filename }}</strong></div>
+
+        <div class="sheet-lines">
+          <span></span>
+          <span></span>
+          <span class="short"></span>
+        </div>
+
+        <div class="sheet-signature">
+          <div class="sig-line"></div>
+          <span>Authorized Signature</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn cancel" (click)="closeDocPreview()">Close</button>
+        <button type="button" class="modal-btn confirm">
+          <app-icon name="download" [size]="15" />
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
 }

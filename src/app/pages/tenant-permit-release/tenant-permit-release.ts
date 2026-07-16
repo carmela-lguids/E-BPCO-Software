@@ -54,9 +54,9 @@ function buildRows(): ReleaseRow[] {
 })
 export class TenantPermitRelease {
   protected readonly ringStats: RingStat[] = [
-    { label: 'Ready to Release', value: '124', color: '#f5c518', light: '#fdf1c7', pct: 45 },
-    { label: 'Released', value: '62', color: '#22c55e', light: '#d7f5df', pct: 65 },
-    { label: 'Total Release', value: '196', color: '#3b82f6', light: '#dbe8fd', pct: 85 },
+    { label: 'Ready to Release', value: '124', color: '#f59e0b', light: '#fef3c7', pct: 45 },
+    { label: 'Released', value: '62', color: '#16a34a', light: '#dcfce7', pct: 65 },
+    { label: 'Total Release', value: '196', color: '#2563eb', light: '#dbeafe', pct: 85 },
   ];
 
   protected ringSegments(stat: RingStat): DonutSegment[] {

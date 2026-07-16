@@ -34,3 +34,2259 @@ Application bundle generation complete. [10.260 seconds] - 2026-07-13T06:50:37.5
 Watch mode enabled. Watching for file changes...
 NOTE: Raw file sizes do not reflect development server per-request transformations.
   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m4200[22m/[39m
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 640 bytes | 
+
+Application bundle generation complete. [1.644 seconds] - 2026-07-15T06:53:24.203Z
+
+Stylesheet update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names         | Raw size
+main.js             | main          |  4.19 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-NPAFPBWP.js   | -             | 10.88 kB | 
+chunk-Y3OFESIO.js   | tenant-layout |  4.07 kB | 
+chunk-PN6WQFGS.js   | admin-layout  |  3.37 kB | 
+
+Application bundle generation complete. [12.005 seconds] - 2026-07-15T06:53:52.795Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names         | Raw size
+main.js             | main          |  4.19 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-M5YTGQ37.js   | -             | 10.94 kB | 
+chunk-ZIOXKW5R.js   | tenant-layout |  4.07 kB | 
+chunk-JPOEIHVA.js   | admin-layout  |  3.37 kB | 
+
+Application bundle generation complete. [0.606 seconds] - 2026-07-15T06:53:53.421Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names         | Raw size
+main.js             | main          |  4.19 kB | 
+
+Lazy chunk files    | Names         | Raw size
+chunk-HUJ47ZMY.js   | -             | 11.04 kB | 
+chunk-CSNUMA2G.js   | tenant-layout |  4.07 kB | 
+chunk-INYYA4XM.js   | admin-layout  |  3.37 kB | 
+
+Application bundle generation complete. [0.677 seconds] - 2026-07-15T06:54:10.958Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [3.726 seconds] - 2026-07-15T06:54:48.587Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mUndefined operation "#dcfce7 + #000".
+    ╷
+111 │     background: $color-success-bg + #000; // placeholder, overridden below
+    │                 ^^^^^^^^^^^^^^^^^^^^^^^^
+    ╵
+  src\app\shared\topbar\topbar.scss 111:17  root stylesheet[0m [1m[35m[plugin angular-sass][0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-3NCSYHVL.js   | tenant-applications   | 171.51 kB | 
+chunk-PYAGBUZW.js   | tenants               |  96.91 kB | 
+chunk-D3IK2S4I.js   | tenant-payments       |  67.30 kB | 
+chunk-ZHEVDAAD.js   | system-logs           |  64.48 kB | 
+chunk-L3UDTTAB.js   | dashboard             |  57.32 kB | 
+chunk-C6SYNCCE.js   | tenant-dashboard      |  50.11 kB | 
+chunk-WCFUG4V2.js   | tenant-evaluations    |  43.98 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-7S6FXXI6.js   | tenant-permit-release |  37.03 kB | 
+chunk-AEG5S6JL.js   | login                 |  22.08 kB | 
+chunk-BQZJ674L.js   | register              |  21.47 kB | 
+chunk-GO5ULDEW.js   | -                     |  15.06 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+chunk-4I2PUOSL.js   | tenant-workflow       |  14.36 kB | 
+chunk-XAPBTU5O.js   | workflow              |  14.12 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.964 seconds] - 2026-07-15T06:54:56.409Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-5IC7MDMB.js   | tenant-applications   | 171.51 kB | 
+chunk-UAVDD7YS.js   | tenants               |  96.91 kB | 
+chunk-YZCFLKEY.js   | tenant-payments       |  67.30 kB | 
+chunk-JEYUF7KL.js   | system-logs           |  64.48 kB | 
+chunk-SD5NGQN2.js   | dashboard             |  57.32 kB | 
+chunk-JDB62CAP.js   | tenant-dashboard      |  50.11 kB | 
+chunk-PB663DJ3.js   | tenant-evaluations    |  43.98 kB | 
+chunk-ZH2CEDTW.js   | tenant-permit-release |  37.03 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-3VDJIN52.js   | tenant-workflow       |  14.36 kB | 
+chunk-YVGD4C2W.js   | workflow              |  14.12 kB | 
+chunk-ERJ5SRMD.js   | user-roles            |   4.70 kB | 
+
+Application bundle generation complete. [0.441 seconds] - 2026-07-15T06:55:01.879Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [1.425 seconds] - 2026-07-15T06:55:15.722Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names       | Raw size
+main.js             | main        |  4.19 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-U6AS3MPU.js   | system-logs | 64.48 kB | 
+chunk-MQQGZYIA.js   | dashboard   | 57.32 kB | 
+chunk-JZAVWAMC.js   | -           | 11.42 kB | 
+
+Application bundle generation complete. [0.775 seconds] - 2026-07-15T06:55:24.118Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.920 seconds] - 2026-07-15T06:55:30.961Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-RKRXWUD7.js   | tenant-applications   | 171.94 kB | 
+chunk-RSUNEHFM.js   | tenants               |  97.32 kB | 
+chunk-I7K436TN.js   | tenant-payments       |  67.73 kB | 
+chunk-M5GVFU2Z.js   | system-logs           |  64.91 kB | 
+chunk-RKSHXHFG.js   | dashboard             |  57.75 kB | 
+chunk-3CKIWNSO.js   | tenant-dashboard      |  50.54 kB | 
+chunk-WEIRP3O4.js   | tenant-evaluations    |  44.41 kB | 
+chunk-THDJGKE5.js   | tenant-permit-release |  37.45 kB | 
+
+Application bundle generation complete. [5.436 seconds] - 2026-07-15T06:55:57.606Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [5.733 seconds] - 2026-07-15T06:56:16.941Z
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-E5GNS2IN.js   | tenant-applications   | 171.94 kB | 
+chunk-S5W2GAH7.js   | tenants               |  97.32 kB | 
+chunk-3GAZW74I.js   | tenant-payments       |  67.73 kB | 
+chunk-DE4Z753J.js   | system-logs           |  64.91 kB | 
+chunk-I5VDE5RZ.js   | dashboard             |  57.75 kB | 
+chunk-NW4CD46C.js   | tenant-evaluations    |  44.41 kB | 
+chunk-4YC7SXCT.js   | tenant-permit-release |  37.45 kB | 
+chunk-OXXLHQNM.js   | -                     |   9.31 kB | 
+
+Application bundle generation complete. [1.973 seconds] - 2026-07-15T06:56:25.402Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-HMFISDIC.js   | tenant-applications   | 171.94 kB | 
+chunk-D4O6XMNO.js   | tenants               |  97.32 kB | 
+chunk-P7KVJIG7.js   | tenant-payments       |  67.73 kB | 
+chunk-EQAERRHD.js   | system-logs           |  64.91 kB | 
+chunk-GXHHMNHV.js   | dashboard             |  57.75 kB | 
+chunk-UUR5ZUWB.js   | tenant-evaluations    |  44.41 kB | 
+chunk-YQPAOMHX.js   | tenant-permit-release |  37.45 kB | 
+chunk-2R53SVWU.js   | -                     |   9.75 kB | 
+
+Application bundle generation complete. [0.737 seconds] - 2026-07-15T06:56:37.255Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-K4IYSHGK.js   | dashboard | 57.75 kB | 
+
+Application bundle generation complete. [1.650 seconds] - 2026-07-15T06:57:02.150Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.451 seconds] - 2026-07-15T06:57:07.670Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-RTYVU2AD.js   | dashboard | 57.77 kB | 
+
+Application bundle generation complete. [0.432 seconds] - 2026-07-15T06:57:17.870Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.732 seconds] - 2026-07-15T06:57:31.334Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.661 seconds] - 2026-07-15T06:57:39.424Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.825 seconds] - 2026-07-15T06:57:46.376Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-5QRUMU6S.js   | dashboard | 58.18 kB | 
+
+Application bundle generation complete. [0.666 seconds] - 2026-07-15T06:57:58.216Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-NGE34UXK.js   | dashboard | 58.53 kB | 
+
+Application bundle generation complete. [0.640 seconds] - 2026-07-15T06:58:05.459Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-U2HXZMHQ.js   | dashboard | 58.86 kB | 
+
+Application bundle generation complete. [0.899 seconds] - 2026-07-15T06:58:12.092Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-PM5EYLFG.js   | dashboard | 59.95 kB | 
+
+Application bundle generation complete. [1.021 seconds] - 2026-07-15T06:58:26.769Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [5.268 seconds] - 2026-07-15T07:21:50.543Z
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.522 seconds] - 2026-07-15T07:23:30.122Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'conicGradient' does not exist on type 'DonutChart'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/donut-chart/donut-chart.html:5:22:
+[37m      5 │   [style.background]="[32mconicGradient[37m()"
+        ╵                       [32m~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component DonutChart.
+
+    src/app/shared/donut-chart/donut-chart.ts:36:15:
+[37m      36 │   templateUrl: [32m'./donut-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'labelPositions' does not exist on type 'DonutChart'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/donut-chart/donut-chart.html:10:15:
+[37m      10 │     @for (l of [32mlabelPositions[37m(); track l.text + l.x) {
+         ╵                [32m~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component DonutChart.
+
+    src/app/shared/donut-chart/donut-chart.ts:36:15:
+[37m      36 │   templateUrl: [32m'./donut-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-IT223HF5.js   | tenant-applications   | 171.94 kB | 
+chunk-ZEEJ6UWD.js   | tenants               |  97.32 kB | 
+chunk-RXPOLHNX.js   | tenant-payments       |  67.73 kB | 
+chunk-EQAERRHD.js   | system-logs           |  64.91 kB | 
+chunk-LDO6GEVI.js   | dashboard             |  59.95 kB | 
+chunk-KG2RS6PG.js   | tenant-dashboard      |  50.54 kB | 
+chunk-JSX2JEKH.js   | tenant-evaluations    |  44.41 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-IPVPRFPY.js   | tenant-permit-release |  37.45 kB | 
+chunk-AEG5S6JL.js   | login                 |  22.08 kB | 
+chunk-BQZJ674L.js   | register              |  21.47 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+chunk-3VDJIN52.js   | tenant-workflow       |  14.36 kB | 
+chunk-YVGD4C2W.js   | workflow              |  14.12 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.310 seconds] - 2026-07-15T07:23:40.382Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-CWU7G7T5.js   | tenant-applications   | 171.94 kB | 
+chunk-I7DH7EOK.js   | tenants               |  97.32 kB | 
+chunk-PJSRHQ2T.js   | tenant-payments       |  67.73 kB | 
+chunk-4IUEQO4O.js   | dashboard             |  59.95 kB | 
+chunk-G2LCHDYJ.js   | tenant-dashboard      |  50.54 kB | 
+chunk-5B2VBBFU.js   | tenant-evaluations    |  44.41 kB | 
+chunk-GF3KEVAK.js   | tenant-permit-release |  37.45 kB | 
+chunk-JCCKW3OD.js   | -                     |  12.82 kB | 
+
+Application bundle generation complete. [1.325 seconds] - 2026-07-15T07:23:51.587Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-IDHJSGM2.js   | dashboard | 60.25 kB | 
+
+Application bundle generation complete. [0.379 seconds] - 2026-07-15T07:24:06.591Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.613 seconds] - 2026-07-15T07:24:26.231Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'top' does not exist on type 'LollipopDot'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/lollipop-chart/lollipop-chart.html:9:31:
+[37m      9 │             [style.top.%]="dot.[32mtop[37m"
+        ╵                                [32m~~~[0m
+
+  Error occurs in the template of component LollipopChart.
+
+    src/app/shared/lollipop-chart/lollipop-chart.ts:26:15:
+[37m      26 │   templateUrl: [32m'./lollipop-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type '{ label: string; dots: { top: number; color: string; }[]; }[]' is not assignable to type 'LollipopCategory[]'.
+  Type '{ label: string; dots: { top: number; color: string; }[]; }' is not assignable to type 'LollipopCategory'.
+    Types of property 'dots' are incompatible.
+      Type '{ top: number; color: string; }[]' is not assignable to type 'LollipopDot[]'.
+        Type '{ top: number; color: string; }' is missing the following properties from type 'LollipopDot': value, label[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/permit-queue/permit-queue.ts:25:2:
+[37m      25 │   [32mreturn[37m PERMIT_LABELS.map((label, i) => {
+         ╵   [32m~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.270 seconds] - 2026-07-15T07:24:36.098Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type '{ label: string; dots: { top: number; color: string; }[]; }[]' is not assignable to type 'LollipopCategory[]'.
+  Type '{ label: string; dots: { top: number; color: string; }[]; }' is not assignable to type 'LollipopCategory'.
+    Types of property 'dots' are incompatible.
+      Type '{ top: number; color: string; }[]' is not assignable to type 'LollipopDot[]'.
+        Type '{ top: number; color: string; }' is missing the following properties from type 'LollipopDot': value, label[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/permit-queue/permit-queue.ts:25:2:
+[37m      25 │   [32mreturn[37m PERMIT_LABELS.map((label, i) => {
+         ╵   [32m~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.380 seconds] - 2026-07-15T07:24:47.088Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2322: Type '{ label: string; dots: { top: number; color: string; }[]; }[]' is not assignable to type 'LollipopCategory[]'.
+  Type '{ label: string; dots: { top: number; color: string; }[]; }' is not assignable to type 'LollipopCategory'.
+    Types of property 'dots' are incompatible.
+      Type '{ top: number; color: string; }[]' is not assignable to type 'LollipopDot[]'.
+        Type '{ top: number; color: string; }' is missing the following properties from type 'LollipopDot': value, label[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/permit-queue/permit-queue.ts:25:2:
+[37m      25 │   [32mreturn[37m PERMIT_LABELS.map((label, i) => {
+         ╵   [32m~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-CWU7G7T5.js   | tenant-applications   | 171.94 kB | 
+chunk-I7DH7EOK.js   | tenants               |  97.32 kB | 
+chunk-PJSRHQ2T.js   | tenant-payments       |  67.73 kB | 
+chunk-EQAERRHD.js   | system-logs           |  64.91 kB | 
+chunk-T4FQDYS6.js   | dashboard             |  60.25 kB | 
+chunk-64NQCGHZ.js   | tenant-dashboard      |  50.54 kB | 
+chunk-5B2VBBFU.js   | tenant-evaluations    |  44.41 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-GF3KEVAK.js   | tenant-permit-release |  37.45 kB | 
+chunk-AEG5S6JL.js   | login                 |  22.08 kB | 
+chunk-BQZJ674L.js   | register              |  21.47 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+chunk-3VDJIN52.js   | tenant-workflow       |  14.36 kB | 
+chunk-YVGD4C2W.js   | workflow              |  14.12 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.434 seconds] - 2026-07-15T07:25:05.412Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             |  4.19 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-XO3QQSJI.js   | tenant-dashboard | 50.54 kB | 
+
+Application bundle generation complete. [0.363 seconds] - 2026-07-15T07:25:29.827Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-QQKXE5QQ.js   | dashboard | 60.25 kB | 
+
+Application bundle generation complete. [0.482 seconds] - 2026-07-15T07:25:38.382Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.395 seconds] - 2026-07-15T07:26:58.102Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2551: Property 'yLabels' does not exist on type 'AreaChart'. Did you mean 'xLabels'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/area-chart/area-chart.html:3:19:
+[37m      3 │     @for (label of [32myLabels[37m(); track label) {
+        ╵                    [32m~~~~~~~[0m
+
+  Error occurs in the template of component AreaChart.
+
+    src/app/shared/area-chart/area-chart.ts:63:15:
+[37m      63 │   templateUrl: [32m'./area-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2551: Property 'yLabels' does not exist on type 'AreaChart'. Did you mean 'xLabels'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/area-chart/area-chart.html:21:21:
+[37m      21 │       @for (label of [32myLabels[37m(); track $index) {
+         ╵                      [32m~~~~~~~[0m
+
+  Error occurs in the template of component AreaChart.
+
+    src/app/shared/area-chart/area-chart.ts:63:15:
+[37m      63 │   templateUrl: [32m'./area-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2551: Property 'yLabels' does not exist on type 'AreaChart'. Did you mean 'xLabels'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/area-chart/area-chart.html:24:32:
+[37m      24 │           [attr.y1]="($index / ([32myLabels[37m().length - 1)) * 300"
+         ╵                                 [32m~~~~~~~[0m
+
+  Error occurs in the template of component AreaChart.
+
+    src/app/shared/area-chart/area-chart.ts:63:15:
+[37m      63 │   templateUrl: [32m'./area-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2551: Property 'yLabels' does not exist on type 'AreaChart'. Did you mean 'xLabels'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/area-chart/area-chart.html:26:32:
+[37m      26 │           [attr.y2]="($index / ([32myLabels[37m().length - 1)) * 300"
+         ╵                                 [32m~~~~~~~[0m
+
+  Error occurs in the template of component AreaChart.
+
+    src/app/shared/area-chart/area-chart.ts:63:15:
+[37m      63 │   templateUrl: [32m'./area-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'highlightXIndex' does not exist on type 'AreaChart'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/area-chart/area-chart.html:54:36:
+[37m      54 │ ... <span [class.active]="i === [32mhighlightXIndex[37m()">{{ label }}</span>
+         ╵                                 [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component AreaChart.
+
+    src/app/shared/area-chart/area-chart.ts:63:15:
+[37m      63 │   templateUrl: [32m'./area-chart.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-CWU7G7T5.js   | tenant-applications   | 171.94 kB | 
+chunk-I7DH7EOK.js   | tenants               |  97.32 kB | 
+chunk-GAV6OU2J.js   | dashboard             |  68.09 kB | 
+chunk-PJSRHQ2T.js   | tenant-payments       |  67.73 kB | 
+chunk-EQAERRHD.js   | system-logs           |  64.91 kB | 
+chunk-XO3QQSJI.js   | tenant-dashboard      |  50.54 kB | 
+chunk-5B2VBBFU.js   | tenant-evaluations    |  44.41 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-GF3KEVAK.js   | tenant-permit-release |  37.45 kB | 
+chunk-AEG5S6JL.js   | login                 |  22.08 kB | 
+chunk-BQZJ674L.js   | register              |  21.47 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+chunk-3VDJIN52.js   | tenant-workflow       |  14.36 kB | 
+chunk-YVGD4C2W.js   | workflow              |  14.12 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.692 seconds] - 2026-07-15T07:27:28.339Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-6ZMXIMIG.js   | dashboard | 68.13 kB | 
+
+Application bundle generation complete. [0.470 seconds] - 2026-07-15T07:27:52.368Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-GOUHJXN5.js   | dashboard | 70.15 kB | 
+
+Application bundle generation complete. [0.598 seconds] - 2026-07-15T07:28:10.840Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-FLRNF3TI.js   | dashboard | 70.15 kB | 
+
+Application bundle generation complete. [0.430 seconds] - 2026-07-15T07:28:20.232Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-R6GDMATZ.js   | dashboard | 70.52 kB | 
+
+Application bundle generation complete. [0.310 seconds] - 2026-07-15T07:28:35.301Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-SKPXYS4T.js   | dashboard | 70.66 kB | 
+
+Application bundle generation complete. [0.367 seconds] - 2026-07-15T07:28:47.624Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-JNBA7URU.js   | tenant-applications   | 171.94 kB | 
+chunk-Y6KET6NI.js   | tenants               |  97.32 kB | 
+chunk-JNNPRUDR.js   | dashboard             |  70.66 kB | 
+chunk-35XD5QGJ.js   | tenant-payments       |  67.73 kB | 
+chunk-3BUXG3UA.js   | tenant-dashboard      |  50.54 kB | 
+chunk-I2YUZRMK.js   | tenant-evaluations    |  44.41 kB | 
+chunk-WZBL7QKR.js   | tenant-permit-release |  37.45 kB | 
+chunk-32PKVXZH.js   | -                     |  13.39 kB | 
+
+Application bundle generation complete. [3.485 seconds] - 2026-07-15T08:48:28.031Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-IRLMUJYB.js   | tenant-applications   | 171.94 kB | 
+chunk-RSKMZ6NE.js   | tenants               |  97.32 kB | 
+chunk-RYQTDRPW.js   | dashboard             |  70.66 kB | 
+chunk-DU3SQ3QZ.js   | tenant-payments       |  67.73 kB | 
+chunk-SQYKOATF.js   | tenant-dashboard      |  50.54 kB | 
+chunk-5HEZQAGQ.js   | tenant-evaluations    |  44.41 kB | 
+chunk-3PKNJUMN.js   | tenant-permit-release |  37.45 kB | 
+chunk-XMOFB4G3.js   | -                     |  13.45 kB | 
+
+Application bundle generation complete. [1.625 seconds] - 2026-07-15T08:48:35.078Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-D6HN736O.js   | tenant-applications   | 171.94 kB | 
+chunk-IACSJIGO.js   | tenants               |  97.32 kB | 
+chunk-CE6NECOS.js   | dashboard             |  70.66 kB | 
+chunk-K3WOIVB7.js   | tenant-payments       |  67.73 kB | 
+chunk-NVY3D62E.js   | tenant-dashboard      |  50.54 kB | 
+chunk-7ADIHKHL.js   | tenant-evaluations    |  44.41 kB | 
+chunk-3CKEDEGI.js   | tenant-permit-release |  37.45 kB | 
+chunk-64TOHTJI.js   | -                     |  14.78 kB | 
+
+Application bundle generation complete. [0.398 seconds] - 2026-07-15T08:48:52.621Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [1.149 seconds] - 2026-07-15T08:49:01.742Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-XLXNG3BT.js   | tenant-applications   | 171.94 kB | 
+chunk-LKXDUNBV.js   | tenants               |  97.32 kB | 
+chunk-DNIDO7XY.js   | dashboard             |  70.66 kB | 
+chunk-MR2YDSAS.js   | tenant-payments       |  67.73 kB | 
+chunk-SYBRXEOK.js   | tenant-dashboard      |  50.54 kB | 
+chunk-BKFDBWPC.js   | tenant-evaluations    |  44.41 kB | 
+chunk-U72IHCJX.js   | tenant-permit-release |  37.45 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+
+Application bundle generation complete. [1.561 seconds] - 2026-07-15T08:49:13.337Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-QH54E5UN.js   | dashboard | 70.82 kB | 
+
+Application bundle generation complete. [0.479 seconds] - 2026-07-15T08:49:33.268Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-M5MIZG3H.js   | dashboard | 71.50 kB | 
+
+Application bundle generation complete. [0.363 seconds] - 2026-07-15T08:49:50.208Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-GMWHZOI4.js   | dashboard | 72.13 kB | 
+
+Application bundle generation complete. [0.583 seconds] - 2026-07-15T08:50:10.831Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-BXBPWBEP.js   | dashboard | 73.20 kB | 
+
+Application bundle generation complete. [0.343 seconds] - 2026-07-15T08:50:28.398Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-KKMQPHD7.js   | dashboard | 73.38 kB | 
+
+Application bundle generation complete. [0.448 seconds] - 2026-07-15T08:50:37.958Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-VAEHOZAR.js   | tenant-applications   | 172.57 kB | 
+chunk-KOJJ4JMB.js   | tenants               |  97.92 kB | 
+chunk-DRZYM7SX.js   | tenant-payments       |  68.37 kB | 
+chunk-IXFYIDXD.js   | tenant-dashboard      |  51.18 kB | 
+chunk-AB4H75EM.js   | tenant-evaluations    |  45.05 kB | 
+chunk-NOUTQCDW.js   | tenant-permit-release |  38.09 kB | 
+
+Application bundle generation complete. [9.491 seconds] - 2026-07-15T09:24:24.370Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-6JO7SNNQ.js   | tenant-applications | 172.57 kB | 
+chunk-TB3WSKXO.js   | tenant-payments     |  68.37 kB | 
+chunk-W6LLZBAK.js   | tenant-evaluations  |  45.05 kB | 
+
+Application bundle generation complete. [4.369 seconds] - 2026-07-15T09:26:26.784Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 | Raw size
+main.js             | main                  |  4.19 kB | 
+
+Lazy chunk files    | Names                 | Raw size
+chunk-44TVE5G5.js   | tenants               | 97.92 kB | 
+chunk-IA236IZP.js   | tenant-dashboard      | 51.18 kB | 
+chunk-TJUUEGD3.js   | tenant-permit-release | 38.09 kB | 
+
+Application bundle generation complete. [3.930 seconds] - 2026-07-15T09:26:30.740Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names   | Raw size
+main.js             | main    |  4.19 kB | 
+
+Lazy chunk files    | Names   | Raw size
+chunk-HYVXYVVX.js   | tenants | 97.92 kB | 
+
+Application bundle generation complete. [1.696 seconds] - 2026-07-15T09:27:46.631Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-ZKSBK7MP.js   | tenant-applications | 172.64 kB | 
+
+Application bundle generation complete. [6.236 seconds] - 2026-07-15T09:31:22.537Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-3EHGWEIH.js   | tenant-applications | 172.64 kB | 
+
+Application bundle generation complete. [6.037 seconds] - 2026-07-15T09:31:34.824Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-I2HSEP4V.js   | tenant-applications | 172.64 kB | 
+
+Application bundle generation complete. [4.620 seconds] - 2026-07-15T09:31:45.036Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names   | Raw size
+main.js             | main    |  4.19 kB | 
+
+Lazy chunk files    | Names   | Raw size
+chunk-ZR4L42LN.js   | tenants | 97.88 kB | 
+
+Application bundle generation complete. [1.535 seconds] - 2026-07-15T09:32:49.924Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-36SK23MU.js   | login    | 22.42 kB | 
+chunk-BFSL2P4A.js   | register | 21.81 kB | 
+
+Application bundle generation complete. [3.805 seconds] - 2026-07-15T09:44:46.829Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-SVSM25KM.js   | login    | 22.43 kB | 
+chunk-UVUVU7Q2.js   | register | 21.81 kB | 
+
+Application bundle generation complete. [2.622 seconds] - 2026-07-15T09:44:59.002Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-FMUVUT7T.js   | login    | 22.43 kB | 
+chunk-DMCXDAUD.js   | register | 21.81 kB | 
+chunk-K5QPLDTS.js   | -        |  8.66 kB | 
+
+Application bundle generation complete. [0.834 seconds] - 2026-07-15T09:45:36.562Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-442KBXZO.js   | login    | 22.43 kB | 
+chunk-74AGAKW2.js   | register | 21.81 kB | 
+chunk-MYWJG7SG.js   | -        |  9.30 kB | 
+
+Application bundle generation complete. [0.427 seconds] - 2026-07-15T09:45:56.102Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-6UIJDFJ7.js   | login    | 22.50 kB | 
+chunk-4G7LKZDS.js   | register | 21.89 kB | 
+
+Application bundle generation complete. [3.488 seconds] - 2026-07-15T09:46:36.641Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  |  4.19 kB | 
+
+Lazy chunk files    | Names | Raw size
+chunk-S2UGZQ7R.js   | login | 21.27 kB | 
+
+Application bundle generation complete. [2.528 seconds] - 2026-07-15T09:46:50.751Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  |  4.19 kB | 
+
+Lazy chunk files    | Names | Raw size
+chunk-IOPTF4XX.js   | login | 19.44 kB | 
+
+Application bundle generation complete. [3.622 seconds] - 2026-07-15T09:47:07.430Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  |  4.19 kB | 
+
+Lazy chunk files    | Names | Raw size
+chunk-YHFRXDIY.js   | login | 19.29 kB | 
+
+Application bundle generation complete. [1.511 seconds] - 2026-07-15T09:47:21.976Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-PJC3NMQD.js   | register | 21.84 kB | 
+chunk-INFIYGJU.js   | login    | 19.24 kB | 
+
+Application bundle generation complete. [1.866 seconds] - 2026-07-15T09:47:40.429Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.897 seconds] - 2026-07-15T09:55:03.377Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:38:4:
+[37m      38 │     [32mLollipopChart[37m,
+         ╵     [32m~~~~~~~~~~~~~[0m
+
+  Unknown reference.
+
+    src/app/pages/dashboard/dashboard.ts:38:4:
+[37m      38 │     [32mLollipopChart[37m,
+         ╵     [32m~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'LollipopChart'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:38:4:
+[37m      38 │     [32mLollipopChart[37m,
+         ╵     [32m~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'LollipopCategory'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:95:38:
+[37m      95 │ ...readonly queueCategories: [32mLollipopCategory[37m[] = buildPermitQueue();
+         ╵                              [32m~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.294 seconds] - 2026-07-15T09:55:14.819Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'app-lollipop-chart' is not a known element:
+1. If 'app-lollipop-chart' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.html:36:2:
+[37m      36 │   [32m<app-lollipop-chart [categories]="queueCategories" />[37m
+         ╵   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component Dashboard.
+
+    src/app/pages/dashboard/dashboard.ts:35:15:
+[37m      35 │   templateUrl: [32m'./dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'categories' since it isn't a known property of 'app-lollipop-chart'.
+1. If 'app-lollipop-chart' is an Angular component and it has 'categories' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.html:36:22:
+[37m      36 │   <app-lollipop-chart [32m[categories]="queueCategories"[37m />
+         ╵                       [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component Dashboard.
+
+    src/app/pages/dashboard/dashboard.ts:35:15:
+[37m      35 │   templateUrl: [32m'./dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'LollipopCategory'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:85:38:
+[37m      85 │ ...readonly queueCategories: [32mLollipopCategory[37m[] = buildPermitQueue();
+         ╵                              [32m~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.427 seconds] - 2026-07-15T09:55:29.111Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'app-lollipop-chart' is not a known element:
+1. If 'app-lollipop-chart' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.html:36:2:
+[37m      36 │   [32m<app-lollipop-chart [categories]="queueCategories" />[37m
+         ╵   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component Dashboard.
+
+    src/app/pages/dashboard/dashboard.ts:35:15:
+[37m      35 │   templateUrl: [32m'./dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'categories' since it isn't a known property of 'app-lollipop-chart'.
+1. If 'app-lollipop-chart' is an Angular component and it has 'categories' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.html:36:22:
+[37m      36 │   <app-lollipop-chart [32m[categories]="queueCategories"[37m />
+         ╵                       [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component Dashboard.
+
+    src/app/pages/dashboard/dashboard.ts:35:15:
+[37m      35 │   templateUrl: [32m'./dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'queueCategories' does not exist on type 'Dashboard'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.html:36:36:
+[37m      36 │   <app-lollipop-chart [categories]="[32mqueueCategories[37m" />
+         ╵                                     [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component Dashboard.
+
+    src/app/pages/dashboard/dashboard.ts:35:15:
+[37m      35 │   templateUrl: [32m'./dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-I2HSEP4V.js   | tenant-applications   | 172.64 kB | 
+chunk-ZR4L42LN.js   | tenants               |  97.88 kB | 
+chunk-2WMHL2AB.js   | dashboard             |  73.97 kB | 
+chunk-TB3WSKXO.js   | tenant-payments       |  68.37 kB | 
+chunk-EQAERRHD.js   | system-logs           |  64.91 kB | 
+chunk-ZBPEHRCH.js   | tenant-dashboard      |  60.41 kB | 
+chunk-W6LLZBAK.js   | tenant-evaluations    |  45.05 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-TJUUEGD3.js   | tenant-permit-release |  38.09 kB | 
+chunk-PJC3NMQD.js   | register              |  21.84 kB | 
+chunk-INFIYGJU.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+chunk-3VDJIN52.js   | tenant-workflow       |  14.36 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [2.557 seconds] - 2026-07-15T09:56:06.631Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-7QTLPJA2.js   | dashboard | 74.19 kB | 
+
+Application bundle generation complete. [1.747 seconds] - 2026-07-15T09:56:30.008Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-FEFN7GJM.js   | dashboard | 74.36 kB | 
+
+Application bundle generation complete. [1.293 seconds] - 2026-07-15T09:57:52.168Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-XJA4ZKCJ.js   | dashboard | 74.36 kB | 
+
+Application bundle generation complete. [2.484 seconds] - 2026-07-15T09:58:05.570Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-53FRIS7T.js   | dashboard | 74.37 kB | 
+
+Application bundle generation complete. [2.238 seconds] - 2026-07-15T09:58:18.482Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.628 seconds] - 2026-07-15T10:02:47.449Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'queueStatusTotals' does not exist on type 'Dashboard'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.html:38:18:
+[37m      38 │       [segments]="[32mqueueStatusTotals[37m"
+         ╵                   [32m~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component Dashboard.
+
+    src/app/pages/dashboard/dashboard.ts:35:15:
+[37m      35 │   templateUrl: [32m'./dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'PermitQueueDonut'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:87:40:
+[37m      87 │ ...only permitQueueDonuts: [32mPermitQueueDonut[37m[] = buildPermitQueue()...
+         ╵                            [32m~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [2.119 seconds] - 2026-07-15T10:02:59.148Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'queueStatusTotals' does not exist on type 'Dashboard'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.html:38:18:
+[37m      38 │       [segments]="[32mqueueStatusTotals[37m"
+         ╵                   [32m~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component Dashboard.
+
+    src/app/pages/dashboard/dashboard.ts:42:15:
+[37m      42 │   templateUrl: [32m'./dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-I2HSEP4V.js   | tenant-applications   | 172.64 kB | 
+chunk-ZR4L42LN.js   | tenants               |  97.88 kB | 
+chunk-RM5WTD33.js   | dashboard             |  75.51 kB | 
+chunk-TB3WSKXO.js   | tenant-payments       |  68.37 kB | 
+chunk-EQAERRHD.js   | system-logs           |  64.91 kB | 
+chunk-ZBPEHRCH.js   | tenant-dashboard      |  60.41 kB | 
+chunk-W6LLZBAK.js   | tenant-evaluations    |  45.05 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-TJUUEGD3.js   | tenant-permit-release |  38.09 kB | 
+chunk-PJC3NMQD.js   | register              |  21.84 kB | 
+chunk-INFIYGJU.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+chunk-3VDJIN52.js   | tenant-workflow       |  14.36 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.815 seconds] - 2026-07-15T10:03:34.452Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-GALNIQ33.js   | dashboard | 76.84 kB | 
+
+Application bundle generation complete. [1.267 seconds] - 2026-07-15T10:04:04.301Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-G4W5PO37.js   | dashboard | 76.95 kB | 
+
+Application bundle generation complete. [1.692 seconds] - 2026-07-15T10:04:20.297Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-6MYMOIML.js   | dashboard | 76.84 kB | 
+
+Application bundle generation complete. [1.652 seconds] - 2026-07-15T10:08:51.995Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-TFGFGQ5C.js   | dashboard | 76.59 kB | 
+
+Application bundle generation complete. [0.640 seconds] - 2026-07-15T10:09:16.448Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-HEBAI2LC.js   | dashboard | 76.83 kB | 
+
+Application bundle generation complete. [0.636 seconds] - 2026-07-15T10:09:48.044Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-3MNKHYMX.js   | dashboard | 77.82 kB | 
+
+Application bundle generation complete. [1.100 seconds] - 2026-07-15T10:10:16.117Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.353 seconds] - 2026-07-15T10:11:49.553Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: StatCard is not used within the template of UserRoles[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/user-roles/user-roles.ts:176:20:
+[37m      176 │   imports: [Topbar, [32mStatCard[37m, Icon, Avatar, Pagination],
+          ╵                     [32m~~~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: Avatar is not used within the template of UserRoles[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/user-roles/user-roles.ts:176:36:
+[37m      176 │   imports: [Topbar, StatCard, Icon, [32mAvatar[37m, Pagination],
+          ╵                                     [32m~~~~~~[0m
+
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: Pagination is not used within the template of UserRoles[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/user-roles/user-roles.ts:176:44:
+[37m      176 │   imports: [Topbar, StatCard, Icon, Avatar, [32mPagination[37m],
+          ╵                                             [32m~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find stylesheet file './user-roles.scss'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/user-roles/user-roles.ts:178:12:
+[37m      178 │   styleUrl: [32m'./user-roles.scss'[37m,
+          ╵             [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.653 seconds] - 2026-07-15T10:12:12.251Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG2008: Could not find stylesheet file './user-roles.scss'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/user-roles/user-roles.ts:178:12:
+[37m      178 │   styleUrl: [32m'./user-roles.scss'[37m,
+          ╵             [32m~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-I2HSEP4V.js   | tenant-applications   | 172.64 kB | 
+chunk-ZR4L42LN.js   | tenants               |  97.88 kB | 
+chunk-3MNKHYMX.js   | dashboard             |  77.82 kB | 
+chunk-TB3WSKXO.js   | tenant-payments       |  68.37 kB | 
+chunk-EQAERRHD.js   | system-logs           |  64.91 kB | 
+chunk-ZBPEHRCH.js   | tenant-dashboard      |  60.41 kB | 
+chunk-W6LLZBAK.js   | tenant-evaluations    |  45.05 kB | 
+chunk-MC73JS4U.js   | user-roles            |  38.79 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-TJUUEGD3.js   | tenant-permit-release |  38.09 kB | 
+chunk-XAEXXY2L.js   | register              |  21.84 kB | 
+chunk-X74ZTQXD.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.540 seconds] - 2026-07-15T10:23:02.317Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-XOA7J2AT.js   | register | 21.84 kB | 
+chunk-ATWF7QOB.js   | login    | 19.24 kB | 
+chunk-AZWB7XUP.js   | -        |  8.73 kB | 
+
+Application bundle generation complete. [1.012 seconds] - 2026-07-15T10:23:42.962Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names    | Raw size
+main.js             | main     |  4.19 kB | 
+
+Lazy chunk files    | Names    | Raw size
+chunk-APZXU7KZ.js   | register | 21.84 kB | 
+chunk-YI3LDJMG.js   | login    | 19.24 kB | 
+chunk-TYPL3I55.js   | -        |  8.73 kB | 
+
+Application bundle generation complete. [0.358 seconds] - 2026-07-15T10:25:52.784Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names       | Raw size
+main.js             | main        |  4.19 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-4YE2YHZP.js   | system-logs | 66.24 kB | 
+
+Application bundle generation complete. [1.454 seconds] - 2026-07-15T10:35:20.515Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names       | Raw size
+main.js             | main        |  4.19 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-NHXW5JUF.js   | system-logs | 65.03 kB | 
+
+Application bundle generation complete. [2.320 seconds] - 2026-07-15T10:35:37.249Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names       | Raw size
+main.js             | main        |  4.19 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-RJ36UMEQ.js   | system-logs | 65.11 kB | 
+
+Application bundle generation complete. [1.123 seconds] - 2026-07-15T10:35:50.584Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names       | Raw size
+main.js             | main        |  4.19 kB | 
+
+Lazy chunk files    | Names       | Raw size
+chunk-47LQNGGB.js   | system-logs | 65.32 kB | 
+
+Application bundle generation complete. [1.130 seconds] - 2026-07-15T10:36:05.176Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names      | Raw size
+main.js             | main       |  4.19 kB | 
+
+Lazy chunk files    | Names      | Raw size
+chunk-2B7DKE5B.js   | user-roles | 40.12 kB | 
+
+Application bundle generation complete. [0.979 seconds] - 2026-07-15T10:36:20.152Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names      | Raw size
+main.js             | main       |  4.19 kB | 
+
+Lazy chunk files    | Names      | Raw size
+chunk-SLW6ROFH.js   | user-roles | 38.92 kB | 
+
+Application bundle generation complete. [0.569 seconds] - 2026-07-15T10:36:34.562Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names      | Raw size
+main.js             | main       |  4.19 kB | 
+
+Lazy chunk files    | Names      | Raw size
+chunk-YFBOK563.js   | user-roles | 38.95 kB | 
+
+Application bundle generation complete. [0.580 seconds] - 2026-07-15T10:36:49.948Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names      | Raw size
+main.js             | main       |  4.19 kB | 
+
+Lazy chunk files    | Names      | Raw size
+chunk-VVCPV7PT.js   | user-roles | 39.13 kB | 
+
+Application bundle generation complete. [0.588 seconds] - 2026-07-15T10:37:03.546Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names   | Raw size
+main.js             | main    |  4.19 kB | 
+
+Lazy chunk files    | Names   | Raw size
+chunk-R2S447F7.js   | tenants | 98.47 kB | 
+
+Application bundle generation complete. [1.175 seconds] - 2026-07-15T10:37:20.444Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [1.154 seconds] - 2026-07-15T10:37:49.305Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names   | Raw size
+main.js             | main    |  4.19 kB | 
+
+Lazy chunk files    | Names   | Raw size
+chunk-HGAFLLL3.js   | tenants | 98.94 kB | 
+
+Application bundle generation complete. [1.024 seconds] - 2026-07-15T10:38:06.895Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               |  4.19 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-UE3XEWSL.js   | tenant-evaluations | 45.13 kB | 
+
+Application bundle generation complete. [0.318 seconds] - 2026-07-15T10:38:49.521Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               |  4.19 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-EN4CVVF6.js   | tenant-evaluations | 45.32 kB | 
+
+Application bundle generation complete. [0.709 seconds] - 2026-07-15T10:39:20.799Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.638 seconds] - 2026-07-15T10:39:58.080Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               |  4.19 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-2HF2PCTW.js   | tenant-evaluations | 45.54 kB | 
+
+Application bundle generation complete. [0.592 seconds] - 2026-07-15T10:40:15.212Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-J6RBG6VE.js   | dashboard | 80.11 kB | 
+
+Application bundle generation complete. [1.182 seconds] - 2026-07-15T10:59:57.347Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names     | Raw size
+main.js             | main      |  4.19 kB | 
+
+Lazy chunk files    | Names     | Raw size
+chunk-GZZRK4ED.js   | dashboard | 77.82 kB | 
+
+Application bundle generation complete. [0.807 seconds] - 2026-07-15T11:00:13.358Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             |  4.19 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-UNCK2I6E.js   | dashboard        | 77.82 kB | 
+chunk-V56XSI3Z.js   | tenant-dashboard | 60.41 kB | 
+chunk-XZJ5AG5N.js   | -                |  1.08 kB | 
+
+Application bundle generation complete. [0.319 seconds] - 2026-07-15T11:00:52.417Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             |  4.19 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-2QYPV56X.js   | dashboard        | 77.82 kB | 
+chunk-MSEM37ZY.js   | tenant-dashboard | 60.41 kB | 
+chunk-SVHADC2X.js   | -                |  1.08 kB | 
+
+Application bundle generation complete. [0.353 seconds] - 2026-07-15T11:01:08.958Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.498 seconds] - 2026-07-15T11:01:39.297Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'PermitQueueDonut'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:87:40:
+[37m      87 │ ...only permitQueueDonuts: [32mPermitQueueDonut[37m[] = buildPermitQueue()...
+         ╵                            [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'buildPermitQueue'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:87:61:
+[37m      87 │ ...onuts: PermitQueueDonut[] = [32mbuildPermitQueue[37m().map((category) => {
+         ╵                                [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'category' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:87:85:
+[37m      87 │ ...onuts: PermitQueueDonut[] = buildPermitQueue().map(([32mcategory[37m) => {
+         ╵                                                        [32m~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'sum' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:88:40:
+[37m      88 │     const total = category.dots.reduce(([32msum[37m, d) => sum + d.value, 0);
+         ╵                                         [32m~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'd' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:88:45:
+[37m      88 │     const total = category.dots.reduce((sum, [32md[37m) => sum + d.value, 0);
+         ╵                                              [32m^[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'd' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:92:35:
+[37m      92 │ ...  segments: category.dots.map(([32md[37m) => ({ label: d.label, value: ...
+         ╵                                   [32m^[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'd' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/dashboard/dashboard.ts:93:34:
+[37m      93 │       tooltip: category.dots.map(([32md[37m) => `${d.label}: ${d.value}`)....
+         ╵                                   [32m^[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-I2HSEP4V.js   | tenant-applications   | 172.64 kB | 
+chunk-HGAFLLL3.js   | tenants               |  98.94 kB | 
+chunk-QBO225LP.js   | dashboard             |  77.49 kB | 
+chunk-TB3WSKXO.js   | tenant-payments       |  68.37 kB | 
+chunk-47LQNGGB.js   | system-logs           |  65.32 kB | 
+chunk-QJV64NJK.js   | tenant-dashboard      |  60.41 kB | 
+chunk-2HF2PCTW.js   | tenant-evaluations    |  45.54 kB | 
+chunk-VVCPV7PT.js   | user-roles            |  39.13 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-TJUUEGD3.js   | tenant-permit-release |  38.09 kB | 
+chunk-APZXU7KZ.js   | register              |  21.84 kB | 
+chunk-YI3LDJMG.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.579 seconds] - 2026-07-15T11:02:05.597Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.381 seconds] - 2026-07-15T11:02:22.280Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG1010: 'imports' must be an array of components, directives, pipes, or NgModules.
+  Value could not be determined statically.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:36:46:
+[37m      36 │ ...rts: [Topbar, Icon, Avatar, DonutChart, [32mLollipopChart[37m, HBarChart],
+         ╵                                            [32m~~~~~~~~~~~~~[0m
+
+  Unknown reference.
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:36:46:
+[37m      36 │ ...rts: [Topbar, Icon, Avatar, DonutChart, [32mLollipopChart[37m, HBarChart],
+         ╵                                            [32m~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'LollipopChart'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:36:46:
+[37m      36 │ ...rts: [Topbar, Icon, Avatar, DonutChart, [32mLollipopChart[37m, HBarChart],
+         ╵                                            [32m~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'LollipopCategory'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:55:38:
+[37m      55 │ ...readonly queueCategories: [32mLollipopCategory[37m[] = buildPermitQueue();
+         ╵                              [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'buildPermitQueue'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:55:59:
+[37m      55 │ ...readonly queueCategories: LollipopCategory[] = [32mbuildPermitQueue[37m();
+         ╵                                                   [32m~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.437 seconds] - 2026-07-15T11:02:52.876Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'app-lollipop-chart' is not a known element:
+1. If 'app-lollipop-chart' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.html:40:2:
+[37m      40 │   [32m<app-lollipop-chart [categories]="queueCategories" />[37m
+         ╵   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantDashboard.
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:37:15:
+[37m      37 │   templateUrl: [32m'./tenant-dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'categories' since it isn't a known property of 'app-lollipop-chart'.
+1. If 'app-lollipop-chart' is an Angular component and it has 'categories' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.html:40:22:
+[37m      40 │   <app-lollipop-chart [32m[categories]="queueCategories"[37m />
+         ╵                       [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantDashboard.
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:37:15:
+[37m      37 │   templateUrl: [32m'./tenant-dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'LollipopCategory'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:55:38:
+[37m      55 │ ...readonly queueCategories: [32mLollipopCategory[37m[] = buildPermitQueue();
+         ╵                              [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'buildPermitQueue'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:55:59:
+[37m      55 │ ...readonly queueCategories: LollipopCategory[] = [32mbuildPermitQueue[37m();
+         ╵                                                   [32m~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.421 seconds] - 2026-07-15T11:03:19.231Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'app-lollipop-chart' is not a known element:
+1. If 'app-lollipop-chart' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.html:40:2:
+[37m      40 │   [32m<app-lollipop-chart [categories]="queueCategories" />[37m
+         ╵   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantDashboard.
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:37:15:
+[37m      37 │   templateUrl: [32m'./tenant-dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'categories' since it isn't a known property of 'app-lollipop-chart'.
+1. If 'app-lollipop-chart' is an Angular component and it has 'categories' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-lollipop-chart' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.html:40:22:
+[37m      40 │   <app-lollipop-chart [32m[categories]="queueCategories"[37m />
+         ╵                       [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantDashboard.
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:37:15:
+[37m      37 │   templateUrl: [32m'./tenant-dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'queueCategories' does not exist on type 'TenantDashboard'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.html:40:36:
+[37m      40 │   <app-lollipop-chart [categories]="[32mqueueCategories[37m" />
+         ╵                                     [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantDashboard.
+
+    src/app/pages/tenant-dashboard/tenant-dashboard.ts:37:15:
+[37m      37 │   templateUrl: [32m'./tenant-dashboard.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-I2HSEP4V.js   | tenant-applications   | 172.64 kB | 
+chunk-HGAFLLL3.js   | tenants               |  98.94 kB | 
+chunk-W5S4BMOG.js   | dashboard             |  77.49 kB | 
+chunk-TB3WSKXO.js   | tenant-payments       |  68.37 kB | 
+chunk-47LQNGGB.js   | system-logs           |  65.32 kB | 
+chunk-V657BCB2.js   | tenant-dashboard      |  53.11 kB | 
+chunk-2HF2PCTW.js   | tenant-evaluations    |  45.54 kB | 
+chunk-VVCPV7PT.js   | user-roles            |  39.13 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-TJUUEGD3.js   | tenant-permit-release |  38.09 kB | 
+chunk-APZXU7KZ.js   | register              |  21.84 kB | 
+chunk-YI3LDJMG.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.483 seconds] - 2026-07-15T11:03:34.034Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             |  4.19 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-MOIW3SKV.js   | tenant-dashboard | 55.40 kB | 
+
+Application bundle generation complete. [1.128 seconds] - 2026-07-15T11:03:49.800Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             |  4.19 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-H23UVUYU.js   | tenant-dashboard | 55.41 kB | 
+
+Application bundle generation complete. [0.928 seconds] - 2026-07-15T11:04:08.463Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             |  4.19 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-KNZKAGVX.js   | tenant-dashboard | 55.42 kB | 
+
+Application bundle generation complete. [0.592 seconds] - 2026-07-15T11:04:38.695Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.421 seconds] - 2026-07-15T11:04:52.346Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names            | Raw size
+main.js             | main             |  4.19 kB | 
+
+Lazy chunk files    | Names            | Raw size
+chunk-CGJAFQZU.js   | dashboard        | 77.49 kB | 
+chunk-SPKTOMSC.js   | tenant-dashboard | 55.42 kB | 
+chunk-RSG6YWM6.js   | -                |  1.30 kB | 
+
+Application bundle generation complete. [0.350 seconds] - 2026-07-15T11:06:06.555Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 640 bytes | 
+
+                    | Initial total         |   5.77 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-I2HSEP4V.js   | tenant-applications   | 172.64 kB | 
+chunk-HGAFLLL3.js   | tenants               |  98.94 kB | 
+chunk-CGJAFQZU.js   | dashboard             |  77.49 kB | 
+chunk-TB3WSKXO.js   | tenant-payments       |  68.37 kB | 
+chunk-47LQNGGB.js   | system-logs           |  65.32 kB | 
+chunk-SPKTOMSC.js   | tenant-dashboard      |  55.42 kB | 
+chunk-2HF2PCTW.js   | tenant-evaluations    |  45.54 kB | 
+chunk-VVCPV7PT.js   | user-roles            |  39.13 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-TJUUEGD3.js   | tenant-permit-release |  38.09 kB | 
+chunk-APZXU7KZ.js   | register              |  21.84 kB | 
+chunk-YI3LDJMG.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-VHWXXCLN.js   | -                     |  15.37 kB | 
+chunk-RMQND4YG.js   | -                     |  14.97 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [0.749 seconds] - 2026-07-15T11:07:31.259Z
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names  |  Raw size
+styles.css          | styles | 727 bytes | 
+
+Application bundle generation complete. [0.033 seconds] - 2026-07-15T11:17:37.676Z
+
+Stylesheet update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-6VPY6MHE.js   | tenant-applications   | 172.64 kB | 
+chunk-UW32E77G.js   | tenants               |  98.94 kB | 
+chunk-BDCYDT7E.js   | dashboard             |  77.49 kB | 
+chunk-HYYL4ILG.js   | tenant-payments       |  68.37 kB | 
+chunk-54POWQVJ.js   | system-logs           |  65.32 kB | 
+chunk-LFFRZYJK.js   | tenant-dashboard      |  55.42 kB | 
+chunk-EN32SQ52.js   | tenant-evaluations    |  45.54 kB | 
+chunk-ZCDZJW7A.js   | user-roles            |  39.13 kB | 
+chunk-KLY4VAPI.js   | tenant-permit-release |  38.09 kB | 
+chunk-EEEE6OGF.js   | -                     |  15.37 kB | 
+chunk-4FRDZFUK.js   | -                     |  15.15 kB | 
+chunk-E6U5M5EG.js   | tenant-workflow       |  14.36 kB | 
+chunk-PVO7BYUO.js   | workflow              |  14.12 kB | 
+chunk-6BZS6CVV.js   | -                     |  11.42 kB | 
+chunk-SMJUHGPJ.js   | -                     |  11.04 kB | 
+...and 3 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [2.626 seconds] - 2026-07-15T11:30:04.241Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-YJCVVRZU.js   | tenant-applications | 172.64 kB | 
+
+Application bundle generation complete. [1.126 seconds] - 2026-07-15T11:30:29.856Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-KZQGYNZY.js   | tenant-applications | 172.78 kB | 
+
+Application bundle generation complete. [1.321 seconds] - 2026-07-15T11:31:11.835Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-2WHBASDF.js   | tenant-applications | 172.94 kB | 
+
+Application bundle generation complete. [1.021 seconds] - 2026-07-15T11:31:25.384Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-QTLMFER2.js   | tenant-applications | 174.24 kB | 
+
+Application bundle generation complete. [1.419 seconds] - 2026-07-15T11:31:54.747Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.489 seconds] - 2026-07-15T11:32:39.146Z
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mNG8113: All imports are unused[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-applications/tenant-applications.ts:72:2:
+[37m      72 │   [32mimports[37m: [Topbar, Icon, Avatar, DonutChart, Pagination],
+         ╵   [32m~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG5002: Unexpected closing tag "div". It may happen when the tag has already been closed by another tag. For more info see https://www.w3.org/TR/html5/syntax.html#closing-elements-that-have-implied-end-tags[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-applications/tenant-applications.html:727:6:
+[37m      727 │       [32m</div>[37m
+          ╵       [32m~~~~~~[0m
+
+  Error occurs in the template of component TenantApplications.
+
+    src/app/pages/tenant-applications/tenant-applications.ts:73:15:
+[37m      73 │   templateUrl: [32m'./tenant-applications.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 727 bytes | 
+
+                    | Initial total         |   5.86 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-QZXAMJUP.js   | tenant-applications   | 174.15 kB | 
+chunk-UW32E77G.js   | tenants               |  98.94 kB | 
+chunk-BDCYDT7E.js   | dashboard             |  77.49 kB | 
+chunk-HYYL4ILG.js   | tenant-payments       |  68.37 kB | 
+chunk-54POWQVJ.js   | system-logs           |  65.32 kB | 
+chunk-LFFRZYJK.js   | tenant-dashboard      |  55.42 kB | 
+chunk-EN32SQ52.js   | tenant-evaluations    |  45.54 kB | 
+chunk-ZCDZJW7A.js   | user-roles            |  39.13 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-KLY4VAPI.js   | tenant-permit-release |  38.09 kB | 
+chunk-APZXU7KZ.js   | register              |  21.84 kB | 
+chunk-YI3LDJMG.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-EEEE6OGF.js   | -                     |  15.37 kB | 
+chunk-4FRDZFUK.js   | -                     |  15.15 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.791 seconds] - 2026-07-15T11:33:18.146Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-UDBKAV37.js   | tenant-applications | 174.15 kB | 
+
+Application bundle generation complete. [1.179 seconds] - 2026-07-15T11:33:45.267Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-UQNWIS4E.js   | tenant-applications | 174.24 kB | 
+
+Application bundle generation complete. [1.606 seconds] - 2026-07-15T11:34:23.743Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.320 seconds] - 2026-07-15T11:35:07.692Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'app-dilg-seal' is not a known element:
+1. If 'app-dilg-seal' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-dilg-seal' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-applications/tenant-applications.html:743:10:
+[37m      743 │           [32m<app-dilg-seal [size]="36" />[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantApplications.
+
+    src/app/pages/tenant-applications/tenant-applications.ts:73:15:
+[37m      73 │   templateUrl: [32m'./tenant-applications.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'size' since it isn't a known property of 'app-dilg-seal'.
+1. If 'app-dilg-seal' is an Angular component and it has 'size' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-dilg-seal' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-applications/tenant-applications.html:743:25:
+[37m      743 │           <app-dilg-seal [32m[size]="36"[37m />
+          ╵                          [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantApplications.
+
+    src/app/pages/tenant-applications/tenant-applications.ts:73:15:
+[37m      73 │   templateUrl: [32m'./tenant-applications.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.558 seconds] - 2026-07-15T11:35:54.519Z
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8001: 'app-dilg-seal' is not a known element:
+1. If 'app-dilg-seal' is an Angular component, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-dilg-seal' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-applications/tenant-applications.html:743:10:
+[37m      743 │           [32m<app-dilg-seal [size]="36" />[37m
+          ╵           [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantApplications.
+
+    src/app/pages/tenant-applications/tenant-applications.ts:74:15:
+[37m      74 │   templateUrl: [32m'./tenant-applications.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31mX [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'size' since it isn't a known property of 'app-dilg-seal'.
+1. If 'app-dilg-seal' is an Angular component and it has 'size' input, then verify that it is included in the '@Component.imports' of this component.
+2. If 'app-dilg-seal' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@Component.schemas' of this component to suppress this message.
+3. To allow any property add 'NO_ERRORS_SCHEMA' to the '@Component.schemas' of this component.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/pages/tenant-applications/tenant-applications.html:743:25:
+[37m      743 │           <app-dilg-seal [32m[size]="36"[37m />
+          ╵                          [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component TenantApplications.
+
+    src/app/pages/tenant-applications/tenant-applications.ts:74:15:
+[37m      74 │   templateUrl: [32m'./tenant-applications.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                 |  Raw size
+main.js             | main                  |   4.19 kB | 
+chunk-VUJOFXKG.js   | -                     | 938 bytes | 
+styles.css          | styles                | 727 bytes | 
+
+                    | Initial total         |   5.86 kB
+
+Lazy chunk files    | Names                 |  Raw size
+chunk-7ZNBFLQZ.js   | tenant-applications   | 181.26 kB | 
+chunk-UW32E77G.js   | tenants               |  98.94 kB | 
+chunk-BDCYDT7E.js   | dashboard             |  77.49 kB | 
+chunk-HYYL4ILG.js   | tenant-payments       |  68.37 kB | 
+chunk-54POWQVJ.js   | system-logs           |  65.32 kB | 
+chunk-LFFRZYJK.js   | tenant-dashboard      |  55.42 kB | 
+chunk-EN32SQ52.js   | tenant-evaluations    |  45.54 kB | 
+chunk-ZCDZJW7A.js   | user-roles            |  39.13 kB | 
+chunk-EGX4NMA4.js   | -                     |  38.14 kB | 
+chunk-KLY4VAPI.js   | tenant-permit-release |  38.09 kB | 
+chunk-APZXU7KZ.js   | register              |  21.84 kB | 
+chunk-YI3LDJMG.js   | login                 |  19.24 kB | 
+chunk-J5JBAEKR.js   | -                     |  15.37 kB | 
+chunk-EEEE6OGF.js   | -                     |  15.37 kB | 
+chunk-4FRDZFUK.js   | -                     |  15.15 kB | 
+...and 10 more lazy chunks files. Use "--verbose" to show all the files.
+
+Application bundle generation complete. [1.017 seconds] - 2026-07-15T11:36:08.592Z
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-EPQYK36E.js   | tenant-applications | 185.21 kB | 
+
+Application bundle generation complete. [1.343 seconds] - 2026-07-15T11:36:39.419Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-Z2HASTEF.js   | tenant-applications | 186.35 kB | 
+
+Application bundle generation complete. [1.277 seconds] - 2026-07-15T11:37:07.980Z
+
+Component update sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               |  Raw size
+main.js             | main                |   4.19 kB | 
+
+Lazy chunk files    | Names               |  Raw size
+chunk-KFYG3332.js   | tenant-applications | 190.83 kB | 
+
+Application bundle generation complete. [1.210 seconds] - 2026-07-15T11:37:55.422Z
+
+Component update sent to client(s).

@@ -120,10 +120,10 @@ export class TenantPayments {
   });
 
   protected readonly ringStats: RingStat[] = [
-    { label: 'Pending', value: '524', color: '#f5c518', light: '#fdf1c7', pct: 45 },
-    { label: 'Paid', value: '849', color: '#22c55e', light: '#d7f5df', pct: 75 },
-    { label: 'Unpaid', value: '376', color: '#ef4444', light: '#fbdada', pct: 30 },
-    { label: 'Total Payments', value: '196', color: '#3b82f6', light: '#dbe8fd', pct: 85 },
+    { label: 'Pending', value: '524', color: '#f59e0b', light: '#fef3c7', pct: 45 },
+    { label: 'Paid', value: '849', color: '#16a34a', light: '#dcfce7', pct: 75 },
+    { label: 'Unpaid', value: '376', color: '#991b1b', light: '#fdeceb', pct: 30 },
+    { label: 'Total Payments', value: '196', color: '#2563eb', light: '#dbeafe', pct: 85 },
   ];
 
   protected ringSegments(stat: RingStat): DonutSegment[] {

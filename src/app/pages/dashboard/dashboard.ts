@@ -2,13 +2,13 @@ import { Component, computed, signal } from '@angular/core';
 import { Topbar } from '../../shared/topbar/topbar';
 import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
-import { LollipopChart, LollipopCategory } from '../../shared/lollipop-chart/lollipop-chart';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
+import { StackedBarChart } from '../../shared/stacked-bar-chart/stacked-bar-chart';
 import { BarList, BarListRow } from '../../shared/bar-list/bar-list';
 import { AreaChart } from '../../shared/area-chart/area-chart';
 import { Avatar } from '../../shared/avatar/avatar';
 import { Pagination } from '../../shared/pagination/pagination';
-import { buildPermitQueue } from '../../shared/permit-queue/permit-queue';
+import { buildPermitQueueRows } from '../../shared/permit-queue/permit-queue';
 
 interface StatCardData {
   icon: string;
@@ -32,17 +32,7 @@ interface TenantApplication {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [
-    Topbar,
-    StatCard,
-    Icon,
-    LollipopChart,
-    DonutChart,
-    BarList,
-    AreaChart,
-    Avatar,
-    Pagination,
-  ],
+  imports: [Topbar, StatCard, Icon, DonutChart, StackedBarChart, BarList, AreaChart, Avatar, Pagination],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -93,14 +83,26 @@ export class Dashboard {
     },
   ];
 
-  protected readonly queueCategories: LollipopCategory[] = buildPermitQueue();
+  // One stacked bar per permit type — bar length is that permit's total
+  // queue volume, and the fill is its own Pending/Approved/Rejected split.
+  protected readonly permitQueueRows = buildPermitQueueRows();
 
+  // Colors are the validated 4-slot categorical palette (dataviz skill
+  // validate_palette.js: CVD separation + lightness band + chroma floor all
+  // PASS) — info blue, success green, warning amber, and a 4th violet slot
+  // for "Return" so it doesn't collide with the Pending/warning meaning.
   protected readonly statusSegments: DonutSegment[] = [
-    { label: 'For Evaluation', value: 30, color: '#3b82f6' },
-    { label: 'Approved', value: 20, color: '#22c55e' },
-    { label: 'Return', value: 20, color: '#f59e0b' },
-    { label: 'Pending', value: 30, color: '#f5c518' },
+    { label: 'For Evaluation', value: 30, color: '#2563eb' },
+    { label: 'Approved', value: 20, color: '#16a34a' },
+    { label: 'Return', value: 20, color: '#7c3aed' },
+    { label: 'Pending', value: 30, color: '#f59e0b' },
   ];
+
+  protected readonly statusTotal = this.statusSegments.reduce((sum, s) => sum + s.value, 0);
+
+  protected statusPercent(seg: DonutSegment): number {
+    return Math.round((seg.value / this.statusTotal) * 100);
+  }
 
   protected readonly tenantRows: BarListRow[] = [
     { name: 'Quezon LGU', value: 100 },

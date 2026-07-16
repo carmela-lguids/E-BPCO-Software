@@ -28,10 +28,4 @@ export class Login {
     const isTenant = normalized.includes('tenant');
     this.router.navigateByUrl(isTenant ? '/tenant/dashboard' : '/dashboard');
   }
-
-  fillDemo(portal: 'super-admin' | 'tenant-admin'): void {
-    this.email =
-      portal === 'tenant-admin' ? 'tenantadmin@ebpco.gov.ph' : 'superadmin@ebpco.gov.ph';
-    this.password = 'demo1234';
-  }
 }

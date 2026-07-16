@@ -1,3 +1,5 @@
+@use '../styles/tokens' as *;
+
 @keyframes card-in {
   from {
     opacity: 0;
@@ -16,17 +18,17 @@
 
 .stat-card {
   height: 100%;
-  border-radius: 0.85rem;
+  border-radius: $radius-lg;
   padding: 1.15rem 1.25rem;
   border: 1px solid rgba(0, 0, 0, 0.04);
   animation: card-in 0.35s ease both;
   transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+    transform $ease-base,
+    box-shadow $ease-base;
 
   &:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 22px rgba(20, 20, 40, 0.08);
+    box-shadow: $shadow-card-hover;
   }
 }
 
@@ -57,7 +59,7 @@
   margin: 0 0 0.35rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #454a58;
+  color: $color-ink-600;
   line-height: 1.25;
 }
 
@@ -65,7 +67,7 @@
   margin: 0;
   font-size: 1.7rem;
   font-weight: 800;
-  color: #1f2430;
+  color: $color-ink-900;
 }
 
 .icon-badge {
@@ -76,8 +78,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  color: $color-surface;
+  box-shadow: $shadow-badge;
 }
 
 .deltas {
@@ -95,11 +97,11 @@
   font-weight: 700;
 
   &.good {
-    color: #059669;
+    color: $color-success-strong;
   }
 
   &.bad {
-    color: #dc2626;
+    color: $color-danger;
   }
 }
 
@@ -107,5 +109,5 @@
   margin: 0.6rem 0 0;
   font-size: 0.78rem;
   font-weight: 600;
-  color: #7a7f8c;
+  color: $color-ink-300;
 }

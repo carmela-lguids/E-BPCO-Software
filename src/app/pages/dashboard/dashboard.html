@@ -19,9 +19,9 @@
     <div>
       <h2>Over All Applications Queue</h2>
       <div class="legend">
-        <span><i class="dot" style="background: #f5b528"></i>Pending</span>
-        <span><i class="dot" style="background: #22c55e"></i>Approved</span>
-        <span><i class="dot" style="background: #ef4444"></i>Rejected</span>
+        <span><i class="dot" style="background: #f59e0b"></i>Pending</span>
+        <span><i class="dot" style="background: #16a34a"></i>Approved</span>
+        <span><i class="dot" style="background: #dc2626"></i>Rejected</span>
       </div>
     </div>
     <div class="queue-actions">
@@ -33,24 +33,33 @@
     </div>
   </div>
 
-  <app-lollipop-chart [categories]="queueCategories" />
+  <app-stacked-bar-chart [rows]="permitQueueRows" />
 </section>
 
 <section class="mid-row">
   <div class="card status-card">
     <div class="card-head">
-      <h2>Applications By Status</h2>
-      <select class="filter-select">
+      <h2 id="status-card-heading">Applications By Status</h2>
+      <label class="sr-only" for="status-range">Applications by status time range</label>
+      <select id="status-range" class="filter-select">
         <option>Yearly</option>
         <option>Monthly</option>
       </select>
     </div>
 
     <div class="status-body">
-      <app-donut-chart [segments]="statusSegments" [size]="190" />
+      <app-donut-chart
+        [segments]="statusSegments"
+        [size]="190"
+        [showCenterTotal]="true"
+        centerLabel="Total Applications"
+      />
       <ul class="status-legend">
         @for (seg of statusSegments; track seg.label) {
-          <li><i [style.background]="seg.color"></i>{{ seg.label }}</li>
+          <li>
+            <span class="legend-head"><i [style.background]="seg.color"></i>{{ seg.label }}</span>
+            <span class="legend-value">{{ seg.value }} ({{ statusPercent(seg) }}%)</span>
+          </li>
         }
       </ul>
     </div>
@@ -59,7 +68,8 @@
   <div class="card tenants-card">
     <div class="card-head">
       <h2>Application By Tenants</h2>
-      <select class="filter-select">
+      <label class="sr-only" for="tenants-range">Application by tenants time range</label>
+      <select id="tenants-range" class="filter-select">
         <option>This Month</option>
         <option>Last Month</option>
       </select>
@@ -78,15 +88,16 @@
 <section class="card overview-card">
   <div class="card-head">
     <h2>Application Overview</h2>
-    <select class="filter-select">
+    <label class="sr-only" for="overview-range">Application overview time range</label>
+    <select id="overview-range" class="filter-select">
       <option>This Month</option>
       <option>This Year</option>
     </select>
   </div>
 
   <div class="overview-legend">
-    <span><i style="background: #3b82f6"></i>New Application: <strong>50</strong></span>
-    <span><i style="background: #f5b528"></i>Approved Application: <strong>500</strong></span>
+    <span><i style="background: #2563eb"></i>New Application: <strong>50</strong></span>
+    <span><i style="background: #f59e0b"></i>Approved Application: <strong>500</strong></span>
   </div>
 
   <app-area-chart />
@@ -113,24 +124,24 @@
   </div>
 
   <div class="table-wrap">
-    <table>
+    <table aria-label="Recent tenant applications">
       <thead>
         <tr>
-          <th><input type="checkbox" /></th>
-          <th>APPLICATION ID</th>
-          <th>APPLICANT NAME</th>
-          <th>LOCATION</th>
-          <th>TYPE</th>
-          <th>DATE SUBMITTED</th>
-          <th>ASSIGNED OFFICER</th>
-          <th>STATUS</th>
-          <th>ACTION</th>
+          <th scope="col"><input type="checkbox" aria-label="Select all applications" /></th>
+          <th scope="col">APPLICATION ID</th>
+          <th scope="col">APPLICANT NAME</th>
+          <th scope="col">LOCATION</th>
+          <th scope="col">TYPE</th>
+          <th scope="col">DATE SUBMITTED</th>
+          <th scope="col">ASSIGNED OFFICER</th>
+          <th scope="col">STATUS</th>
+          <th scope="col">ACTION</th>
         </tr>
       </thead>
       <tbody>
         @for (row of recentTenants; track row.id) {
           <tr>
-            <td><input type="checkbox" /></td>
+            <td><input type="checkbox" [attr.aria-label]="'Select application ' + row.id" /></td>
             <td class="id-cell">{{ row.id }}</td>
             <td>
               <div class="applicant-cell">
@@ -146,9 +157,15 @@
               <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
             </td>
             <td class="actions-cell">
-              <button type="button" class="icon-btn view"><app-icon name="eye" [size]="15" /></button>
-              <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="15" /></button>
-              <button type="button" class="icon-btn del"><app-icon name="trash" [size]="15" /></button>
+              <button type="button" class="icon-btn view" [attr.aria-label]="'View application ' + row.id">
+                <app-icon name="eye" [size]="15" />
+              </button>
+              <button type="button" class="icon-btn edit" [attr.aria-label]="'Edit application ' + row.id">
+                <app-icon name="edit" [size]="15" />
+              </button>
+              <button type="button" class="icon-btn del" [attr.aria-label]="'Delete application ' + row.id">
+                <app-icon name="trash" [size]="15" />
+              </button>
             </td>
           </tr>
         }

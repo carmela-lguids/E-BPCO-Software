@@ -116,6 +116,11 @@ const ICONS: Record<string, Shape[]> = {
     { tag: 'line', x1: 12, y1: 7.5, x2: 12, y2: 13 },
     { tag: 'circle', cx: 12, cy: 16.3, r: 0.9, fill: 'currentColor' },
   ],
+  info: [
+    { tag: 'circle', cx: 12, cy: 12, r: 8.5 },
+    { tag: 'circle', cx: 12, cy: 8, r: 0.9, fill: 'currentColor' },
+    { tag: 'line', x1: 12, y1: 11, x2: 12, y2: 16.5 },
+  ],
   'alert-triangle': [
     { tag: 'path', d: 'M12 4 21.5 20H2.5Z' },
     { tag: 'line', x1: 12, y1: 10, x2: 12, y2: 14.5 },

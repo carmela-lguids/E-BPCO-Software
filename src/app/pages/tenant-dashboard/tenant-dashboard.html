@@ -23,9 +23,9 @@
     <div>
       <h2>Applications Queue</h2>
       <div class="legend">
-        <span><i class="dot" style="background: #f5b528"></i>Pending</span>
-        <span><i class="dot" style="background: #22c55e"></i>Approved</span>
-        <span><i class="dot" style="background: #ef4444"></i>Rejected</span>
+        <span><i class="dot" style="background: #f59e0b"></i>Pending</span>
+        <span><i class="dot" style="background: #16a34a"></i>Approved</span>
+        <span><i class="dot" style="background: #dc2626"></i>Rejected</span>
       </div>
     </div>
     <div class="queue-actions">
@@ -37,7 +37,7 @@
     </div>
   </div>
 
-  <app-lollipop-chart [categories]="queueCategories" />
+  <app-stacked-bar-chart [rows]="permitQueueRows" />
 </section>
 
 <section class="mid-row">

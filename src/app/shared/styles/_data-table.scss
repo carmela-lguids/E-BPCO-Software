@@ -1,16 +1,20 @@
+@use 'tokens' as *;
+
 .btn-outline,
 .btn-primary {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border-radius: 0.5rem;
+  border-radius: $radius-md;
   padding: 0.55rem 0.9rem;
   font-size: 0.83rem;
   font-weight: 700;
   cursor: pointer;
   transition:
-    transform 0.15s ease,
-    background 0.2s ease;
+    transform $ease-fast,
+    background $ease-base,
+    color $ease-base,
+    border-color $ease-base;
   white-space: nowrap;
 
   &:active {
@@ -19,35 +23,41 @@
 }
 
 .btn-outline {
-  background: #fff;
-  border: 1px solid #e6e6ec;
-  color: #454a58;
+  background: $color-surface;
+  border: 1px solid $color-border-strong;
+  color: $color-ink-600;
 
   &:hover {
-    border-color: #2563eb;
-    color: #2563eb;
+    border-color: $color-brand-600;
+    color: $color-brand-600;
   }
 }
 
 .btn-primary {
-  background: #2563eb;
-  border: 1px solid #2563eb;
-  color: #fff;
+  background: $color-brand-600;
+  border: 1px solid $color-brand-600;
+  color: $color-surface;
 
   &:hover {
-    background: #1d4ed8;
+    background: $color-brand-700;
   }
 }
 
 .filter-select {
-  border: 1px solid #e6e6ec;
-  border-radius: 0.4rem;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-sm;
   padding: 0.5rem 0.7rem;
   font-size: 0.8rem;
   font-weight: 600;
-  color: #454a58;
-  background: #fff;
+  color: $color-ink-600;
+  background: $color-surface;
   cursor: pointer;
+  transition: border-color $ease-base;
+
+  &:hover,
+  &:focus-visible {
+    border-color: $color-brand-600;
+  }
 }
 
 .table-wrap {
@@ -64,56 +74,56 @@ thead th {
   text-align: left;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #9297a3;
+  color: $color-ink-050;
   letter-spacing: 0.03em;
   padding: 0.65rem 0.75rem;
-  border-bottom: 1px solid #eeeef2;
+  border-bottom: 1px solid $color-border;
   white-space: nowrap;
 }
 
 tbody td {
   padding: 0.8rem 0.75rem;
   font-size: 0.85rem;
-  color: #2b2f3a;
-  border-bottom: 1px solid #f4f4f7;
+  color: $color-ink-700;
+  border-bottom: 1px solid $color-bg-muted;
   white-space: nowrap;
 }
 
 tbody tr {
-  transition: background 0.15s ease;
+  transition: background $ease-fast;
 
   &:hover {
-    background: #fafafc;
+    background: $color-bg-subtle;
   }
 }
 
 .status-pill {
   display: inline-block;
   padding: 0.3rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: $radius-pill;
   font-size: 0.76rem;
   font-weight: 700;
 
   &.approved,
   &.active,
   &.good {
-    background: #dcfce7;
-    color: #16a34a;
+    background: $color-success-bg;
+    color: $color-success;
   }
   &.pending,
   &.warning {
-    background: #fef3c7;
-    color: #b45309;
+    background: $color-warning-bg;
+    color: $color-warning;
   }
   &.rejected,
   &.inactive,
   &.critical {
-    background: #fee2e2;
-    color: #dc2626;
+    background: $color-danger-bg;
+    color: $color-danger;
   }
   &.info {
-    background: #dbeafe;
-    color: #2563eb;
+    background: $color-info-bg;
+    color: $color-info;
   }
 }
 
@@ -131,23 +141,23 @@ tbody tr {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.15s ease;
+  transition: transform $ease-fast;
 
   &:active {
     transform: scale(0.9);
   }
 
   &.view {
-    background: #e8f1ff;
-    color: #2563eb;
+    background: $color-info-bg-soft;
+    color: $color-info;
   }
   &.edit {
-    background: #e7fbef;
-    color: #16a34a;
+    background: $color-success-bg-soft;
+    color: $color-success;
   }
   &.del {
-    background: #fdeceb;
-    color: #dc2626;
+    background: $color-danger-bg-soft;
+    color: $color-danger;
   }
 }
 
@@ -156,5 +166,5 @@ tbody tr {
   margin: 1.25rem 0 0;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #2b2f3a;
+  color: $color-ink-700;
 }

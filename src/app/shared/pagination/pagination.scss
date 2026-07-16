@@ -1,3 +1,5 @@
+@use '../styles/tokens' as *;
+
 .pagination {
   display: flex;
   align-items: center;
@@ -8,7 +10,7 @@
 
 .range-label {
   font-size: 0.85rem;
-  color: #7a7f8c;
+  color: $color-ink-300;
   font-weight: 500;
 }
 
@@ -22,9 +24,9 @@
 .page-btn {
   min-width: 30px;
   height: 30px;
-  border-radius: 0.4rem;
-  border: 1px solid #e6e6ec;
-  background: #fff;
+  border-radius: $radius-sm;
+  border: 1px solid $color-border-strong;
+  background: $color-surface;
   color: #5a5f6b;
   font-size: 0.82rem;
   font-weight: 700;
@@ -33,14 +35,14 @@
   align-items: center;
   justify-content: center;
   transition:
-    background 0.15s ease,
-    color 0.15s ease,
-    border-color 0.15s ease,
-    transform 0.15s ease;
+    background $ease-fast,
+    color $ease-fast,
+    border-color $ease-fast,
+    transform $ease-fast;
 
   &:hover:not(:disabled) {
-    border-color: #c81e2c;
-    color: #c81e2c;
+    border-color: $color-brand-600;
+    color: $color-brand-600;
   }
 
   &:active:not(:disabled) {
@@ -54,7 +56,7 @@
 }
 
 .page-btn.active {
-  background: #2563eb;
-  border-color: #2563eb;
-  color: #fff;
+  background: $color-brand-600;
+  border-color: $color-brand-600;
+  color: $color-surface;
 }

@@ -190,12 +190,12 @@ export interface SystemEventRow {
   styleUrl: './system-logs.scss',
 })
 export class SystemLogs {
-  protected readonly tabs: { key: LogTabKey; label: string }[] = [
-    { key: 'activity', label: 'Activity logs' },
-    { key: 'access', label: 'Access logs' },
-    { key: 'error', label: 'Error logs' },
-    { key: 'security', label: 'Security Activity' },
-    { key: 'events', label: 'System Events' },
+  protected readonly tabs: { key: LogTabKey; label: string; icon: string }[] = [
+    { key: 'activity', label: 'Activity logs', icon: 'logs' },
+    { key: 'access', label: 'Access logs', icon: 'key' },
+    { key: 'error', label: 'Error logs', icon: 'alert-circle' },
+    { key: 'security', label: 'Security Activity', icon: 'shield' },
+    { key: 'events', label: 'System Events', icon: 'gear' },
   ];
 
   protected readonly activeTab = signal<LogTabKey>('activity');

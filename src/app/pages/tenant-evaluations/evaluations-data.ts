@@ -102,15 +102,15 @@ export const EVAL_ROWS: EvalRow[] = BASE.map((r, i) => ({
 }));
 
 export const EVAL_RING_STATS = [
-  { label: 'Total Applications', value: '1,749', color: '#3b82f6', light: '#dbe8fd', pct: 85 },
-  { label: 'Return for Revision', value: '376', color: '#ef4444', light: '#fbdada', pct: 30 },
-  { label: 'Pending Review', value: '524', color: '#f5c518', light: '#fdf1c7', pct: 45 },
-  { label: 'Approved', value: '849', color: '#22c55e', light: '#d7f5df', pct: 75 },
+  { label: 'Total Applications', value: '1,749', color: '#2563eb', light: '#dbeafe', pct: 85 },
+  { label: 'Return for Revision', value: '376', color: '#991b1b', light: '#fdeceb', pct: 30 },
+  { label: 'Pending Review', value: '524', color: '#f59e0b', light: '#fef3c7', pct: 45 },
+  { label: 'Approved', value: '849', color: '#16a34a', light: '#dcfce7', pct: 75 },
 ];
 
-export const STAGE_TABS: { key: Stage; label: string }[] = [
-  { key: 'pending-review', label: 'Pending Review' },
-  { key: 'under-review', label: 'Under Review' },
-  { key: 'returned', label: 'Returned' },
-  { key: 'passed', label: 'Passed' },
+export const STAGE_TABS: { key: Stage; label: string; icon: string }[] = [
+  { key: 'pending-review', label: 'Pending Review', icon: 'alert-circle' },
+  { key: 'under-review', label: 'Under Review', icon: 'eye' },
+  { key: 'returned', label: 'Returned', icon: 'alert-triangle' },
+  { key: 'passed', label: 'Passed', icon: 'check-circle' },
 ];

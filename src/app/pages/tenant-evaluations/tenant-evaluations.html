@@ -56,6 +56,7 @@
         [class.active]="activeStage() === tab.key"
         (click)="selectStage(tab.key)"
       >
+        <app-icon [name]="tab.icon" [size]="15" />
         {{ tab.label }}
       </button>
     }

@@ -4,7 +4,8 @@
   <div class="topbar-right">
     <div class="search-box">
       <app-icon name="search" [size]="17" />
-      <input type="text" placeholder="Search here..." />
+      <label class="sr-only" for="topbar-search">Search</label>
+      <input id="topbar-search" type="text" placeholder="Search here..." />
     </div>
 
     <button type="button" class="bell-btn" aria-label="Notifications">

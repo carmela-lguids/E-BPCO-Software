@@ -23,6 +23,7 @@
         [class.active]="activeTab() === t.key"
         (click)="selectTab(t.key)"
       >
+        <app-icon [name]="t.icon" [size]="15" />
         {{ t.label }}
       </button>
     }

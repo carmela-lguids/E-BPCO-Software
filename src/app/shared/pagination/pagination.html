@@ -1,8 +1,14 @@
-<div class="pagination">
+<nav class="pagination" aria-label="Pagination">
   <span class="range-label">{{ rangeLabel() }}</span>
 
   <div class="page-controls">
-    <button type="button" class="page-nav" [disabled]="page() === 1" (click)="first()">
+    <button
+      type="button"
+      class="page-nav"
+      [disabled]="page() === 1"
+      (click)="first()"
+      aria-label="First page"
+    >
       <app-icon name="chevrons-left" [size]="16" />
     </button>
 
@@ -11,6 +17,8 @@
         type="button"
         class="page-btn"
         [class.active]="p === page()"
+        [attr.aria-current]="p === page() ? 'page' : null"
+        [attr.aria-label]="'Page ' + p"
         (click)="goTo(p)"
       >
         {{ p }}
@@ -22,8 +30,9 @@
       class="page-nav"
       [disabled]="page() === totalPages()"
       (click)="last()"
+      aria-label="Last page"
     >
       <app-icon name="chevrons-right" [size]="16" />
     </button>
   </div>
-</div>
+</nav>

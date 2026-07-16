@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, ElementRef, computed, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
@@ -125,10 +125,10 @@ export class Tenants {
   protected readonly activeSubTab = signal<SubTab>('analytics');
 
   protected readonly ringStats: RingStat[] = [
-    { label: 'Total Users', value: '1,524', color: '#f5c518', light: '#fdf1c7', pct: 65 },
-    { label: 'Active Tenants', value: '849', color: '#22c55e', light: '#d7f5df', pct: 70 },
-    { label: 'Inactive Tenants', value: '376', color: '#ef4444', light: '#fbdada', pct: 30 },
-    { label: 'Total Tenants', value: '196', color: '#3b82f6', light: '#dbe8fd', pct: 55 },
+    { label: 'Total Users', value: '1,524', color: '#f59e0b', light: '#fef3c7', pct: 65 },
+    { label: 'Active Tenants', value: '849', color: '#16a34a', light: '#dcfce7', pct: 70 },
+    { label: 'Inactive Tenants', value: '376', color: '#991b1b', light: '#fdeceb', pct: 30 },
+    { label: 'Total Tenants', value: '196', color: '#2563eb', light: '#dbeafe', pct: 55 },
   ];
 
   protected ringSegments(stat: RingStat): DonutSegment[] {
@@ -148,11 +148,11 @@ export class Tenants {
   });
 
   protected readonly moduleUsage: ModuleUsage[] = [
-    { name: 'Initial Evaluation', tenantCount: 122, pct: 30, color: '#f97316' },
+    { name: 'Initial Evaluation', tenantCount: 122, pct: 30, color: '#7c3aed' },
     { name: 'Zoning Evaluation', tenantCount: 122, pct: 50, color: '#f59e0b' },
-    { name: 'Fire Safety Evaluation', tenantCount: 75, pct: 60, color: '#3b82f6' },
-    { name: 'OBO Evaluation', tenantCount: 32, pct: 80, color: '#22c55e' },
-    { name: 'Localization evaluation', tenantCount: 22, pct: 30, color: '#ef4444' },
+    { name: 'Fire Safety Evaluation', tenantCount: 75, pct: 60, color: '#2563eb' },
+    { name: 'OBO Evaluation', tenantCount: 32, pct: 80, color: '#16a34a' },
+    { name: 'Localization evaluation', tenantCount: 22, pct: 30, color: '#991b1b' },
   ];
 
   protected readonly recentActivity: ActivityItem[] = [
@@ -213,6 +213,35 @@ export class Tenants {
       label: p.label,
     }));
   });
+
+  private readonly growthChartWrap = viewChild<ElementRef<HTMLDivElement>>('growthChartWrap');
+  protected readonly hoveredGrowthIndex = signal<number | null>(null);
+
+  protected readonly hoveredGrowthPoint = computed(() => {
+    const i = this.hoveredGrowthIndex();
+    if (i === null) return null;
+    const marker = this.growthMarkers()[i];
+    // Anchor the tooltip above the dot, but never let it rise past this
+    // floor — otherwise a near-top point (a high growth value) floats the
+    // tooltip up into the card header and behind the range filter.
+    const tooltipY = Math.max(marker.y, 60);
+    return { ...marker, tooltipY, value: this.growthPoints[i].value };
+  });
+
+  protected onGrowthPointerMove(event: MouseEvent): void {
+    const el = this.growthChartWrap()?.nativeElement;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    if (rect.width === 0) return;
+    const ratio = (event.clientX - rect.left) / rect.width;
+    const n = this.growthPoints.length;
+    const idx = Math.round(ratio * (n - 1));
+    this.hoveredGrowthIndex.set(Math.min(Math.max(idx, 0), n - 1));
+  }
+
+  protected onGrowthPointerLeave(): void {
+    this.hoveredGrowthIndex.set(null);
+  }
 
   protected readonly metricTiles = [
     { label: 'Applications Processed', value: '2,032', delta: '12.5%', direction: 'up' as const },

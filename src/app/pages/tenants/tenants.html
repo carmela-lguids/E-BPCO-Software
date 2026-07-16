@@ -103,6 +103,7 @@
         [class.active]="activeSubTab() === 'analytics'"
         (click)="selectSubTab('analytics')"
       >
+        <app-icon name="trend-up" [size]="15" />
         Analytics
       </button>
       <button
@@ -111,6 +112,7 @@
         [class.active]="activeSubTab() === 'modules'"
         (click)="selectSubTab('modules')"
       >
+        <app-icon name="plug" [size]="15" />
         Modules
       </button>
       <button
@@ -119,6 +121,7 @@
         [class.active]="activeSubTab() === 'recent-activity'"
         (click)="selectSubTab('recent-activity')"
       >
+        <app-icon name="logs" [size]="15" />
         Recent Activity
       </button>
     </nav>
@@ -135,24 +138,41 @@
               </select>
             </div>
 
-            <div class="growth-chart-wrap">
+            <div
+              class="growth-chart-wrap"
+              #growthChartWrap
+              (mousemove)="onGrowthPointerMove($event)"
+              (mouseleave)="onGrowthPointerLeave()"
+            >
               <svg viewBox="0 0 1000 260" preserveAspectRatio="none" class="growth-svg">
                 @for (i of [0, 1, 2, 3]; track i) {
                   <line x1="0" [attr.y1]="(i / 3) * 260" x2="1000" [attr.y2]="(i / 3) * 260" class="grid-line" />
                 }
                 <path [attr.d]="growthPath()" class="growth-line" />
-                @for (m of growthMarkers(); track m.label) {
-                  <circle [attr.cx]="m.x" [attr.cy]="m.y" r="6" class="growth-dot" />
+
+                @if (hoveredGrowthPoint(); as hp) {
+                  <line [attr.x1]="hp.x" [attr.x2]="hp.x" y1="0" y2="260" class="growth-crosshair" />
+                }
+
+                @for (m of growthMarkers(); track m.label; let i = $index) {
+                  <circle
+                    [attr.cx]="m.x"
+                    [attr.cy]="m.y"
+                    r="6"
+                    class="growth-dot"
+                    [class.active]="i === hoveredGrowthIndex()"
+                  />
                 }
               </svg>
 
-              @if (growthMarkers().length) {
+              @if (hoveredGrowthPoint(); as hp) {
                 <div
                   class="growth-tooltip"
-                  [style.top.%]="(growthMarkers()[growthMarkers().length - 1].y / 260) * 100"
+                  [style.left.%]="(hp.x / 1000) * 100"
+                  [style.top.%]="(hp.tooltipY / 260) * 100"
                 >
-                  <strong>{{ growthMarkers()[growthMarkers().length - 1].label }} 2024</strong>
-                  <span><i></i>Tenants: +31</span>
+                  <strong>{{ hp.label }} 2024</strong>
+                  <span><i></i>Tenants: +{{ hp.value }}</span>
                 </div>
               }
             </div>

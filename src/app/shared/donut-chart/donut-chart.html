@@ -1,14 +1,58 @@
-<div
+<svg
   class="donut"
-  [style.width.px]="size()"
-  [style.height.px]="size()"
-  [style.background]="conicGradient()"
+  [attr.width]="size()"
+  [attr.height]="size()"
+  viewBox="0 0 100 100"
+  [attr.role]="showLabels() ? 'img' : null"
+  [attr.aria-label]="showLabels() ? 'Distribution of ' + segments().length + ' categories' : null"
+  [attr.aria-hidden]="showLabels() ? null : 'true'"
 >
-  <div class="hole" [style.background]="holeColor()" [style.inset.px]="ringWidth()"></div>
+  <circle cx="50" cy="50" [attr.r]="innerRadius()" [attr.fill]="holeColor()" />
+
+  <g transform="rotate(-90 50 50)">
+    @for (arc of arcs(); track arc.label) {
+      <circle
+        class="donut-arc"
+        cx="50"
+        cy="50"
+        [attr.r]="radius()"
+        fill="none"
+        [attr.stroke]="arc.color"
+        [attr.stroke-width]="strokeWidthVb()"
+        [attr.stroke-dasharray]="arc.dashArray"
+        [attr.stroke-dashoffset]="arc.dashOffset"
+        [attr.tabindex]="showLabels() ? 0 : null"
+        [attr.role]="showLabels() ? 'img' : null"
+        [attr.aria-label]="showLabels() ? arc.label + ': ' + arc.value + ' (' + round(arc.pct * 100) + '%)' : null"
+      >
+        @if (showLabels()) {
+          <title>{{ arc.label }}: {{ arc.value }} ({{ round(arc.pct * 100) }}%)</title>
+        }
+      </circle>
+    }
+  </g>
 
   @if (showLabels()) {
-    @for (l of labelPositions(); track l.text + l.x) {
-      <span class="donut-label" [style.left.%]="l.x" [style.top.%]="l.y">{{ l.text }}</span>
+    @for (arc of arcs(); track arc.label + '-label') {
+      @if (arc.showLabel) {
+        <text
+          class="donut-label"
+          [attr.x]="arc.labelX"
+          [attr.y]="arc.labelY"
+          [attr.fill]="arc.labelColor"
+          text-anchor="middle"
+          dominant-baseline="central"
+        >{{ round(arc.pct * 100) }}%</text>
+      }
     }
   }
-</div>
+
+  @if (showCenterTotal()) {
+    <text x="50" y="46" text-anchor="middle" dominant-baseline="central" class="donut-center-value">
+      {{ formatTotal(total()) }}
+    </text>
+    <text x="50" y="60" text-anchor="middle" dominant-baseline="central" class="donut-center-label">
+      {{ centerLabel() }}
+    </text>
+  }
+</svg>

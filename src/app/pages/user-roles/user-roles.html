@@ -1,7 +1,152 @@
 <app-topbar title="User &amp; Roles" />
 
-<div class="coming-soon-card">
-  <span class="icon-circle"><app-icon name="user-check" [size]="30" /></span>
-  <h2>User &amp; Roles</h2>
-  <p>Manage tenant users, role assignments and permissions here. This module is coming soon.</p>
-</div>
+<section class="stat-row">
+  @for (s of stats; track s.label) {
+    <app-stat-card
+      [icon]="s.icon"
+      [iconBg]="s.iconBg"
+      [cardTint]="s.tint"
+      [label]="s.label"
+      [value]="s.value"
+      [deltas]="s.delta ? [s.delta] : []"
+      [footnote]="s.footnote ?? ''"
+    />
+  }
+</section>
+
+<section class="card">
+  <nav class="tab-nav">
+    @for (t of tabs; track t.key) {
+      <button
+        type="button"
+        class="tab-btn"
+        [class.active]="activeTab() === t.key"
+        (click)="selectTab(t.key)"
+      >
+        <app-icon [name]="t.icon" [size]="15" />
+        {{ t.label }}
+      </button>
+    }
+  </nav>
+
+  @if (activeTab() === 'users') {
+    <div class="filter-bar">
+      <div class="search-box">
+        <app-icon name="search" [size]="16" />
+        <label class="sr-only" for="user-search">Search users</label>
+        <input id="user-search" type="text" placeholder="Search name, email, or role..." />
+      </div>
+
+      <select class="filter-select">
+        <option>All Roles</option>
+      </select>
+      <select class="filter-select">
+        <option>All Statuses</option>
+      </select>
+
+      <div class="spacer"></div>
+
+      <button type="button" class="btn-outline">
+        <app-icon name="filter" [size]="15" />
+        Filters
+      </button>
+      <button type="button" class="btn-outline">
+        <app-icon name="download" [size]="15" />
+        Export
+      </button>
+      <button type="button" class="btn-primary">
+        <app-icon name="plus" [size]="15" />
+        Add User
+      </button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">User</th>
+            <th scope="col">Role</th>
+            <th scope="col">Department</th>
+            <th scope="col">Status</th>
+            <th scope="col">Last Active</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of pagedUsers(); track row.email) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <app-avatar [name]="row.name" [size]="34" />
+                  <div>
+                    <div class="user-name">{{ row.name }}</div>
+                    <div class="user-email">{{ row.email }}</div>
+                  </div>
+                </div>
+              </td>
+              <td>{{ row.role }}</td>
+              <td>{{ row.department }}</td>
+              <td>
+                <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
+              </td>
+              <td>{{ row.lastActive }}</td>
+              <td class="actions-cell">
+                <button type="button" class="icon-btn view" [attr.aria-label]="'View ' + row.name">
+                  <app-icon name="eye" [size]="14" />
+                </button>
+                <button type="button" class="icon-btn edit" [attr.aria-label]="'Edit ' + row.name">
+                  <app-icon name="edit" [size]="14" />
+                </button>
+                <button type="button" class="icon-btn del" [attr.aria-label]="'Remove ' + row.name">
+                  <app-icon name="trash" [size]="14" />
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination
+      class="pagination-row"
+      [totalItems]="totalItems()"
+      [pageSize]="pageSize"
+      [(page)]="page"
+    />
+  } @else {
+    <div class="role-grid">
+      @for (role of roles; track role.name) {
+        <div class="role-card">
+          <div class="role-head">
+            <span class="role-icon" [style.background]="role.iconBg">
+              <app-icon name="shield" [size]="18" />
+            </span>
+            <div>
+              <h3>{{ role.name }}</h3>
+              <span class="role-count">{{ role.userCount }} user{{ role.userCount === 1 ? '' : 's' }}</span>
+            </div>
+          </div>
+
+          <p class="role-desc">{{ role.description }}</p>
+
+          <div class="role-permissions">
+            @for (perm of role.permissions; track perm) {
+              <span class="permission-badge">{{ perm }}</span>
+            }
+          </div>
+
+          <div class="role-actions">
+            <button type="button" class="btn-outline">
+              <app-icon name="edit" [size]="14" />
+              Edit
+            </button>
+            <button type="button" class="btn-outline">
+              <app-icon name="user-check" [size]="14" />
+              View Users
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>

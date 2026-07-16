@@ -1,4 +1,5 @@
 @use '../../shared/styles/data-table';
+@use '../../shared/styles/tokens' as *;
 
 @keyframes section-in {
   from {
@@ -23,10 +24,10 @@
 }
 
 .card {
-  background: #fff;
-  border-radius: 0.9rem;
+  background: $color-surface;
+  border-radius: $radius-xl;
   padding: 1.5rem 1.6rem;
-  border: 1px solid #eeeef2;
+  border: 1px solid $color-border;
   margin-bottom: 1.5rem;
   animation: section-in 0.4s ease both;
 }
@@ -35,7 +36,7 @@ h2 {
   margin: 0;
   font-size: 1.15rem;
   font-weight: 800;
-  color: #1f2430;
+  color: $color-ink-900;
 }
 
 .card-head {
@@ -61,7 +62,7 @@ h2 {
   margin-top: 0.6rem;
   font-size: 0.82rem;
   font-weight: 600;
-  color: #565c6b;
+  color: $color-ink-500;
 
   span {
     display: inline-flex;
@@ -83,6 +84,7 @@ h2 {
   gap: 0.9rem;
 }
 
+
 .mini-bars {
   display: flex;
   align-items: flex-end;
@@ -92,7 +94,7 @@ h2 {
   i {
     width: 5px;
     border-radius: 2px;
-    background: #2563eb;
+    background: $color-brand-600;
     display: block;
 
     &:nth-child(1) {
@@ -113,21 +115,21 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  border: 1px solid #2563eb;
-  color: #2563eb;
-  background: #fff;
-  border-radius: 0.5rem;
+  border: 1px solid $color-brand-600;
+  color: $color-brand-600;
+  background: $color-surface;
+  border-radius: $radius-md;
   padding: 0.55rem 1rem;
   font-weight: 700;
   font-size: 0.85rem;
   cursor: pointer;
   transition:
-    background 0.2s ease,
-    color 0.2s ease;
+    background $ease-base,
+    color $ease-base;
 
   &:hover {
-    background: #2563eb;
-    color: #fff;
+    background: $color-brand-600;
+    color: $color-surface;
   }
 }
 
@@ -157,15 +159,29 @@ h2 {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.9rem;
 
   li {
     display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .legend-head {
+    display: flex;
     align-items: center;
     gap: 0.55rem;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    color: #2b2f3a;
+    color: $color-ink-700;
+  }
+
+  .legend-value {
+    margin-left: 1.15rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: $color-ink-900;
+    font-variant-numeric: tabular-nums;
   }
 
   i {
@@ -173,6 +189,7 @@ h2 {
     height: 12px;
     border-radius: 3px;
     display: inline-block;
+    flex-shrink: 0;
   }
 }
 
@@ -183,7 +200,7 @@ h2 {
   margin-bottom: 1.25rem;
   font-size: 0.85rem;
   font-weight: 600;
-  color: #565c6b;
+  color: $color-ink-500;
 
   span {
     display: inline-flex;
@@ -199,7 +216,7 @@ h2 {
   }
 
   strong {
-    color: #1f2430;
+    color: $color-ink-900;
     font-weight: 800;
   }
 }
@@ -223,7 +240,7 @@ h2 {
 .view-all {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #c81e2c;
+  color: $color-brand-600;
   text-decoration: none;
   cursor: pointer;
 
