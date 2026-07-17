@@ -1,8 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { FormsModule, NgForm } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 import { AuthLayout } from '../../shared/auth-layout/auth-layout';
 import { DilgSeal } from '../../shared/dilg-seal/dilg-seal';
+
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 @Component({
   selector: 'app-register',
@@ -17,15 +19,46 @@ export class Register {
   confirmPassword = '';
 
   readonly showPassword = signal(false);
+  readonly registerError = signal('');
+  readonly emailInvalid = signal(false);
+  readonly passwordMismatch = signal(false);
+
+  constructor(private readonly router: Router) {}
 
   togglePassword(): void {
     this.showPassword.update((value) => !value);
   }
 
-  onSubmit(): void {
-    console.log('Register attempt', {
-      fullName: this.fullName,
-      email: this.email,
-    });
+  onEmailChange(): void {
+    this.emailInvalid.set(false);
+    this.registerError.set('');
+  }
+
+  onPasswordChange(): void {
+    this.passwordMismatch.set(false);
+    this.registerError.set('');
+  }
+
+  onSubmit(form: NgForm): void {
+    this.registerError.set('');
+    this.emailInvalid.set(false);
+    this.passwordMismatch.set(false);
+
+    if (form.invalid) {
+      this.registerError.set('Please fill in all required fields.');
+      return;
+    }
+    if (!EMAIL_PATTERN.test(this.email.trim().toLowerCase())) {
+      this.emailInvalid.set(true);
+      this.registerError.set('Please enter a valid email address.');
+      return;
+    }
+    if (this.password !== this.confirmPassword) {
+      this.passwordMismatch.set(true);
+      this.registerError.set('Passwords do not match.');
+      return;
+    }
+
+    this.router.navigateByUrl('/login');
   }
 }

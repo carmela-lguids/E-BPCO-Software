@@ -34,12 +34,12 @@
 }
 
 .btn-primary {
-  background: $color-brand-600;
-  border: 1px solid $color-brand-600;
+  background: $color-info;
+  border: 1px solid $color-info;
   color: $color-surface;
 
   &:hover {
-    background: $color-brand-700;
+    background: $color-info-700;
   }
 }
 
@@ -167,4 +167,13 @@ tbody tr {
   font-size: 0.85rem;
   font-weight: 700;
   color: $color-ink-700;
+}
+
+.table-empty-row td {
+  text-align: center;
+  padding: 2.5rem 0.75rem;
+  color: $color-ink-300;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: normal;
 }

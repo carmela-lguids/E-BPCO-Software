@@ -64,7 +64,7 @@ export const EVAL_TYPE_CARDS: EvalTypeCard[] = [
   {
     key: 'final',
     title: 'Final Evaluation',
-    description: 'An OBO review for fire and building code compliance.',
+    description: 'A final sign-off confirming the application is ready for permit release.',
     count: 750,
     icon: 'check-circle',
     accent: '#16a34a',
@@ -81,25 +81,38 @@ const BASE: Array<{
   missingDocuments: number;
   type: string;
   dateSubmitted: string;
-  status: RowStatus;
 }> = [
-  { id: '#WA-2026', applicant: 'Raul Villa', missingDocuments: 2, type: 'Residential', dateSubmitted: '12 Apr 2024', status: 'Approved' },
-  { id: '#WA-2025', applicant: 'Fea Sims', missingDocuments: 1, type: 'Commercial', dateSubmitted: '24 Apr 2024', status: 'Pending' },
-  { id: '#WA-2024', applicant: 'David Roderick', missingDocuments: 2, type: 'Renovation', dateSubmitted: '25 Apr 2024', status: 'Approved' },
-  { id: '#WA-2023', applicant: 'James Zavel', missingDocuments: 1, type: 'Renovation', dateSubmitted: '14 Dec 2024', status: 'Approved' },
-  { id: '#WA-2022', applicant: 'Denese Martin', missingDocuments: 1, type: 'Renovation', dateSubmitted: '14 Jan 2024', status: 'Return for Revision' },
-  { id: '#WA-2021', applicant: 'Jack Nunnally', missingDocuments: 1, type: 'Renovation', dateSubmitted: '2 Dec 2024', status: 'Pending' },
-  { id: '#WA-2020', applicant: 'James Zavel', missingDocuments: 3, type: 'Residential', dateSubmitted: '14 Dec 2024', status: 'Approved' },
-  { id: '#WA-2019', applicant: 'Anthony Williams', missingDocuments: 2, type: 'Commercial', dateSubmitted: '1 Jul 2024', status: 'Return for Revision' },
-  { id: '#WA-2018', applicant: 'Axie Barnes', missingDocuments: 2, type: 'Commercial', dateSubmitted: '28 Aug 2024', status: 'Approved' },
-  { id: '#WA-2017', applicant: 'Glen Morning', missingDocuments: 1, type: 'Commercial', dateSubmitted: '30 Aug 2024', status: 'Pending' },
+  { id: '#WA-2026', applicant: 'Raul Villa', missingDocuments: 2, type: 'Residential', dateSubmitted: '12 Apr 2024' },
+  { id: '#WA-2025', applicant: 'Fea Sims', missingDocuments: 1, type: 'Commercial', dateSubmitted: '24 Apr 2024' },
+  { id: '#WA-2024', applicant: 'David Roderick', missingDocuments: 2, type: 'Renovation', dateSubmitted: '25 Apr 2024' },
+  { id: '#WA-2023', applicant: 'James Zavel', missingDocuments: 1, type: 'Renovation', dateSubmitted: '14 Dec 2024' },
+  { id: '#WA-2022', applicant: 'Denese Martin', missingDocuments: 1, type: 'Renovation', dateSubmitted: '14 Jan 2024' },
+  { id: '#WA-2021', applicant: 'Jack Nunnally', missingDocuments: 1, type: 'Renovation', dateSubmitted: '2 Dec 2024' },
+  { id: '#WA-2020', applicant: 'James Zavel', missingDocuments: 3, type: 'Residential', dateSubmitted: '14 Dec 2024' },
+  { id: '#WA-2019', applicant: 'Anthony Williams', missingDocuments: 2, type: 'Commercial', dateSubmitted: '1 Jul 2024' },
+  { id: '#WA-2018', applicant: 'Axie Barnes', missingDocuments: 2, type: 'Commercial', dateSubmitted: '28 Aug 2024' },
+  { id: '#WA-2017', applicant: 'Glen Morning', missingDocuments: 1, type: 'Commercial', dateSubmitted: '30 Aug 2024' },
 ];
 
-export const EVAL_ROWS: EvalRow[] = BASE.map((r, i) => ({
-  ...r,
-  officer: 'Engr. Doe',
-  stage: STAGES[i % STAGES.length],
-}));
+// Status is derived from stage (not stored independently) so a row's badge
+// never contradicts the stage tab it's filed under — e.g. an application
+// filed under "Pending Review" can no longer show an "Approved" badge.
+const STAGE_STATUS: Record<Stage, RowStatus> = {
+  'pending-review': 'Pending',
+  'under-review': 'Pending',
+  returned: 'Return for Revision',
+  passed: 'Approved',
+};
+
+export const EVAL_ROWS: EvalRow[] = BASE.map((r, i) => {
+  const stage = STAGES[i % STAGES.length];
+  return {
+    ...r,
+    officer: 'Engr. Doe',
+    stage,
+    status: STAGE_STATUS[stage],
+  };
+});
 
 export const EVAL_RING_STATS = [
   { label: 'Total Applications', value: '1,749', color: '#2563eb', light: '#dbeafe', pct: 85 },

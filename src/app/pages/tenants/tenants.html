@@ -23,7 +23,12 @@
     <div class="table-toolbar">
       <div class="search-input">
         <app-icon name="search" [size]="16" />
-        <input type="text" placeholder="Search Here By Application ID, Application ..." />
+        <input
+          type="text"
+          placeholder="Search Here By Application ID, Applicant Name, or Location"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+        />
       </div>
       <div class="toolbar-actions">
         <button type="button" class="btn-outline">
@@ -87,12 +92,16 @@
                 </div>
               </td>
             </tr>
+          } @empty {
+            <tr class="table-empty-row">
+              <td colspan="9">No tenants match your search.</td>
+            </tr>
           }
         </tbody>
       </table>
     </div>
 
-    <app-pagination [totalItems]="tenantRows().length" [pageSize]="pageSize" [(page)]="page" />
+    <app-pagination [totalItems]="filteredTenantRows().length" [pageSize]="pageSize" [(page)]="page" />
   </section>
 
   <section class="card subtabs-card">
@@ -257,12 +266,25 @@
           <div class="comm-center-card">
             <h2>Communication Center</h2>
             <p class="comm-subtitle">Broadcast system-wide notices to tenants.</p>
-            <textarea placeholder="Compose an announcement..." rows="7"></textarea>
-            <select class="filter-select full-width">
+            <textarea
+              placeholder="Compose an announcement..."
+              rows="7"
+              [(ngModel)]="announcementText"
+              (ngModelChange)="onAnnouncementChange()"
+            ></textarea>
+            @if (announcementError()) {
+              <p class="field-error">{{ announcementError() }}</p>
+            }
+            @if (announcementSent()) {
+              <p class="field-success">Announcement broadcast to {{ announcementAudience() }}.</p>
+            }
+            <select class="filter-select full-width" [(ngModel)]="announcementAudience">
               <option>All Tenants 150</option>
               <option>Active Tenants Only</option>
             </select>
-            <button type="button" class="btn-primary full-width">Broadcast Notice</button>
+            <button type="button" class="btn-primary full-width" (click)="broadcastNotice()">
+              Broadcast Notice
+            </button>
           </div>
         </div>
       }
@@ -302,7 +324,7 @@
       <div class="card">
         <h2>Contact Person</h2>
         <label class="field-label">Full Name</label>
-        <input class="text-input" type="text" placeholder="Enter Tenant Name" [(ngModel)]="newTenant.contactName" />
+        <input class="text-input" type="text" placeholder="Enter Full Name" [(ngModel)]="newTenant.contactName" />
 
         <label class="field-label">Contact Number</label>
         <input
@@ -370,7 +392,7 @@
       <div class="card">
         <h2>Login Credentials</h2>
         <label class="field-label">User Name</label>
-        <input class="text-input" type="text" placeholder="Enter Tenant Name" [(ngModel)]="newTenant.userName" />
+        <input class="text-input" type="text" placeholder="Enter User Name" [(ngModel)]="newTenant.userName" />
 
         <label class="field-label">Password</label>
         <div class="input-wrap">

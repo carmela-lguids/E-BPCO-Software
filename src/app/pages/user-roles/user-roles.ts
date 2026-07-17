@@ -1,4 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
@@ -173,7 +174,7 @@ const ROLES: RoleRow[] = [
 
 @Component({
   selector: 'app-user-roles',
-  imports: [Topbar, StatCard, Icon, Avatar, Pagination],
+  imports: [Topbar, StatCard, Icon, Avatar, Pagination, FormsModule],
   templateUrl: './user-roles.html',
   styleUrl: './user-roles.scss',
 })
@@ -186,9 +187,14 @@ export class UserRoles {
   protected readonly activeTab = signal<Tab>('users');
   protected readonly page = signal(1);
   protected readonly pageSize = 8;
+  protected readonly searchTerm = signal('');
+  protected readonly roleFilter = signal('All Roles');
+  protected readonly statusFilter = signal('All Statuses');
 
   private readonly users: UserRow[] = buildUsers();
   protected readonly roles: RoleRow[] = ROLES;
+  protected readonly roleOptions = ROLE_ORDER;
+  protected readonly statusOptions: UserStatus[] = ['Active', 'Inactive', 'Pending'];
 
   protected readonly stats: {
     icon: string;
@@ -233,15 +239,35 @@ export class UserRoles {
     },
   ];
 
-  protected readonly totalItems = computed(() => this.users.length);
+  protected readonly filteredUsers = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    const role = this.roleFilter();
+    const status = this.statusFilter();
+    return this.users.filter((u) => {
+      if (role !== 'All Roles' && u.role !== role) return false;
+      if (status !== 'All Statuses' && u.status !== status) return false;
+      if (!term) return true;
+      return (
+        u.name.toLowerCase().includes(term) ||
+        u.email.toLowerCase().includes(term) ||
+        u.role.toLowerCase().includes(term)
+      );
+    });
+  });
+
+  protected readonly totalItems = computed(() => this.filteredUsers().length);
 
   protected readonly pagedUsers = computed(() => {
     const start = (this.page() - 1) * this.pageSize;
-    return this.users.slice(start, start + this.pageSize);
+    return this.filteredUsers().slice(start, start + this.pageSize);
   });
 
   selectTab(tab: Tab): void {
     this.activeTab.set(tab);
+    this.page.set(1);
+  }
+
+  onFilterChange(): void {
     this.page.set(1);
   }
 }

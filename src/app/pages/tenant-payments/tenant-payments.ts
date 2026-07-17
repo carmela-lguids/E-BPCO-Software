@@ -1,4 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -71,11 +72,11 @@ function buildRows(): PaymentRow[] {
     const history: HistoryEntry[] =
       r.status === 'Paid'
         ? [
-            { ref: refNo, amount: '1,400', date: r.dateSubmitted, status: 'Paid', method: r.method, verifiedBy: 'Engr. Doe' },
-            { ref: `0122${8456 + i * 3}`, amount: '1,400', date: r.dateSubmitted, status: 'Unsuccessful', method: 'Maya', verifiedBy: '' },
-            { ref: `0122${8329 + i * 2}`, amount: '1,400', date: r.dateSubmitted, status: 'Unsuccessful', method: 'Maya', verifiedBy: '' },
+            { ref: refNo, amount: '₱1,400', date: r.dateSubmitted, status: 'Paid', method: r.method, verifiedBy: 'Engr. Doe' },
+            { ref: `0122${8456 + i * 3}`, amount: '₱1,400', date: r.dateSubmitted, status: 'Unsuccessful', method: 'Maya', verifiedBy: '' },
+            { ref: `0122${8329 + i * 2}`, amount: '₱1,400', date: r.dateSubmitted, status: 'Unsuccessful', method: 'Maya', verifiedBy: '' },
           ]
-        : [{ ref: `0122${8100 + i * 5}`, amount: '1,400', date: r.dateSubmitted, status: 'Unsuccessful', method: r.method, verifiedBy: '' }];
+        : [{ ref: `0122${8100 + i * 5}`, amount: '₱1,400', date: r.dateSubmitted, status: 'Unsuccessful', method: r.method, verifiedBy: '' }];
 
     return {
       id: r.id,
@@ -84,13 +85,13 @@ function buildRows(): PaymentRow[] {
       region: 'National Capital Region',
       type: r.type,
       dateSubmitted: r.dateSubmitted,
-      amount: 'P1,400',
+      amount: '₱1,400',
       status: r.status,
       verified: r.status === 'Paid',
       verifyResult: r.verifyResult,
       refNo,
       paymentMethod: r.method,
-      fees: { processing: 'P250', zoning: 'P 150', fire: 'P500', obo: 'P500', total: 'P1,400' },
+      fees: { processing: '₱250', zoning: '₱150', fire: '₱500', obo: '₱500', total: '₱1,400' },
       history,
     };
   });
@@ -98,7 +99,7 @@ function buildRows(): PaymentRow[] {
 
 @Component({
   selector: 'app-tenant-payments',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule],
   templateUrl: './tenant-payments.html',
   styleUrl: './tenant-payments.scss',
 })
@@ -113,11 +114,28 @@ export class TenantPayments {
 
   protected readonly page = signal(1);
   protected readonly pageSize = 10;
+  protected readonly searchTerm = signal('');
+
+  protected readonly filteredRows = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    if (!term) return this.rows();
+    return this.rows().filter(
+      (r) =>
+        r.id.toLowerCase().includes(term) ||
+        r.applicant.toLowerCase().includes(term) ||
+        r.city.toLowerCase().includes(term) ||
+        r.type.toLowerCase().includes(term),
+    );
+  });
 
   protected readonly pagedRows = computed(() => {
     const start = (this.page() - 1) * this.pageSize;
-    return this.rows().slice(start, start + this.pageSize);
+    return this.filteredRows().slice(start, start + this.pageSize);
   });
+
+  protected onSearchChange(): void {
+    this.page.set(1);
+  }
 
   protected readonly ringStats: RingStat[] = [
     { label: 'Pending', value: '524', color: '#f59e0b', light: '#fef3c7', pct: 45 },

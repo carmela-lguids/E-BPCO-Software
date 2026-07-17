@@ -34,14 +34,26 @@
       <div class="search-box">
         <app-icon name="search" [size]="16" />
         <label class="sr-only" for="user-search">Search users</label>
-        <input id="user-search" type="text" placeholder="Search name, email, or role..." />
+        <input
+          id="user-search"
+          type="text"
+          placeholder="Search name, email, or role..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onFilterChange()"
+        />
       </div>
 
-      <select class="filter-select">
+      <select class="filter-select" [(ngModel)]="roleFilter" (ngModelChange)="onFilterChange()">
         <option>All Roles</option>
+        @for (role of roleOptions; track role) {
+          <option>{{ role }}</option>
+        }
       </select>
-      <select class="filter-select">
+      <select class="filter-select" [(ngModel)]="statusFilter" (ngModelChange)="onFilterChange()">
         <option>All Statuses</option>
+        @for (status of statusOptions; track status) {
+          <option>{{ status }}</option>
+        }
       </select>
 
       <div class="spacer"></div>
@@ -101,6 +113,10 @@
                   <app-icon name="trash" [size]="14" />
                 </button>
               </td>
+            </tr>
+          } @empty {
+            <tr class="table-empty-row">
+              <td colspan="6">No users match your search.</td>
             </tr>
           }
         </tbody>

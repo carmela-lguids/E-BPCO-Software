@@ -141,18 +141,36 @@ export class Tenants {
   protected readonly tenantRows = signal<TenantRow[]>(buildTenantRows(12));
   protected readonly page = signal(1);
   protected readonly pageSize = 10;
+  protected readonly searchTerm = signal('');
+
+  protected readonly filteredTenantRows = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    if (!term) return this.tenantRows();
+    return this.tenantRows().filter(
+      (r) =>
+        r.id.toLowerCase().includes(term) ||
+        r.code.toLowerCase().includes(term) ||
+        r.city.toLowerCase().includes(term) ||
+        r.contactName.toLowerCase().includes(term) ||
+        r.subdomain.toLowerCase().includes(term),
+    );
+  });
 
   protected readonly pagedTenantRows = computed(() => {
     const start = (this.page() - 1) * this.pageSize;
-    return this.tenantRows().slice(start, start + this.pageSize);
+    return this.filteredTenantRows().slice(start, start + this.pageSize);
   });
+
+  protected onSearchChange(): void {
+    this.page.set(1);
+  }
 
   protected readonly moduleUsage: ModuleUsage[] = [
     { name: 'Initial Evaluation', tenantCount: 122, pct: 30, color: '#7c3aed' },
     { name: 'Zoning Evaluation', tenantCount: 122, pct: 50, color: '#f59e0b' },
     { name: 'Fire Safety Evaluation', tenantCount: 75, pct: 60, color: '#2563eb' },
     { name: 'OBO Evaluation', tenantCount: 32, pct: 80, color: '#16a34a' },
-    { name: 'Localization evaluation', tenantCount: 22, pct: 30, color: '#991b1b' },
+    { name: 'Final Evaluation', tenantCount: 22, pct: 30, color: '#991b1b' },
   ];
 
   protected readonly recentActivity: ActivityItem[] = [
@@ -185,6 +203,27 @@ export class Tenants {
       color: '#a78bfa',
     },
   ];
+
+  protected readonly announcementText = signal('');
+  protected readonly announcementAudience = signal('All Tenants 150');
+  protected readonly announcementError = signal('');
+  protected readonly announcementSent = signal(false);
+
+  broadcastNotice(): void {
+    if (!this.announcementText().trim()) {
+      this.announcementError.set('Write an announcement before broadcasting.');
+      this.announcementSent.set(false);
+      return;
+    }
+    this.announcementError.set('');
+    this.announcementText.set('');
+    this.announcementSent.set(true);
+  }
+
+  onAnnouncementChange(): void {
+    this.announcementError.set('');
+    this.announcementSent.set(false);
+  }
 
   protected readonly growthPoints = GROWTH_POINTS;
 

@@ -73,9 +73,11 @@ function buildBaseRows(count: number): BaseRow[] {
 }
 
 function timestampFor(i: number, base: BaseRow): string {
-  const hour = 8 + (i % 10);
+  const hour24 = 8 + (i % 10);
   const minute = (i * 7) % 60;
-  return `${base.date} ${hour}:${minute.toString().padStart(2, '0')} ${i % 2 === 0 ? 'AM' : 'PM'}`;
+  const period = hour24 >= 12 ? 'PM' : 'AM';
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
+  return `${base.date} ${hour12}:${minute.toString().padStart(2, '0')} ${period}`;
 }
 
 function severityFor(i: number): 'Critical' | 'Warning' | 'Info' {
@@ -344,7 +346,7 @@ export class SystemLogs {
         icon: 'lock',
         iconBg: '#dc2626',
         tint: 'tint-red',
-        label: 'Failed Login Attemps',
+        label: 'Failed Login Attempts',
         value: '23',
         delta: { text: '8.6% vs yesterday', direction: 'up', tone: 'bad' },
       },

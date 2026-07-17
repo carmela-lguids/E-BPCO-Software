@@ -23,7 +23,12 @@
     <div class="table-toolbar">
       <div class="search-input">
         <app-icon name="search" [size]="16" />
-        <input type="text" placeholder="Search Here By Application ID, Application ..." />
+        <input
+          type="text"
+          placeholder="Search Here By Application ID, Applicant Name, or Location"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onSearchChange()"
+        />
       </div>
       <div class="toolbar-actions">
         <button type="button" class="btn-outline">
@@ -89,12 +94,16 @@
                 </div>
               </td>
             </tr>
+          } @empty {
+            <tr class="table-empty-row">
+              <td colspan="9">No payments match your search.</td>
+            </tr>
           }
         </tbody>
       </table>
     </div>
 
-    <app-pagination [totalItems]="rows().length" [pageSize]="pageSize" [(page)]="page" />
+    <app-pagination [totalItems]="filteredRows().length" [pageSize]="pageSize" [(page)]="page" />
   </section>
 } @else if (selectedRow(); as row) {
   <div class="detail-head">

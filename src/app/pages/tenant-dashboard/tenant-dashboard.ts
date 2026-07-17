@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -34,7 +35,7 @@ interface ApplicationRow {
 
 @Component({
   selector: 'app-tenant-dashboard',
-  imports: [Topbar, Icon, Avatar, DonutChart, StackedBarChart, HBarChart],
+  imports: [Topbar, Icon, Avatar, DonutChart, StackedBarChart, HBarChart, FormsModule],
   templateUrl: './tenant-dashboard.html',
   styleUrl: './tenant-dashboard.scss',
 })
@@ -151,4 +152,18 @@ export class TenantDashboard {
       status: 'Approved',
     },
   ];
+
+  protected readonly searchTerm = signal('');
+
+  protected readonly filteredApplications = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    if (!term) return this.applications;
+    return this.applications.filter(
+      (r) =>
+        r.id.toLowerCase().includes(term) ||
+        r.applicant.toLowerCase().includes(term) ||
+        r.location.toLowerCase().includes(term) ||
+        r.type.toLowerCase().includes(term),
+    );
+  });
 }

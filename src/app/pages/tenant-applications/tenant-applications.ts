@@ -1,4 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -70,7 +71,7 @@ interface RingStat {
 
 @Component({
   selector: 'app-tenant-applications',
-  imports: [Topbar, Icon, Avatar, DilgSeal, DonutChart, Pagination],
+  imports: [Topbar, Icon, Avatar, DilgSeal, DonutChart, Pagination, FormsModule],
   templateUrl: './tenant-applications.html',
   styleUrl: './tenant-applications.scss',
 })
@@ -99,11 +100,28 @@ export class TenantApplications {
 
   protected readonly page = signal(1);
   protected readonly pageSize = 10;
+  protected readonly searchTerm = signal('');
+
+  protected readonly filteredRows = computed(() => {
+    const term = this.searchTerm().trim().toLowerCase();
+    if (!term) return this.rows;
+    return this.rows.filter(
+      (r) =>
+        r.id.toLowerCase().includes(term) ||
+        r.applicant.toLowerCase().includes(term) ||
+        r.city.toLowerCase().includes(term) ||
+        r.type.toLowerCase().includes(term),
+    );
+  });
 
   protected readonly pagedRows = computed(() => {
     const start = (this.page() - 1) * this.pageSize;
-    return this.rows.slice(start, start + this.pageSize);
+    return this.filteredRows().slice(start, start + this.pageSize);
   });
+
+  protected onSearchChange(): void {
+    this.page.set(1);
+  }
 
   protected readonly view = signal<View>('list');
   protected readonly detailTab = signal<DetailTab>('timeline');
