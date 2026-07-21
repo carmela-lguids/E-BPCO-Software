@@ -1,5 +1,6 @@
 @use '../../shared/styles/data-table';
 @use '../../shared/styles/ring-stats';
+@use '../../shared/styles/modal';
 @use '../../shared/styles/tokens' as *;
 
 @keyframes section-in {
@@ -281,9 +282,21 @@
   font-weight: 600;
 }
 
-.status-pill.return-for-revision {
+.status-pill.return-for-revision,
+.status-pill.missing {
   background: #fee2e2;
   color: #dc2626;
+}
+
+.review-checklist-heading {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: #1f2430;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.review-checklist-table {
+  min-width: 0;
 }
 
 .actions-cell {

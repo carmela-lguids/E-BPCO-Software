@@ -1,5 +1,6 @@
 @use '../../shared/styles/data-table';
 @use '../../shared/styles/ring-stats';
+@use '../../shared/styles/modal';
 @use '../../shared/styles/tokens' as *;
 
 @keyframes section-in {
@@ -87,7 +88,7 @@ h2 {
   i {
     width: 5px;
     border-radius: 2px;
-    background: $color-brand-600;
+    background: $color-info;
     display: block;
 
     &:nth-child(1) {
@@ -108,8 +109,8 @@ h2 {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  border: 1px solid $color-brand-600;
-  color: $color-brand-600;
+  border: 1px solid $color-info;
+  color: $color-info;
   background: $color-surface;
   border-radius: $radius-md;
   padding: 0.55rem 1rem;
@@ -121,7 +122,7 @@ h2 {
     color $ease-base;
 
   &:hover {
-    background: $color-brand-600;
+    background: $color-info;
     color: $color-surface;
   }
 }
@@ -282,7 +283,7 @@ h2 {
 .view-all {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #c81e2c;
+  color: #2563eb;
   text-decoration: none;
   cursor: pointer;
 

@@ -143,9 +143,15 @@
               <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
             </td>
             <td class="actions-cell">
-              <button type="button" class="icon-btn view"><app-icon name="eye" [size]="15" /></button>
-              <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="15" /></button>
-              <button type="button" class="icon-btn del"><app-icon name="dots-vertical" [size]="15" /></button>
+              <button type="button" class="icon-btn view" (click)="viewAppRow(row)">
+                <app-icon name="eye" [size]="15" />
+              </button>
+              <button type="button" class="icon-btn edit" (click)="editAppRow(row)">
+                <app-icon name="edit" [size]="15" />
+              </button>
+              <button type="button" class="icon-btn del" (click)="deleteAppRow(row)">
+                <app-icon name="dots-vertical" [size]="15" />
+              </button>
             </td>
           </tr>
         } @empty {
@@ -159,3 +165,83 @@
 
   <p class="table-footer">Showing 1-7 from 196 Applications</p>
 </section>
+
+@if (appRowModal() === 'view') {
+  @if (selectedAppRow(); as row) {
+    <div class="modal-backdrop" (click)="closeAppRowModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeAppRowModal()">&#10005;</button>
+        <h2>Application Details</h2>
+        <dl class="kv-list">
+          <div><dt>Application ID</dt><dd>{{ row.id }}</dd></div>
+          <div><dt>Applicant Name</dt><dd>{{ row.applicant }}</dd></div>
+          <div><dt>Location</dt><dd>{{ row.location }}</dd></div>
+          <div><dt>Type</dt><dd>{{ row.type }}</dd></div>
+          <div><dt>Date Submitted</dt><dd>{{ row.dateSubmitted }}</dd></div>
+          <div><dt>Assigned Officer</dt><dd>{{ row.officer }}</dd></div>
+          <div><dt>Status</dt><dd>{{ row.status }}</dd></div>
+        </dl>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" (click)="closeAppRowModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (appRowModal() === 'edit') {
+  @if (selectedAppRow()) {
+    <div class="modal-backdrop" (click)="closeAppRowModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeAppRowModal()">&#10005;</button>
+        <h2>Edit Application</h2>
+        <div class="form-grid">
+          <div>
+            <label for="edit-tdapp-applicant">Applicant Name</label>
+            <input id="edit-tdapp-applicant" type="text" [(ngModel)]="editAppRowForm.applicant" />
+          </div>
+          <div>
+            <label for="edit-tdapp-location">Location</label>
+            <input id="edit-tdapp-location" type="text" [(ngModel)]="editAppRowForm.location" />
+          </div>
+          <div>
+            <label for="edit-tdapp-type">Type</label>
+            <input id="edit-tdapp-type" type="text" [(ngModel)]="editAppRowForm.type" />
+          </div>
+          <div>
+            <label for="edit-tdapp-officer">Assigned Officer</label>
+            <input id="edit-tdapp-officer" type="text" [(ngModel)]="editAppRowForm.officer" />
+          </div>
+          <div>
+            <label for="edit-tdapp-status">Status</label>
+            <select id="edit-tdapp-status" [(ngModel)]="editAppRowForm.status">
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="saveAppRow()">Save Changes</button>
+          <button type="button" class="modal-btn cancel" (click)="closeAppRowModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (appRowModal() === 'delete') {
+  @if (selectedAppRow(); as row) {
+    <div class="modal-backdrop" (click)="closeAppRowModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeAppRowModal()">&#10005;</button>
+        <h2>Delete Application {{ row.id }}?</h2>
+        <p>This will permanently remove this application record. This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="confirmDeleteAppRow()">Yes, Delete</button>
+          <button type="button" class="modal-btn cancel" (click)="closeAppRowModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}

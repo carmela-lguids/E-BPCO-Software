@@ -1261,6 +1261,7 @@ h3 {
 
   &.return,
   &.reject,
+  &.rejected,
   &.missing {
     color: $color-danger;
   }

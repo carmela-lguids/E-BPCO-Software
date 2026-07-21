@@ -10,7 +10,9 @@ import {
   EVAL_ROWS,
   EVAL_RING_STATS,
   STAGE_TABS,
+  MOCK_REVIEW_CHECKLIST,
   EvalTypeCard,
+  EvalRow,
   Stage,
 } from './evaluations-data';
 
@@ -80,5 +82,17 @@ export class TenantEvaluations {
   backToList(): void {
     this.view.set('list');
     this.selectedCard.set(null);
+  }
+
+  // --- Review modal (mock example — no per-row detail data on this page) ---
+  protected readonly reviewChecklist = MOCK_REVIEW_CHECKLIST;
+  protected readonly reviewRow = signal<EvalRow | null>(null);
+
+  openReview(row: EvalRow): void {
+    this.reviewRow.set(row);
+  }
+
+  closeReview(): void {
+    this.reviewRow.set(null);
   }
 }

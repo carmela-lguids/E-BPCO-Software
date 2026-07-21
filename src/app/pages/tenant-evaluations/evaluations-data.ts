@@ -127,3 +127,19 @@ export const STAGE_TABS: { key: Stage; label: string; icon: string }[] = [
   { key: 'returned', label: 'Returned', icon: 'alert-triangle' },
   { key: 'passed', label: 'Passed', icon: 'check-circle' },
 ];
+
+export interface ReviewChecklistItem {
+  label: string;
+  filename: string;
+  status: 'Approved' | 'Pending' | 'Missing';
+}
+
+// A representative checklist used to mock out the "Review" modal — every
+// row shows the same example set since the app has no per-row document
+// data on this page.
+export const MOCK_REVIEW_CHECKLIST: ReviewChecklistItem[] = [
+  { label: 'Site Development Plan', filename: 'Site_Dev.pdf', status: 'Approved' },
+  { label: 'Building Plans', filename: 'Buildingplans.pdf', status: 'Approved' },
+  { label: 'Proof of Ownership', filename: 'Landtitle.pdf', status: 'Pending' },
+  { label: 'Barangay Clearance', filename: 'BarangayClearance.pdf', status: 'Missing' },
+];

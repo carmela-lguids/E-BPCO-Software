@@ -1,4 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
@@ -32,7 +33,18 @@ interface TenantApplication {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [Topbar, StatCard, Icon, DonutChart, StackedBarChart, BarList, AreaChart, Avatar, Pagination],
+  imports: [
+    Topbar,
+    StatCard,
+    Icon,
+    DonutChart,
+    StackedBarChart,
+    BarList,
+    AreaChart,
+    Avatar,
+    Pagination,
+    FormsModule,
+  ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
@@ -127,7 +139,7 @@ export class Dashboard {
     return this.tenantRows.slice(start, start + this.tenantPageSize);
   });
 
-  protected readonly recentTenants: TenantApplication[] = [
+  protected readonly recentTenants = signal<TenantApplication[]>([
     {
       id: '#WA-2026',
       applicant: 'Raul Villa',
@@ -191,5 +203,54 @@ export class Dashboard {
       officer: 'Engr. Doe',
       status: 'Approved',
     },
-  ];
+  ]);
+
+  // --- Recent tenants row actions (view / edit / delete) ---
+  protected readonly tenantAppModal = signal<'view' | 'edit' | 'delete' | null>(null);
+  protected readonly selectedTenantApp = signal<TenantApplication | null>(null);
+  protected editTenantAppForm: TenantApplication = {
+    id: '',
+    applicant: '',
+    location: '',
+    type: '',
+    dateSubmitted: '',
+    officer: '',
+    status: 'Pending',
+  };
+
+  viewTenantApp(row: TenantApplication): void {
+    this.selectedTenantApp.set(row);
+    this.tenantAppModal.set('view');
+  }
+
+  editTenantApp(row: TenantApplication): void {
+    this.selectedTenantApp.set(row);
+    this.editTenantAppForm = { ...row };
+    this.tenantAppModal.set('edit');
+  }
+
+  deleteTenantApp(row: TenantApplication): void {
+    this.selectedTenantApp.set(row);
+    this.tenantAppModal.set('delete');
+  }
+
+  closeTenantAppModal(): void {
+    this.tenantAppModal.set(null);
+    this.selectedTenantApp.set(null);
+  }
+
+  saveTenantApp(): void {
+    const original = this.selectedTenantApp();
+    if (!original) return;
+    const updated = { ...this.editTenantAppForm };
+    this.recentTenants.update((list) => list.map((r) => (r === original ? updated : r)));
+    this.closeTenantAppModal();
+  }
+
+  confirmDeleteTenantApp(): void {
+    const original = this.selectedTenantApp();
+    if (!original) return;
+    this.recentTenants.update((list) => list.filter((r) => r !== original));
+    this.closeTenantAppModal();
+  }
 }

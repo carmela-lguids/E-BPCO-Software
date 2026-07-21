@@ -87,7 +87,7 @@ export class TenantDashboard {
     },
   ];
 
-  protected readonly applications: ApplicationRow[] = [
+  protected readonly applications = signal<ApplicationRow[]>([
     {
       id: '#WA-2026',
       applicant: 'Raul Villa',
@@ -151,14 +151,15 @@ export class TenantDashboard {
       officer: 'Engr. Doe',
       status: 'Approved',
     },
-  ];
+  ]);
 
   protected readonly searchTerm = signal('');
 
   protected readonly filteredApplications = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
-    if (!term) return this.applications;
-    return this.applications.filter(
+    const rows = this.applications();
+    if (!term) return rows;
+    return rows.filter(
       (r) =>
         r.id.toLowerCase().includes(term) ||
         r.applicant.toLowerCase().includes(term) ||
@@ -166,4 +167,53 @@ export class TenantDashboard {
         r.type.toLowerCase().includes(term),
     );
   });
+
+  // --- Recent applications row actions (view / edit / delete) ---
+  protected readonly appRowModal = signal<'view' | 'edit' | 'delete' | null>(null);
+  protected readonly selectedAppRow = signal<ApplicationRow | null>(null);
+  protected editAppRowForm: ApplicationRow = {
+    id: '',
+    applicant: '',
+    location: '',
+    type: '',
+    dateSubmitted: '',
+    officer: '',
+    status: 'Pending',
+  };
+
+  viewAppRow(row: ApplicationRow): void {
+    this.selectedAppRow.set(row);
+    this.appRowModal.set('view');
+  }
+
+  editAppRow(row: ApplicationRow): void {
+    this.selectedAppRow.set(row);
+    this.editAppRowForm = { ...row };
+    this.appRowModal.set('edit');
+  }
+
+  deleteAppRow(row: ApplicationRow): void {
+    this.selectedAppRow.set(row);
+    this.appRowModal.set('delete');
+  }
+
+  closeAppRowModal(): void {
+    this.appRowModal.set(null);
+    this.selectedAppRow.set(null);
+  }
+
+  saveAppRow(): void {
+    const original = this.selectedAppRow();
+    if (!original) return;
+    const updated = { ...this.editAppRowForm };
+    this.applications.update((list) => list.map((r) => (r === original ? updated : r)));
+    this.closeAppRowModal();
+  }
+
+  confirmDeleteAppRow(): void {
+    const original = this.selectedAppRow();
+    if (!original) return;
+    this.applications.update((list) => list.filter((r) => r !== original));
+    this.closeAppRowModal();
+  }
 }

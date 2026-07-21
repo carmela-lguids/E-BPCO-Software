@@ -84,8 +84,12 @@
                   <button type="button" class="icon-btn view" (click)="openDetail(row)">
                     <app-icon name="eye" [size]="15" />
                   </button>
-                  <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="15" /></button>
-                  <button type="button" class="icon-btn del"><app-icon name="dots-vertical" [size]="15" /></button>
+                  <button type="button" class="icon-btn edit" (click)="editRow(row)">
+                    <app-icon name="edit" [size]="15" />
+                  </button>
+                  <button type="button" class="icon-btn del" (click)="deleteRow(row)">
+                    <app-icon name="dots-vertical" [size]="15" />
+                  </button>
                 </div>
               </td>
             </tr>
@@ -261,7 +265,11 @@
                       <td>
                         <span class="status-pill" [class]="d.status.toLowerCase()">{{ d.status }}</span>
                       </td>
-                      <td><button type="button" class="preview-btn">Preview</button></td>
+                      <td>
+                        <button type="button" class="preview-btn" (click)="openDocumentPreview(d)">
+                          Preview
+                        </button>
+                      </td>
                     </tr>
                   }
                 </tbody>
@@ -783,4 +791,109 @@
       </div>
     </div>
   </div>
+}
+
+@if (previewDocument(); as doc) {
+  <div class="modal-backdrop" (click)="closeDocumentPreview()">
+    <div class="modal-box doc-preview-box" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeDocumentPreview()">&#10005;</button>
+
+      <h2>{{ doc.name }}</h2>
+      <p class="doc-preview-filename">{{ doc.filename }}</p>
+
+      <div class="doc-preview-sheet">
+        <span class="sheet-watermark" [class]="doc.status.toLowerCase()">{{ doc.status }}</span>
+
+        <div class="sheet-header">
+          <app-dilg-seal [size]="36" />
+          <div>
+            <strong>Republic of the Philippines</strong>
+            <span>Office of the Building Official</span>
+          </div>
+        </div>
+
+        <h3>{{ doc.name }}</h3>
+
+        <div class="sheet-row"><span>Document No.</span><strong>DOC-{{ doc.filename.length }}2026</strong></div>
+        <div class="sheet-row"><span>Date Uploaded</span><strong>{{ doc.uploadedDate }}</strong></div>
+        <div class="sheet-row"><span>File Name</span><strong>{{ doc.filename }}</strong></div>
+
+        <div class="sheet-lines">
+          <span></span>
+          <span></span>
+          <span class="short"></span>
+        </div>
+
+        <div class="sheet-signature">
+          <div class="sig-line"></div>
+          <span>Authorized Signature</span>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn cancel" (click)="closeDocumentPreview()">Close</button>
+        <button type="button" class="modal-btn confirm">
+          <app-icon name="download" [size]="15" />
+          Download
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (rowModal() === 'edit') {
+  @if (modalRow()) {
+    <div class="modal-backdrop" (click)="closeRowModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeRowModal()">&#10005;</button>
+        <h2>Edit Application</h2>
+        <div class="form-grid">
+          <div>
+            <label for="edit-appl-applicant">Applicant Name</label>
+            <input id="edit-appl-applicant" type="text" [(ngModel)]="editRowForm.applicant" />
+          </div>
+          <div>
+            <label for="edit-appl-city">Location</label>
+            <input id="edit-appl-city" type="text" [(ngModel)]="editRowForm.city" />
+          </div>
+          <div>
+            <label for="edit-appl-type">Type</label>
+            <input id="edit-appl-type" type="text" [(ngModel)]="editRowForm.type" />
+          </div>
+          <div>
+            <label for="edit-appl-officer">Assigned Officer</label>
+            <input id="edit-appl-officer" type="text" [(ngModel)]="editRowForm.officer" />
+          </div>
+          <div>
+            <label for="edit-appl-status">Status</label>
+            <select id="edit-appl-status" [(ngModel)]="editRowForm.status">
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="saveRow()">Save Changes</button>
+          <button type="button" class="modal-btn cancel" (click)="closeRowModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (rowModal() === 'delete') {
+  @if (modalRow(); as row) {
+    <div class="modal-backdrop" (click)="closeRowModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeRowModal()">&#10005;</button>
+        <h2>Delete Application {{ row.id }}?</h2>
+        <p>This will permanently remove this application record. This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="confirmDeleteRow()">Yes, Delete</button>
+          <button type="button" class="modal-btn cancel" (click)="closeRowModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
 }

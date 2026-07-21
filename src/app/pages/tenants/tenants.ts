@@ -348,4 +348,55 @@ export class Tenants {
     this.view.set('list');
     this.page.set(1);
   }
+
+  // --- Tenant row actions (view / edit / delete) ---
+  protected readonly tenantModal = signal<'view' | 'edit' | 'delete' | null>(null);
+  protected readonly selectedTenant = signal<TenantRow | null>(null);
+  protected editTenantForm: TenantRow = {
+    id: '',
+    code: '',
+    city: '',
+    contactName: '',
+    contactPhone: '',
+    subdomain: '',
+    dateCreated: '',
+    userCount: 0,
+    status: 'Active',
+  };
+
+  viewTenant(row: TenantRow): void {
+    this.selectedTenant.set(row);
+    this.tenantModal.set('view');
+  }
+
+  editTenant(row: TenantRow): void {
+    this.selectedTenant.set(row);
+    this.editTenantForm = { ...row };
+    this.tenantModal.set('edit');
+  }
+
+  deleteTenant(row: TenantRow): void {
+    this.selectedTenant.set(row);
+    this.tenantModal.set('delete');
+  }
+
+  closeTenantModal(): void {
+    this.tenantModal.set(null);
+    this.selectedTenant.set(null);
+  }
+
+  saveTenant(): void {
+    const original = this.selectedTenant();
+    if (!original) return;
+    const updated = { ...this.editTenantForm };
+    this.tenantRows.update((list) => list.map((r) => (r === original ? updated : r)));
+    this.closeTenantModal();
+  }
+
+  confirmDeleteTenant(): void {
+    const original = this.selectedTenant();
+    if (!original) return;
+    this.tenantRows.update((list) => list.filter((r) => r !== original));
+    this.closeTenantModal();
+  }
 }

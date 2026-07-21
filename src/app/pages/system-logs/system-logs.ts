@@ -1,4 +1,5 @@
 import { Component, computed, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
@@ -185,9 +186,11 @@ export interface SystemEventRow {
   status: 'Active' | 'Inactive';
 }
 
+type AnyLogRow = ActivityRow | AccessRow | ErrorRow | SecurityRow | SystemEventRow;
+
 @Component({
   selector: 'app-system-logs',
-  imports: [Topbar, StatCard, Icon, Pagination],
+  imports: [Topbar, StatCard, Icon, Pagination, FormsModule],
   templateUrl: './system-logs.html',
   styleUrl: './system-logs.scss',
 })
@@ -419,7 +422,7 @@ export class SystemLogs {
     ],
   };
 
-  private readonly activityRows: ActivityRow[] = BASE_ROWS.map((r, i) => ({
+  private readonly activityRows = signal<ActivityRow[]>(BASE_ROWS.map((r, i) => ({
     timestamp: timestampFor(i, r),
     eventType: ACTIVITY_EVENTS[i % ACTIVITY_EVENTS.length],
     description: `${r.name} triggered ${ACTIVITY_EVENTS[i % ACTIVITY_EVENTS.length].toLowerCase()}`,
@@ -429,9 +432,9 @@ export class SystemLogs {
     ip: r.ip,
     status: r.status,
     severity: severityFor(i),
-  }));
+  })));
 
-  private readonly accessRows: AccessRow[] = BASE_ROWS.map((r, i) => ({
+  private readonly accessRows = signal<AccessRow[]>(BASE_ROWS.map((r, i) => ({
     timestamp: timestampFor(i, r),
     user: r.name,
     tenant: r.city,
@@ -441,9 +444,9 @@ export class SystemLogs {
     device: DEVICES[i % DEVICES.length],
     location: r.city,
     sessionDuration: `${5 + (i % 50)}m`,
-  }));
+  })));
 
-  private readonly errorRows: ErrorRow[] = BASE_ROWS.map((r, i) => ({
+  private readonly errorRows = signal<ErrorRow[]>(BASE_ROWS.map((r, i) => ({
     timestamp: timestampFor(i, r),
     errorType: ERROR_TYPES[i % ERROR_TYPES.length],
     message: ERROR_MESSAGES[i % ERROR_MESSAGES.length],
@@ -453,9 +456,9 @@ export class SystemLogs {
     status: r.status,
     severity: severityFor(i),
     requestId: `REQ-${10000 + i}`,
-  }));
+  })));
 
-  private readonly securityRows: SecurityRow[] = BASE_ROWS.map((r, i) => ({
+  private readonly securityRows = signal<SecurityRow[]>(BASE_ROWS.map((r, i) => ({
     timestamp: timestampFor(i, r),
     eventType: SECURITY_EVENTS[i % SECURITY_EVENTS.length],
     user: r.name,
@@ -465,9 +468,9 @@ export class SystemLogs {
     environment: i % 2 === 0 ? 'Production' : 'Staging',
     severity: severityFor(i),
     status: r.status,
-  }));
+  })));
 
-  private readonly eventRows: SystemEventRow[] = BASE_ROWS.map((r, i) => ({
+  private readonly eventRows = signal<SystemEventRow[]>(BASE_ROWS.map((r, i) => ({
     timestamp: timestampFor(i, r),
     eventType: SYSTEM_EVENTS[i % SYSTEM_EVENTS.length],
     event: `${SYSTEM_EVENTS[i % SYSTEM_EVENTS.length]} on ${MODULES[i % MODULES.length]}`,
@@ -476,22 +479,22 @@ export class SystemLogs {
     environment: i % 2 === 0 ? 'Production' : 'Staging',
     severity: severityFor(i),
     status: r.status,
-  }));
+  })));
 
   protected readonly currentStats = computed(() => this.statsByTab[this.activeTab()]);
 
   protected readonly totalItems = computed(() => {
     switch (this.activeTab()) {
       case 'activity':
-        return this.activityRows.length;
+        return this.activityRows().length;
       case 'access':
-        return this.accessRows.length;
+        return this.accessRows().length;
       case 'error':
-        return this.errorRows.length;
+        return this.errorRows().length;
       case 'security':
-        return this.securityRows.length;
+        return this.securityRows().length;
       case 'events':
-        return this.eventRows.length;
+        return this.eventRows().length;
     }
   });
 
@@ -500,11 +503,11 @@ export class SystemLogs {
     return rows.slice(start, start + this.pageSize);
   }
 
-  protected readonly pagedActivityRows = computed(() => this.slice(this.activityRows));
-  protected readonly pagedAccessRows = computed(() => this.slice(this.accessRows));
-  protected readonly pagedErrorRows = computed(() => this.slice(this.errorRows));
-  protected readonly pagedSecurityRows = computed(() => this.slice(this.securityRows));
-  protected readonly pagedEventRows = computed(() => this.slice(this.eventRows));
+  protected readonly pagedActivityRows = computed(() => this.slice(this.activityRows()));
+  protected readonly pagedAccessRows = computed(() => this.slice(this.accessRows()));
+  protected readonly pagedErrorRows = computed(() => this.slice(this.errorRows()));
+  protected readonly pagedSecurityRows = computed(() => this.slice(this.securityRows()));
+  protected readonly pagedEventRows = computed(() => this.slice(this.eventRows()));
 
   protected readonly liveStream = signal(true);
 
@@ -515,5 +518,95 @@ export class SystemLogs {
 
   toggleLiveStream(): void {
     this.liveStream.update((v) => !v);
+  }
+
+  // --- Row actions (view / edit / delete) — generic across all 5 log tables ---
+  protected readonly logModal = signal<'view' | 'edit' | 'delete' | null>(null);
+  protected readonly selectedLogRow = signal<AnyLogRow | null>(null);
+  private selectedLogTab: LogTabKey = 'activity';
+  protected editLogForm: Record<string, string> = {};
+
+  protected readonly logFieldKeys = computed(() => {
+    const row = this.selectedLogRow();
+    return row ? Object.keys(row) : [];
+  });
+
+  protected fieldValue(row: AnyLogRow, key: string): string {
+    return String((row as unknown as Record<string, unknown>)[key]);
+  }
+
+  protected labelFor(key: string): string {
+    const spaced = key.replace(/([A-Z])/g, ' $1');
+    return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+  }
+
+  protected isSelectField(key: string): boolean {
+    return key === 'status' || key === 'severity';
+  }
+
+  protected selectOptionsFor(key: string): string[] {
+    if (key === 'status') return ['Active', 'Inactive'];
+    if (key === 'severity') return ['Critical', 'Warning', 'Info'];
+    return [];
+  }
+
+  viewLogRow(row: AnyLogRow): void {
+    this.selectedLogRow.set(row);
+    this.selectedLogTab = this.activeTab();
+    this.logModal.set('view');
+  }
+
+  editLogRow(row: AnyLogRow): void {
+    this.selectedLogRow.set(row);
+    this.selectedLogTab = this.activeTab();
+    this.editLogForm = Object.fromEntries(
+      Object.entries(row).map(([k, v]) => [k, String(v)]),
+    );
+    this.logModal.set('edit');
+  }
+
+  deleteLogRow(row: AnyLogRow): void {
+    this.selectedLogRow.set(row);
+    this.selectedLogTab = this.activeTab();
+    this.logModal.set('delete');
+  }
+
+  closeLogModal(): void {
+    this.logModal.set(null);
+    this.selectedLogRow.set(null);
+  }
+
+  private rowsSignalFor(tab: LogTabKey) {
+    switch (tab) {
+      case 'activity':
+        return this.activityRows;
+      case 'access':
+        return this.accessRows;
+      case 'error':
+        return this.errorRows;
+      case 'security':
+        return this.securityRows;
+      case 'events':
+        return this.eventRows;
+    }
+  }
+
+  saveLogRow(): void {
+    const original = this.selectedLogRow();
+    if (!original) return;
+    const updated = { ...original, ...this.editLogForm };
+    const rowsSignal = this.rowsSignalFor(this.selectedLogTab);
+    (rowsSignal as any).update((list: AnyLogRow[]) =>
+      list.map((r) => (r === original ? updated : r)),
+    );
+    this.closeLogModal();
+  }
+
+  confirmDeleteLogRow(): void {
+    const original = this.selectedLogRow();
+    if (!original) return;
+    const rowsSignal = this.rowsSignalFor(this.selectedLogTab);
+    (rowsSignal as any).update((list: AnyLogRow[]) => list.filter((r) => r !== original));
+    this.closeLogModal();
   }
 }

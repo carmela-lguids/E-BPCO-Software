@@ -191,8 +191,8 @@ export class UserRoles {
   protected readonly roleFilter = signal('All Roles');
   protected readonly statusFilter = signal('All Statuses');
 
-  private readonly users: UserRow[] = buildUsers();
-  protected readonly roles: RoleRow[] = ROLES;
+  private readonly users = signal<UserRow[]>(buildUsers());
+  protected readonly roles = signal<RoleRow[]>(ROLES);
   protected readonly roleOptions = ROLE_ORDER;
   protected readonly statusOptions: UserStatus[] = ['Active', 'Inactive', 'Pending'];
 
@@ -243,7 +243,7 @@ export class UserRoles {
     const term = this.searchTerm().trim().toLowerCase();
     const role = this.roleFilter();
     const status = this.statusFilter();
-    return this.users.filter((u) => {
+    return this.users().filter((u) => {
       if (role !== 'All Roles' && u.role !== role) return false;
       if (status !== 'All Statuses' && u.status !== status) return false;
       if (!term) return true;
@@ -269,5 +269,91 @@ export class UserRoles {
 
   onFilterChange(): void {
     this.page.set(1);
+  }
+
+  // --- User actions (view / edit / delete) ---
+  protected readonly userModal = signal<'view' | 'edit' | 'delete' | null>(null);
+  protected readonly selectedUser = signal<UserRow | null>(null);
+  protected editUserForm: UserRow = {
+    name: '',
+    email: '',
+    role: ROLE_ORDER[0],
+    department: DEPARTMENTS[0],
+    status: 'Active',
+    lastActive: '',
+  };
+
+  viewUser(row: UserRow): void {
+    this.selectedUser.set(row);
+    this.userModal.set('view');
+  }
+
+  editUser(row: UserRow): void {
+    this.selectedUser.set(row);
+    this.editUserForm = { ...row };
+    this.userModal.set('edit');
+  }
+
+  deleteUser(row: UserRow): void {
+    this.selectedUser.set(row);
+    this.userModal.set('delete');
+  }
+
+  closeUserModal(): void {
+    this.userModal.set(null);
+    this.selectedUser.set(null);
+  }
+
+  saveUser(): void {
+    const original = this.selectedUser();
+    if (!original) return;
+    const updated = { ...this.editUserForm };
+    this.users.update((list) => list.map((u) => (u === original ? updated : u)));
+    this.closeUserModal();
+  }
+
+  confirmDeleteUser(): void {
+    const original = this.selectedUser();
+    if (!original) return;
+    this.users.update((list) => list.filter((u) => u !== original));
+    this.closeUserModal();
+  }
+
+  // --- Role actions (edit / view users) ---
+  protected readonly roleModal = signal<'edit' | 'view-users' | null>(null);
+  protected readonly selectedRole = signal<RoleRow | null>(null);
+  protected editRoleForm: { name: string; description: string } = { name: '', description: '' };
+
+  protected readonly roleUsers = computed(() => {
+    const role = this.selectedRole();
+    if (!role) return [];
+    return this.users().filter((u) => u.role === role.name);
+  });
+
+  editRole(role: RoleRow): void {
+    this.selectedRole.set(role);
+    this.editRoleForm = { name: role.name, description: role.description };
+    this.roleModal.set('edit');
+  }
+
+  viewRoleUsers(role: RoleRow): void {
+    this.selectedRole.set(role);
+    this.roleModal.set('view-users');
+  }
+
+  closeRoleModal(): void {
+    this.roleModal.set(null);
+    this.selectedRole.set(null);
+  }
+
+  saveRole(): void {
+    const original = this.selectedRole();
+    if (!original) return;
+    const name = this.editRoleForm.name.trim() || original.name;
+    const description = this.editRoleForm.description.trim() || original.description;
+    this.roles.update((list) =>
+      list.map((r) => (r === original ? { ...r, name, description } : r)),
+    );
+    this.closeRoleModal();
   }
 }

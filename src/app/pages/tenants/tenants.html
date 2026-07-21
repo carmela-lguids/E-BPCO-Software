@@ -86,9 +86,15 @@
               </td>
               <td>
                 <div class="actions-cell">
-                  <button type="button" class="icon-btn view"><app-icon name="eye" [size]="14" /></button>
-                  <button type="button" class="icon-btn edit"><app-icon name="edit" [size]="14" /></button>
-                  <button type="button" class="icon-btn del"><app-icon name="trash" [size]="14" /></button>
+                  <button type="button" class="icon-btn view" (click)="viewTenant(row)">
+                    <app-icon name="eye" [size]="14" />
+                  </button>
+                  <button type="button" class="icon-btn edit" (click)="editTenant(row)">
+                    <app-icon name="edit" [size]="14" />
+                  </button>
+                  <button type="button" class="icon-btn del" (click)="deleteTenant(row)">
+                    <app-icon name="trash" [size]="14" />
+                  </button>
                 </div>
               </td>
             </tr>
@@ -435,4 +441,85 @@
       </div>
     </div>
   </div>
+}
+
+@if (tenantModal() === 'view') {
+  @if (selectedTenant(); as t) {
+    <div class="modal-backdrop" (click)="closeTenantModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeTenantModal()">&#10005;</button>
+        <h2>Tenant Details</h2>
+        <dl class="kv-list">
+          <div><dt>Tenant ID</dt><dd>{{ t.id }}</dd></div>
+          <div><dt>Tenant Name</dt><dd>{{ t.code }}</dd></div>
+          <div><dt>City</dt><dd>{{ t.city }}</dd></div>
+          <div><dt>Contact Person</dt><dd>{{ t.contactName }}</dd></div>
+          <div><dt>Contact Phone</dt><dd>{{ t.contactPhone }}</dd></div>
+          <div><dt>Sub Domain</dt><dd>{{ t.subdomain }}</dd></div>
+          <div><dt>Date Created</dt><dd>{{ t.dateCreated }}</dd></div>
+          <div><dt>User Count</dt><dd>{{ t.userCount }}</dd></div>
+          <div><dt>Status</dt><dd>{{ t.status }}</dd></div>
+        </dl>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" (click)="closeTenantModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (tenantModal() === 'edit') {
+  @if (selectedTenant()) {
+    <div class="modal-backdrop" (click)="closeTenantModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeTenantModal()">&#10005;</button>
+        <h2>Edit Tenant</h2>
+        <div class="form-grid">
+          <div>
+            <label for="edit-tenant-name">Tenant Name</label>
+            <input id="edit-tenant-name" type="text" [(ngModel)]="editTenantForm.code" />
+          </div>
+          <div>
+            <label for="edit-tenant-contact">Contact Person</label>
+            <input id="edit-tenant-contact" type="text" [(ngModel)]="editTenantForm.contactName" />
+          </div>
+          <div>
+            <label for="edit-tenant-phone">Contact Number</label>
+            <input id="edit-tenant-phone" type="text" [(ngModel)]="editTenantForm.contactPhone" />
+          </div>
+          <div>
+            <label for="edit-tenant-subdomain">Sub Domain</label>
+            <input id="edit-tenant-subdomain" type="text" [(ngModel)]="editTenantForm.subdomain" />
+          </div>
+          <div>
+            <label for="edit-tenant-status">Status</label>
+            <select id="edit-tenant-status" [(ngModel)]="editTenantForm.status">
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="saveTenant()">Save Changes</button>
+          <button type="button" class="modal-btn cancel" (click)="closeTenantModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (tenantModal() === 'delete') {
+  @if (selectedTenant(); as t) {
+    <div class="modal-backdrop" (click)="closeTenantModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeTenantModal()">&#10005;</button>
+        <h2>Delete {{ t.code }}?</h2>
+        <p>This will permanently remove this tenant and its workspace. This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="confirmDeleteTenant()">Yes, Delete</button>
+          <button type="button" class="modal-btn cancel" (click)="closeTenantModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
 }

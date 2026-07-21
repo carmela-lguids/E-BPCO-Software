@@ -139,7 +139,7 @@
         </tr>
       </thead>
       <tbody>
-        @for (row of recentTenants; track row.id) {
+        @for (row of recentTenants(); track row.id) {
           <tr>
             <td><input type="checkbox" [attr.aria-label]="'Select application ' + row.id" /></td>
             <td class="id-cell">{{ row.id }}</td>
@@ -157,13 +157,28 @@
               <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
             </td>
             <td class="actions-cell">
-              <button type="button" class="icon-btn view" [attr.aria-label]="'View application ' + row.id">
+              <button
+                type="button"
+                class="icon-btn view"
+                [attr.aria-label]="'View application ' + row.id"
+                (click)="viewTenantApp(row)"
+              >
                 <app-icon name="eye" [size]="15" />
               </button>
-              <button type="button" class="icon-btn edit" [attr.aria-label]="'Edit application ' + row.id">
+              <button
+                type="button"
+                class="icon-btn edit"
+                [attr.aria-label]="'Edit application ' + row.id"
+                (click)="editTenantApp(row)"
+              >
                 <app-icon name="edit" [size]="15" />
               </button>
-              <button type="button" class="icon-btn del" [attr.aria-label]="'Delete application ' + row.id">
+              <button
+                type="button"
+                class="icon-btn del"
+                [attr.aria-label]="'Delete application ' + row.id"
+                (click)="deleteTenantApp(row)"
+              >
                 <app-icon name="trash" [size]="15" />
               </button>
             </td>
@@ -175,3 +190,83 @@
 
   <p class="table-footer">Showing 1-7 from 196 Applications</p>
 </section>
+
+@if (tenantAppModal() === 'view') {
+  @if (selectedTenantApp(); as row) {
+    <div class="modal-backdrop" (click)="closeTenantAppModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeTenantAppModal()">&#10005;</button>
+        <h2>Application Details</h2>
+        <dl class="kv-list">
+          <div><dt>Application ID</dt><dd>{{ row.id }}</dd></div>
+          <div><dt>Applicant Name</dt><dd>{{ row.applicant }}</dd></div>
+          <div><dt>Location</dt><dd>{{ row.location }}</dd></div>
+          <div><dt>Type</dt><dd>{{ row.type }}</dd></div>
+          <div><dt>Date Submitted</dt><dd>{{ row.dateSubmitted }}</dd></div>
+          <div><dt>Assigned Officer</dt><dd>{{ row.officer }}</dd></div>
+          <div><dt>Status</dt><dd>{{ row.status }}</dd></div>
+        </dl>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" (click)="closeTenantAppModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (tenantAppModal() === 'edit') {
+  @if (selectedTenantApp()) {
+    <div class="modal-backdrop" (click)="closeTenantAppModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeTenantAppModal()">&#10005;</button>
+        <h2>Edit Application</h2>
+        <div class="form-grid">
+          <div>
+            <label for="edit-app-applicant">Applicant Name</label>
+            <input id="edit-app-applicant" type="text" [(ngModel)]="editTenantAppForm.applicant" />
+          </div>
+          <div>
+            <label for="edit-app-location">Location</label>
+            <input id="edit-app-location" type="text" [(ngModel)]="editTenantAppForm.location" />
+          </div>
+          <div>
+            <label for="edit-app-type">Type</label>
+            <input id="edit-app-type" type="text" [(ngModel)]="editTenantAppForm.type" />
+          </div>
+          <div>
+            <label for="edit-app-officer">Assigned Officer</label>
+            <input id="edit-app-officer" type="text" [(ngModel)]="editTenantAppForm.officer" />
+          </div>
+          <div>
+            <label for="edit-app-status">Status</label>
+            <select id="edit-app-status" [(ngModel)]="editTenantAppForm.status">
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="saveTenantApp()">Save Changes</button>
+          <button type="button" class="modal-btn cancel" (click)="closeTenantAppModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (tenantAppModal() === 'delete') {
+  @if (selectedTenantApp(); as row) {
+    <div class="modal-backdrop" (click)="closeTenantAppModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeTenantAppModal()">&#10005;</button>
+        <h2>Delete Application {{ row.id }}?</h2>
+        <p>This will permanently remove this application record. This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="confirmDeleteTenantApp()">Yes, Delete</button>
+          <button type="button" class="modal-btn cancel" (click)="closeTenantAppModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}

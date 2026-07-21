@@ -12,6 +12,7 @@ import {
   AppDetail,
   buildDetailFor,
   DOCUMENTS,
+  DocumentItem,
   COMMENTS,
   TIMELINE,
   SHARED_TIMELINE,
@@ -76,7 +77,7 @@ interface RingStat {
   styleUrl: './tenant-applications.scss',
 })
 export class TenantApplications {
-  protected readonly rows = APP_ROWS;
+  protected readonly rows = signal<AppRow[]>([...APP_ROWS]);
   protected readonly documents = DOCUMENTS;
   protected readonly comments = COMMENTS;
   protected readonly timeline = TIMELINE;
@@ -104,8 +105,9 @@ export class TenantApplications {
 
   protected readonly filteredRows = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
-    if (!term) return this.rows;
-    return this.rows.filter(
+    const rows = this.rows();
+    if (!term) return rows;
+    return rows.filter(
       (r) =>
         r.id.toLowerCase().includes(term) ||
         r.applicant.toLowerCase().includes(term) ||
@@ -194,5 +196,60 @@ export class TenantApplications {
 
   closeDocPreview(): void {
     this.previewItem.set(null);
+  }
+
+  // --- Documents tab preview (mock document sheet) ---
+  protected readonly previewDocument = signal<DocumentItem | null>(null);
+
+  openDocumentPreview(doc: DocumentItem): void {
+    this.previewDocument.set(doc);
+  }
+
+  closeDocumentPreview(): void {
+    this.previewDocument.set(null);
+  }
+
+  // --- Row actions (edit / delete) — the eye/view button already opens the detail page ---
+  protected readonly rowModal = signal<'edit' | 'delete' | null>(null);
+  protected readonly modalRow = signal<AppRow | null>(null);
+  protected editRowForm: AppRow = {
+    id: '',
+    applicant: '',
+    city: '',
+    type: '',
+    dateSubmitted: '',
+    officer: '',
+    status: 'Pending',
+  };
+
+  editRow(row: AppRow): void {
+    this.modalRow.set(row);
+    this.editRowForm = { ...row };
+    this.rowModal.set('edit');
+  }
+
+  deleteRow(row: AppRow): void {
+    this.modalRow.set(row);
+    this.rowModal.set('delete');
+  }
+
+  closeRowModal(): void {
+    this.rowModal.set(null);
+    this.modalRow.set(null);
+  }
+
+  saveRow(): void {
+    const original = this.modalRow();
+    if (!original) return;
+    const updated = { ...this.editRowForm };
+    this.rows.update((list) => list.map((r) => (r === original ? updated : r)));
+    this.closeRowModal();
+  }
+
+  confirmDeleteRow(): void {
+    const original = this.modalRow();
+    if (!original) return;
+    this.rows.update((list) => list.filter((r) => r !== original));
+    this.closeRowModal();
   }
 }

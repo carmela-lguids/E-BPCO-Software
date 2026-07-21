@@ -122,7 +122,7 @@
               </td>
               <td>
                 <div class="actions-cell">
-                  <button type="button" class="review-btn">Review</button>
+                  <button type="button" class="review-btn" (click)="openReview(row)">Review</button>
                   <button type="button" class="icon-btn more small">
                     <app-icon name="dots-horizontal" [size]="15" />
                   </button>
@@ -140,4 +140,51 @@
 
     <app-pagination [totalItems]="stageRows().length" [pageSize]="pageSize" [(page)]="page" />
   </section>
+}
+
+@if (reviewRow(); as row) {
+  <div class="modal-backdrop" (click)="closeReview()">
+    <div class="modal-box wide" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeReview()">&#10005;</button>
+      <h2>Review — {{ row.applicant }}</h2>
+
+      <dl class="kv-list">
+        <div><dt>Application ID</dt><dd>{{ row.id }}</dd></div>
+        <div><dt>Type</dt><dd>{{ row.type }}</dd></div>
+        <div><dt>Date Submitted</dt><dd>{{ row.dateSubmitted }}</dd></div>
+        <div><dt>Assigned Officer</dt><dd>{{ row.officer }}</dd></div>
+        <div><dt>Missing Documents</dt><dd>{{ row.missingDocuments }}</dd></div>
+        <div><dt>Status</dt><dd>{{ row.status }}</dd></div>
+      </dl>
+
+      <h3 class="review-checklist-heading">Document Checklist (Example)</h3>
+      <div class="table-wrap">
+        <table class="review-checklist-table">
+          <thead>
+            <tr>
+              <th>Document</th>
+              <th>File</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of reviewChecklist; track item.label) {
+              <tr>
+                <td>{{ item.label }}</td>
+                <td class="muted">{{ item.filename }}</td>
+                <td>
+                  <span class="status-pill" [class]="item.status.toLowerCase()">{{ item.status }}</span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn confirm" (click)="closeReview()">Approve</button>
+        <button type="button" class="modal-btn cancel" (click)="closeReview()">Return for Revision</button>
+      </div>
+    </div>
+  </div>
 }

@@ -103,13 +103,28 @@
               </td>
               <td>{{ row.lastActive }}</td>
               <td class="actions-cell">
-                <button type="button" class="icon-btn view" [attr.aria-label]="'View ' + row.name">
+                <button
+                  type="button"
+                  class="icon-btn view"
+                  [attr.aria-label]="'View ' + row.name"
+                  (click)="viewUser(row)"
+                >
                   <app-icon name="eye" [size]="14" />
                 </button>
-                <button type="button" class="icon-btn edit" [attr.aria-label]="'Edit ' + row.name">
+                <button
+                  type="button"
+                  class="icon-btn edit"
+                  [attr.aria-label]="'Edit ' + row.name"
+                  (click)="editUser(row)"
+                >
                   <app-icon name="edit" [size]="14" />
                 </button>
-                <button type="button" class="icon-btn del" [attr.aria-label]="'Remove ' + row.name">
+                <button
+                  type="button"
+                  class="icon-btn del"
+                  [attr.aria-label]="'Remove ' + row.name"
+                  (click)="deleteUser(row)"
+                >
                   <app-icon name="trash" [size]="14" />
                 </button>
               </td>
@@ -131,7 +146,7 @@
     />
   } @else {
     <div class="role-grid">
-      @for (role of roles; track role.name) {
+      @for (role of roles(); track role.name) {
         <div class="role-card">
           <div class="role-head">
             <span class="role-icon" [style.background]="role.iconBg">
@@ -152,11 +167,11 @@
           </div>
 
           <div class="role-actions">
-            <button type="button" class="btn-outline">
+            <button type="button" class="btn-outline" (click)="editRole(role)">
               <app-icon name="edit" [size]="14" />
               Edit
             </button>
-            <button type="button" class="btn-outline">
+            <button type="button" class="btn-outline" (click)="viewRoleUsers(role)">
               <app-icon name="user-check" [size]="14" />
               View Users
             </button>
@@ -166,3 +181,132 @@
     </div>
   }
 </section>
+
+@if (userModal() === 'view'; as mode) {
+  @if (selectedUser(); as u) {
+    <div class="modal-backdrop" (click)="closeUserModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeUserModal()">&#10005;</button>
+        <h2>User Details</h2>
+        <dl class="kv-list">
+          <div><dt>Name</dt><dd>{{ u.name }}</dd></div>
+          <div><dt>Email</dt><dd>{{ u.email }}</dd></div>
+          <div><dt>Role</dt><dd>{{ u.role }}</dd></div>
+          <div><dt>Department</dt><dd>{{ u.department }}</dd></div>
+          <div><dt>Status</dt><dd>{{ u.status }}</dd></div>
+          <div><dt>Last Active</dt><dd>{{ u.lastActive }}</dd></div>
+        </dl>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" (click)="closeUserModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (userModal() === 'edit') {
+  @if (selectedUser()) {
+    <div class="modal-backdrop" (click)="closeUserModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeUserModal()">&#10005;</button>
+        <h2>Edit User</h2>
+        <div class="form-grid">
+          <div>
+            <label for="edit-user-name">Name</label>
+            <input id="edit-user-name" type="text" [(ngModel)]="editUserForm.name" />
+          </div>
+          <div>
+            <label for="edit-user-email">Email</label>
+            <input id="edit-user-email" type="email" [(ngModel)]="editUserForm.email" />
+          </div>
+          <div>
+            <label for="edit-user-role">Role</label>
+            <select id="edit-user-role" [(ngModel)]="editUserForm.role">
+              @for (role of roleOptions; track role) {
+                <option [value]="role">{{ role }}</option>
+              }
+            </select>
+          </div>
+          <div>
+            <label for="edit-user-department">Department</label>
+            <input id="edit-user-department" type="text" [(ngModel)]="editUserForm.department" />
+          </div>
+          <div>
+            <label for="edit-user-status">Status</label>
+            <select id="edit-user-status" [(ngModel)]="editUserForm.status">
+              @for (status of statusOptions; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="saveUser()">Save Changes</button>
+          <button type="button" class="modal-btn cancel" (click)="closeUserModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (userModal() === 'delete') {
+  @if (selectedUser(); as u) {
+    <div class="modal-backdrop" (click)="closeUserModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeUserModal()">&#10005;</button>
+        <h2>Remove {{ u.name }}?</h2>
+        <p>This will permanently remove this user from the platform. This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="confirmDeleteUser()">Yes, Remove</button>
+          <button type="button" class="modal-btn cancel" (click)="closeUserModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (roleModal() === 'edit') {
+  @if (selectedRole()) {
+    <div class="modal-backdrop" (click)="closeRoleModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeRoleModal()">&#10005;</button>
+        <h2>Edit Role</h2>
+        <div class="form-grid">
+          <div>
+            <label for="edit-role-name">Role Name</label>
+            <input id="edit-role-name" type="text" [(ngModel)]="editRoleForm.name" />
+          </div>
+          <div>
+            <label for="edit-role-description">Description</label>
+            <textarea id="edit-role-description" rows="3" [(ngModel)]="editRoleForm.description"></textarea>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="saveRole()">Save Changes</button>
+          <button type="button" class="modal-btn cancel" (click)="closeRoleModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (roleModal() === 'view-users') {
+  @if (selectedRole(); as role) {
+    <div class="modal-backdrop" (click)="closeRoleModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeRoleModal()">&#10005;</button>
+        <h2>{{ role.name }} — Users</h2>
+        <dl class="kv-list">
+          @for (u of roleUsers(); track u.email) {
+            <div><dt>{{ u.name }}</dt><dd>{{ u.email }}</dd></div>
+          } @empty {
+            <div><dd>No users currently assigned to this role.</dd></div>
+          }
+        </dl>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" (click)="closeRoleModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+}
