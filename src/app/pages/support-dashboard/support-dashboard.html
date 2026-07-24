@@ -1,0 +1,65 @@
+<app-topbar title="Support Dashboard" />
+
+<section class="stat-row">
+  @for (s of stats; track s.label) {
+    <app-stat-card
+      [icon]="s.icon"
+      [iconBg]="s.iconBg"
+      [cardTint]="s.tint"
+      [label]="s.label"
+      [value]="s.value"
+      [footnote]="s.footnote"
+    />
+  }
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Tenant Directory</h2>
+    <p class="muted-sub">Look up a tenant and start impersonation to troubleshoot as that workspace.</p>
+  </div>
+
+  <div class="search-input">
+    <app-icon name="search" [size]="16" />
+    <input type="text" placeholder="Search tenant name or code..." [(ngModel)]="searchTerm" />
+  </div>
+
+  @if (impersonating(); as imp) {
+    <p class="imp-note">
+      Currently impersonating <strong>{{ imp.tenant }}</strong>. Visit the tenant portal, or end impersonation
+      from the yellow banner shown there.
+    </p>
+  }
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>TENANT</th>
+          <th>CODE</th>
+          <th>STATUS</th>
+          <th>OPEN ISSUES</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (t of filteredTenants(); track t.code) {
+          <tr>
+            <td class="id-cell">{{ t.name }}</td>
+            <td>{{ t.code }}</td>
+            <td>
+              <span class="status-pill" [class]="t.status.toLowerCase()">{{ t.status }}</span>
+            </td>
+            <td>{{ t.openIssues }}</td>
+            <td>
+              <button type="button" class="btn-outline small" (click)="startImpersonation(t)">
+                <app-icon name="eye" [size]="13" />
+                Start Impersonation
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

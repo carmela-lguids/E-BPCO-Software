@@ -112,10 +112,10 @@
                     <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -159,10 +159,10 @@
                     <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -206,10 +206,10 @@
                     <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -253,10 +253,10 @@
                     <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -298,10 +298,10 @@
                     <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>

@@ -14,6 +14,28 @@
   flex-shrink: 0;
 }
 
+.admin-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tenant-banner {
+  flex: none;
+  background: #eef1f6;
+  border-bottom: 1px solid #dde3ee;
+  color: #2b3a55;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.5rem 2rem;
+
+  span {
+    font-weight: 500;
+    color: #6b7a94;
+  }
+}
+
 .admin-content {
   flex: 1;
   min-width: 0;

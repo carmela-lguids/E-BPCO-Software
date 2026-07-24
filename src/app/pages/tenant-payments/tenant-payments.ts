@@ -5,6 +5,7 @@ import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
+import { RoleGate } from '../../core/role-gate.directive';
 
 type PayStatus = 'Paid' | 'Unpaid' | 'Pending';
 type VerifyResult = 'success' | 'incomplete' | 'no-authority';
@@ -99,7 +100,7 @@ function buildRows(): PaymentRow[] {
 
 @Component({
   selector: 'app-tenant-payments',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate],
   templateUrl: './tenant-payments.html',
   styleUrl: './tenant-payments.scss',
 })

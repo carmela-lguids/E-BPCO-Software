@@ -240,6 +240,17 @@ const ICONS: Record<string, Shape[]> = {
     { tag: 'path', d: 'M17 13V4h2.5a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1Z' },
     { tag: 'path', d: 'M17 13l-3.4 7a1.6 1.6 0 0 1-3-1v-3.5H7a1.6 1.6 0 0 1-1.55-1.98l1.3-5.5A1.6 1.6 0 0 1 8.3 7H17' },
   ],
+  'clipboard-check': [
+    { tag: 'rect', x: 5, y: 4.5, width: 14, height: 17, rx: 1.4 },
+    { tag: 'path', d: 'M9 4.5a3 3 0 0 1 6 0' },
+    { tag: 'rect', x: 9, y: 3, width: 6, height: 3, rx: 0.6 },
+    { tag: 'path', d: 'm8.5 13.5 2 2 4.5-5' },
+  ],
+  archive: [
+    { tag: 'rect', x: 3.5, y: 4, width: 17, height: 4.5, rx: 1 },
+    { tag: 'path', d: 'M5 8.5V19a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8.5' },
+    { tag: 'line', x1: 10, y1: 12.5, x2: 14, y2: 12.5 },
+  ],
 };
 
 @Component({

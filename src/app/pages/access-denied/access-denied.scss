@@ -1,0 +1,70 @@
+@use '../../shared/styles/tokens' as *;
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.denied-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $color-bg;
+  padding: 2rem;
+}
+
+.denied-card {
+  max-width: 420px;
+  width: 100%;
+  background: $color-surface;
+  border-radius: $radius-xl;
+  border: 1px solid $color-border;
+  box-shadow: $shadow-card-hover;
+  padding: 2.5rem;
+  text-align: center;
+}
+
+.denied-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background: $color-danger-bg;
+  color: $color-danger;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+h1 {
+  font-size: 1.15rem;
+  margin: 0 0 0.75rem;
+  color: $color-ink-900;
+}
+
+p {
+  font-size: 0.88rem;
+  color: $color-ink-400;
+  line-height: 1.55;
+  margin: 0 0 1.5rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border-radius: $radius-md;
+  padding: 0.65rem 1.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  background: $color-info;
+  border: 1px solid $color-info;
+  color: $color-surface;
+  transition: background $ease-base;
+
+  &:hover {
+    background: $color-info-700;
+  }
+}

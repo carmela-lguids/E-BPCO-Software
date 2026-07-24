@@ -1,6 +1,7 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Icon } from '../icon/icon';
 import { Avatar } from '../avatar/avatar';
+import { Session } from '../../core/session';
 
 @Component({
   selector: 'app-topbar',
@@ -9,8 +10,12 @@ import { Avatar } from '../avatar/avatar';
   styleUrl: './topbar.scss',
 })
 export class Topbar {
+  private readonly session = inject(Session);
+
   readonly title = input.required<string>();
   readonly notificationCount = input<number>(15);
-  readonly userName = input<string>('Andy Johnson');
-  readonly userRole = input<string>('Super Admin');
+
+  // Who's "logged in" is derived from the active mock account, not passed
+  // in per-page — every page shows the same real (mock) identity.
+  protected readonly account = this.session.currentAccount;
 }

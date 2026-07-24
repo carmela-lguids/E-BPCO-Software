@@ -11,6 +11,11 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/register/register').then((m) => m.Register),
   },
   {
+    path: 'access-denied',
+    loadComponent: () =>
+      import('./pages/access-denied/access-denied').then((m) => m.AccessDenied),
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./layout/admin-layout/admin-layout').then((m) => m.AdminLayout),
@@ -35,6 +40,21 @@ export const routes: Routes = [
       {
         path: 'workflow',
         loadComponent: () => import('./pages/workflow/workflow').then((m) => m.Workflow),
+      },
+      {
+        path: 'platform/overview',
+        loadComponent: () =>
+          import('./pages/platform-overview/platform-overview').then((m) => m.PlatformOverview),
+      },
+      {
+        path: 'support/dashboard',
+        loadComponent: () =>
+          import('./pages/support-dashboard/support-dashboard').then((m) => m.SupportDashboard),
+      },
+      {
+        path: 'security/dashboard',
+        loadComponent: () =>
+          import('./pages/security-dashboard/security-dashboard').then((m) => m.SecurityDashboard),
       },
     ],
   },
@@ -79,6 +99,16 @@ export const routes: Routes = [
         path: 'workflow',
         loadComponent: () =>
           import('./pages/tenant-workflow/tenant-workflow').then((m) => m.TenantWorkflow),
+      },
+      {
+        path: 'inspections',
+        loadComponent: () =>
+          import('./pages/tenant-inspections/tenant-inspections').then((m) => m.TenantInspections),
+      },
+      {
+        path: 'records',
+        loadComponent: () =>
+          import('./pages/tenant-records/tenant-records').then((m) => m.TenantRecords),
       },
     ],
   },

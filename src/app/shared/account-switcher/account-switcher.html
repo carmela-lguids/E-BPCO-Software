@@ -1,0 +1,70 @@
+<div class="switcher" [class.open]="open()">
+  @if (open()) {
+    <div class="panel">
+      <div class="panel-head">
+        <div>
+          <span class="dev-tag">Dev mode</span>
+          <h2>Mock account switcher</h2>
+          <p>Frontend testing only — not a real login. Switching swaps the sidebar, topbar, and page state to that role's view.</p>
+        </div>
+        <button type="button" class="close-btn" (click)="toggle()" aria-label="Close account switcher">
+          <app-icon name="chevron-down" [size]="16" />
+        </button>
+      </div>
+
+      <div class="panel-body">
+        <section>
+          <h3>Super Admin portal</h3>
+          <ul>
+            @for (acct of superAdminAccounts; track acct.id) {
+              <li>
+                <button
+                  type="button"
+                  class="acct-row"
+                  [class.active]="currentAccount().id === acct.id"
+                  (click)="select(acct)"
+                >
+                  <app-avatar [name]="acct.fullName" [size]="28" />
+                  <span class="acct-text">
+                    <span class="acct-name">{{ acct.fullName }}</span>
+                    <span class="acct-role">{{ acct.roleLabel }}</span>
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section>
+          <h3>Tenant / LGU portal</h3>
+          @for (group of tenantGroups(); track group[0]) {
+            <p class="tenant-label">{{ group[0] }}</p>
+            <ul>
+              @for (acct of group[1]; track acct.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="acct-row"
+                    [class.active]="currentAccount().id === acct.id"
+                    (click)="select(acct)"
+                  >
+                    <app-avatar [name]="acct.fullName" [size]="28" />
+                    <span class="acct-text">
+                      <span class="acct-name">{{ acct.fullName }}</span>
+                      <span class="acct-role">{{ acct.roleLabel }}</span>
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </section>
+      </div>
+    </div>
+  }
+
+  <button type="button" class="fab" (click)="toggle()">
+    <app-icon name="user-check" [size]="18" />
+    <span>Switch mock account</span>
+  </button>
+</div>

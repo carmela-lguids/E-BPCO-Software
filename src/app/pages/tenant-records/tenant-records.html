@@ -1,0 +1,121 @@
+<app-topbar title="Records" />
+
+<section class="stat-row">
+  <button type="button" class="stat-tile" [class.active]="typeFilter() === 'All'" (click)="selectType('All')">
+    <span class="stat-label">All Records</span>
+    <span class="stat-value">{{ rows().length }}</span>
+  </button>
+  <button type="button" class="stat-tile" [class.active]="typeFilter() === 'Permit'" (click)="selectType('Permit')">
+    <span class="stat-label">Permits</span>
+    <span class="stat-value">{{ typeCounts().Permit }}</span>
+  </button>
+  <button type="button" class="stat-tile" [class.active]="typeFilter() === 'Application'" (click)="selectType('Application')">
+    <span class="stat-label">Applications</span>
+    <span class="stat-value">{{ typeCounts().Application }}</span>
+  </button>
+  <button type="button" class="stat-tile" [class.active]="typeFilter() === 'Document'" (click)="selectType('Document')">
+    <span class="stat-label">Documents</span>
+    <span class="stat-value">{{ typeCounts().Document }}</span>
+  </button>
+  <div class="stat-tile static">
+    <span class="stat-label">Archived</span>
+    <span class="stat-value">{{ typeCounts().Archived }}</span>
+  </div>
+</section>
+
+<section class="card table-card">
+  <div class="table-toolbar">
+    <div class="search-input">
+      <app-icon name="search" [size]="16" />
+      <input
+        type="text"
+        placeholder="Search Here By Record ID, Applicant Name, or Location"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+    <button type="button" class="btn-outline">
+      <app-icon name="download" [size]="15" />
+      Export
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>RECORD ID</th>
+          <th>TYPE</th>
+          <th>APPLICANT NAME</th>
+          <th>LOCATION</th>
+          <th>ARCHIVED DATE</th>
+          <th>ARCHIVED BY</th>
+          <th>STATUS</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of pagedRows(); track row.id) {
+          <tr>
+            <td class="id-cell">{{ row.id }}</td>
+            <td>{{ row.type }}</td>
+            <td>
+              <div class="applicant-cell">
+                <app-avatar [name]="row.applicant" [size]="30" />
+                {{ row.applicant }}
+              </div>
+            </td>
+            <td>{{ row.city }}</td>
+            <td>{{ row.archivedDate }}</td>
+            <td>{{ row.archivedBy }}</td>
+            <td>
+              <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
+            </td>
+            <td class="actions-cell">
+              <button type="button" class="icon-btn view" (click)="view(row)">
+                <app-icon name="eye" [size]="14" />
+              </button>
+              @if (row.status === 'Active') {
+                <button type="button" class="btn-outline small" *roleGate="['records']" (click)="archive(row)">
+                  <app-icon name="archive" [size]="13" />
+                  Archive
+                </button>
+              } @else {
+                <button type="button" class="btn-outline small" *roleGate="['records']" (click)="restore(row)">
+                  Restore
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr class="table-empty-row">
+            <td colspan="8">No records match your search.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <app-pagination [totalItems]="filteredRows().length" [pageSize]="pageSize" [(page)]="page" />
+</section>
+
+@if (selected(); as row) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-box wide" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+      <h2>Record Details</h2>
+      <dl class="kv-list">
+        <div><dt>Record ID</dt><dd>{{ row.id }}</dd></div>
+        <div><dt>Type</dt><dd>{{ row.type }}</dd></div>
+        <div><dt>Applicant</dt><dd>{{ row.applicant }}</dd></div>
+        <div><dt>Location</dt><dd>{{ row.city }}</dd></div>
+        <div><dt>Status</dt><dd>{{ row.status }}</dd></div>
+        <div><dt>Archived Date</dt><dd>{{ row.archivedDate }}</dd></div>
+        <div><dt>Archived By</dt><dd>{{ row.archivedBy }}</dd></div>
+      </dl>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn cancel" (click)="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+}

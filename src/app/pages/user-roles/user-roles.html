@@ -66,7 +66,7 @@
         <app-icon name="download" [size]="15" />
         Export
       </button>
-      <button type="button" class="btn-primary">
+      <button type="button" class="btn-primary" *roleGate="['super-admin']">
         <app-icon name="plus" [size]="15" />
         Add User
       </button>
@@ -114,6 +114,7 @@
                 <button
                   type="button"
                   class="icon-btn edit"
+                  *roleGate="['super-admin']"
                   [attr.aria-label]="'Edit ' + row.name"
                   (click)="editUser(row)"
                 >
@@ -122,6 +123,7 @@
                 <button
                   type="button"
                   class="icon-btn del"
+                  *roleGate="['super-admin']"
                   [attr.aria-label]="'Remove ' + row.name"
                   (click)="deleteUser(row)"
                 >
@@ -167,7 +169,7 @@
           </div>
 
           <div class="role-actions">
-            <button type="button" class="btn-outline" (click)="editRole(role)">
+            <button type="button" class="btn-outline" *roleGate="['super-admin', 'security-admin']" (click)="editRole(role)">
               <app-icon name="edit" [size]="14" />
               Edit
             </button>

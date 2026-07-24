@@ -1,0 +1,87 @@
+@use '../../shared/styles/data-table';
+@use '../../shared/styles/tokens' as *;
+
+@keyframes section-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:host {
+  display: block;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.mid-row {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 1.5rem;
+
+  .card {
+    margin-bottom: 0;
+  }
+}
+
+.card {
+  background: $color-surface;
+  border-radius: $radius-xl;
+  padding: 1.5rem 1.6rem;
+  border: 1px solid $color-border;
+  animation: section-in 0.4s ease both;
+}
+
+.card-head {
+  margin-bottom: 1.1rem;
+
+  h2 {
+    margin: 0 0 0.3rem;
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: $color-ink-900;
+  }
+}
+
+.muted-sub {
+  margin: 0;
+  font-size: 0.8rem;
+  color: $color-ink-300;
+}
+
+.id-cell {
+  font-weight: 700;
+}
+
+.btn-outline.small {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.76rem;
+}
+
+.status-pill.active,
+.status-pill.success {
+  background: $color-success-bg;
+  color: $color-success;
+}
+.status-pill.failed {
+  background: $color-danger-bg;
+  color: $color-danger;
+}
+
+@media (max-width: 1300px) {
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .mid-row {
+    grid-template-columns: 1fr;
+  }
+}

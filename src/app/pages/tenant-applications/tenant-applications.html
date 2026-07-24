@@ -1,4 +1,4 @@
-<app-topbar title="Applications" [userRole]="'Admin'" />
+<app-topbar title="Applications" />
 
 @if (view() === 'list') {
   <section class="ring-stat-row">
@@ -39,7 +39,7 @@
           <app-icon name="download" [size]="15" />
           Export
         </button>
-        <button type="button" class="btn-primary">
+        <button type="button" class="btn-primary" *roleGate="['tenant-admin']">
           <app-icon name="plus" [size]="15" />
           Application
         </button>
@@ -84,10 +84,15 @@
                   <button type="button" class="icon-btn view" (click)="openDetail(row)">
                     <app-icon name="eye" [size]="15" />
                   </button>
-                  <button type="button" class="icon-btn edit" (click)="editRow(row)">
+                  <button
+                    type="button"
+                    class="icon-btn edit"
+                    *roleGate="['tenant-admin', 'obo', 'initial-eval', 'zoning', 'fire-safety']"
+                    (click)="editRow(row)"
+                  >
                     <app-icon name="edit" [size]="15" />
                   </button>
-                  <button type="button" class="icon-btn del" (click)="deleteRow(row)">
+                  <button type="button" class="icon-btn del" *roleGate="['tenant-admin']" (click)="deleteRow(row)">
                     <app-icon name="dots-vertical" [size]="15" />
                   </button>
                 </div>

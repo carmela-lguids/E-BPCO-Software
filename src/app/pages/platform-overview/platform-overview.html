@@ -1,0 +1,44 @@
+<app-topbar title="Platform Overview" />
+
+<section class="stat-row">
+  @for (s of stats; track s.label) {
+    <app-stat-card
+      [icon]="s.icon"
+      [iconBg]="s.iconBg"
+      [cardTint]="s.tint"
+      [label]="s.label"
+      [value]="s.value"
+      [footnote]="s.footnote"
+    />
+  }
+</section>
+
+<section class="card">
+  <div class="card-head">
+    <h2>Module Catalog</h2>
+    <p class="muted-sub">Frontend-only view of modules enabled across the platform's tenants.</p>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>MODULE</th>
+          <th>TENANTS ENABLED</th>
+          <th>STATUS</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (m of modules; track m.key) {
+          <tr>
+            <td class="id-cell">{{ m.name }}</td>
+            <td>{{ m.enabledTenantCount }} / 196</td>
+            <td>
+              <span class="status-pill" [class]="m.status.toLowerCase()">{{ m.status }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>

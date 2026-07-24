@@ -4,6 +4,7 @@ import { Topbar } from '../../shared/topbar/topbar';
 import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
 import { Pagination } from '../../shared/pagination/pagination';
+import { RoleGate } from '../../core/role-gate.directive';
 
 type LogTabKey = 'activity' | 'access' | 'error' | 'security' | 'events';
 
@@ -190,7 +191,7 @@ type AnyLogRow = ActivityRow | AccessRow | ErrorRow | SecurityRow | SystemEventR
 
 @Component({
   selector: 'app-system-logs',
-  imports: [Topbar, StatCard, Icon, Pagination, FormsModule],
+  imports: [Topbar, StatCard, Icon, Pagination, FormsModule, RoleGate],
   templateUrl: './system-logs.html',
   styleUrl: './system-logs.scss',
 })

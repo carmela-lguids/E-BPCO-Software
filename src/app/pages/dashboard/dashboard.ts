@@ -10,6 +10,7 @@ import { AreaChart } from '../../shared/area-chart/area-chart';
 import { Avatar } from '../../shared/avatar/avatar';
 import { Pagination } from '../../shared/pagination/pagination';
 import { buildPermitQueueRows } from '../../shared/permit-queue/permit-queue';
+import { RoleGate } from '../../core/role-gate.directive';
 
 interface StatCardData {
   icon: string;
@@ -44,6 +45,7 @@ interface TenantApplication {
     Avatar,
     Pagination,
     FormsModule,
+    RoleGate,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

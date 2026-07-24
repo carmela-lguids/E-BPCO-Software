@@ -39,7 +39,7 @@
           <app-icon name="download" [size]="15" />
           Export
         </button>
-        <button type="button" class="btn-primary" (click)="openCreate()">
+        <button type="button" class="btn-primary" *roleGate="['super-admin']" (click)="openCreate()">
           <app-icon name="plus" [size]="15" />
           Create New Tenant
         </button>
@@ -89,10 +89,10 @@
                   <button type="button" class="icon-btn view" (click)="viewTenant(row)">
                     <app-icon name="eye" [size]="14" />
                   </button>
-                  <button type="button" class="icon-btn edit" (click)="editTenant(row)">
+                  <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editTenant(row)">
                     <app-icon name="edit" [size]="14" />
                   </button>
-                  <button type="button" class="icon-btn del" (click)="deleteTenant(row)">
+                  <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteTenant(row)">
                     <app-icon name="trash" [size]="14" />
                   </button>
                 </div>

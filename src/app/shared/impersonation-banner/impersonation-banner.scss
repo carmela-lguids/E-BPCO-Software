@@ -1,0 +1,38 @@
+@use '../styles/tokens' as *;
+
+.imp-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #fef3c7;
+  color: #92400e;
+  border-bottom: 1px solid #fde68a;
+  padding: 0.65rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  span {
+    flex: 1;
+  }
+
+  strong {
+    font-weight: 800;
+  }
+}
+
+.end-btn {
+  border: 1px solid #92400e;
+  background: #fff;
+  color: #92400e;
+  border-radius: $radius-sm;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background $ease-fast;
+
+  &:hover {
+    background: #92400e;
+    color: #fff;
+  }
+}

@@ -1,0 +1,84 @@
+<app-topbar title="Security Dashboard" />
+
+<section class="stat-row">
+  @for (s of stats; track s.label) {
+    <app-stat-card
+      [icon]="s.icon"
+      [iconBg]="s.iconBg"
+      [cardTint]="s.tint"
+      [label]="s.label"
+      [value]="s.value"
+      [footnote]="s.footnote"
+    />
+  }
+</section>
+
+<section class="mid-row">
+  <div class="card">
+    <div class="card-head">
+      <h2>Session Monitoring</h2>
+      <p class="muted-sub">Mock sessions only — ending one here does not touch a real session.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>USER</th>
+            <th>ROLE</th>
+            <th>DEVICE</th>
+            <th>STARTED</th>
+            <th>ACTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (s of sessions(); track s.ip) {
+            <tr>
+              <td class="id-cell">{{ s.user }}</td>
+              <td>{{ s.role }}</td>
+              <td>{{ s.device }}</td>
+              <td>{{ s.startedAt }}</td>
+              <td>
+                @if (s.current) {
+                  <span class="status-pill active">This session</span>
+                } @else {
+                  <button type="button" class="btn-outline small" (click)="endSession(s)">End Session</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
+      <h2>Login Monitoring</h2>
+      <p class="muted-sub">Recent login attempts across the platform.</p>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>USER</th>
+            <th>RESULT</th>
+            <th>IP</th>
+            <th>TIME</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (a of loginAttempts; track a.time + a.user) {
+            <tr>
+              <td class="id-cell">{{ a.user }}</td>
+              <td>
+                <span class="status-pill" [class]="a.result.toLowerCase()">{{ a.result }}</span>
+              </td>
+              <td>{{ a.ip }}</td>
+              <td>{{ a.time }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

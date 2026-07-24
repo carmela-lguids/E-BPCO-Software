@@ -1,0 +1,72 @@
+@use '../../shared/styles/data-table';
+@use '../../shared/styles/tokens' as *;
+
+@keyframes section-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:host {
+  display: block;
+}
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.1rem;
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: $color-surface;
+  border-radius: $radius-xl;
+  padding: 1.5rem 1.6rem;
+  border: 1px solid $color-border;
+  animation: section-in 0.4s ease both;
+}
+
+.card-head {
+  margin-bottom: 1.25rem;
+
+  h2 {
+    margin: 0 0 0.3rem;
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: $color-ink-900;
+  }
+}
+
+.muted-sub {
+  margin: 0;
+  font-size: 0.84rem;
+  color: $color-ink-300;
+}
+
+.id-cell {
+  font-weight: 700;
+}
+
+.status-pill.stable {
+  background: $color-success-bg;
+  color: $color-success;
+}
+.status-pill.maintenance {
+  background: $color-warning-bg;
+  color: $color-warning;
+}
+.status-pill.deprecated {
+  background: $color-danger-bg;
+  color: $color-danger;
+}
+
+@media (max-width: 1400px) {
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

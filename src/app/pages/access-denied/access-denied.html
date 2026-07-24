@@ -1,0 +1,11 @@
+<div class="denied-wrap">
+  <div class="denied-card">
+    <span class="denied-icon"><app-icon name="lock" [size]="30" /></span>
+    <h1>You don't have access to this page</h1>
+    <p>
+      <strong>{{ account().roleLabel }}</strong> accounts don't include this module. This is a
+      frontend-only visibility rule, simulating what {{ account().roleLabel }} would see in production.
+    </p>
+    <button type="button" class="btn-primary" (click)="goToMyDashboard()">Go to my dashboard</button>
+  </div>
+</div>

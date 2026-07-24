@@ -115,7 +115,7 @@
         <app-icon name="download" [size]="15" />
         Export
       </button>
-      <button type="button" class="btn-primary">
+      <button type="button" class="btn-primary" *roleGate="['super-admin']">
         <app-icon name="plus" [size]="15" />
         Application
       </button>
@@ -168,6 +168,7 @@
               <button
                 type="button"
                 class="icon-btn edit"
+                *roleGate="['super-admin']"
                 [attr.aria-label]="'Edit application ' + row.id"
                 (click)="editTenantApp(row)"
               >
@@ -176,6 +177,7 @@
               <button
                 type="button"
                 class="icon-btn del"
+                *roleGate="['super-admin']"
                 [attr.aria-label]="'Delete application ' + row.id"
                 (click)="deleteTenantApp(row)"
               >

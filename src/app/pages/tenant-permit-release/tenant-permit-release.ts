@@ -5,6 +5,7 @@ import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
+import { RoleGate } from '../../core/role-gate.directive';
 
 type PermitStatus = 'Ready' | 'Released';
 
@@ -49,7 +50,7 @@ function buildRows(): ReleaseRow[] {
 
 @Component({
   selector: 'app-tenant-permit-release',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate],
   templateUrl: './tenant-permit-release.html',
   styleUrl: './tenant-permit-release.scss',
 })

@@ -1,0 +1,140 @@
+<app-topbar title="Inspections" />
+
+<section class="ring-stat-row">
+  @for (stat of ringStats(); track stat.label) {
+    <div class="ring-card">
+      <app-donut-chart
+        [segments]="ringSegments(stat)"
+        [size]="72"
+        [ringWidth]="11"
+        [showLabels]="false"
+        holeColor="#fff"
+      />
+      <div class="ring-text">
+        <span class="ring-label">{{ stat.label }}</span>
+        <span class="ring-value">{{ stat.value }}</span>
+      </div>
+    </div>
+  }
+</section>
+
+<section class="card table-card">
+  <div class="table-toolbar">
+    <div class="search-input">
+      <app-icon name="search" [size]="16" />
+      <input
+        type="text"
+        placeholder="Search Here By Inspection ID, Applicant Name, or Application ID"
+        [(ngModel)]="searchTerm"
+        (ngModelChange)="onSearchChange()"
+      />
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>INSPECTION ID</th>
+          <th>APPLICATION ID</th>
+          <th>APPLICANT NAME</th>
+          <th>LOCATION</th>
+          <th>SCHEDULED DATE</th>
+          <th>STATUS</th>
+          <th>ACTION</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of pagedRows(); track row.id) {
+          <tr>
+            <td class="id-cell">{{ row.id }}</td>
+            <td>{{ row.applicationId }}</td>
+            <td>
+              <div class="applicant-cell">
+                <app-avatar [name]="row.applicant" [size]="30" />
+                {{ row.applicant }}
+              </div>
+            </td>
+            <td>{{ row.city }}</td>
+            <td>{{ row.scheduledDate }}</td>
+            <td>
+              <span class="status-pill" [class]="row.status.toLowerCase().replace(' ', '-')">{{ row.status }}</span>
+            </td>
+            <td class="actions-cell">
+              @if (row.status === 'Scheduled') {
+                <button type="button" class="btn-outline small" *roleGate="['inspector']" (click)="startInspection(row)">
+                  Start
+                </button>
+              }
+              <button type="button" class="btn-primary small" (click)="open(row)">
+                <app-icon name="clipboard-check" [size]="14" />
+                Checklist
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr class="table-empty-row">
+            <td colspan="7">No inspections match your search.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <app-pagination [totalItems]="filteredRows().length" [pageSize]="pageSize" [(page)]="page" />
+</section>
+
+@if (selected(); as row) {
+  <div class="modal-backdrop" (click)="close()">
+    <div class="modal-box wide" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="close()">&#10005;</button>
+      <h2>{{ row.id }} — {{ row.applicant }}</h2>
+      <p class="modal-sub">{{ row.applicationId }} · {{ row.city }} · {{ row.type }}</p>
+
+      <h3 class="section-heading">Inspection Checklist</h3>
+      <ul class="checklist">
+        @for (item of row.checklist; track item.item) {
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [checked]="item.passed"
+                *roleGate="['inspector']"
+                (change)="toggleChecklistItem(item)"
+              />
+              <span [class.done]="item.passed">{{ item.item }}</span>
+            </label>
+          </li>
+        }
+      </ul>
+
+      <h3 class="section-heading">Photos</h3>
+      <div class="photo-row">
+        @for (photo of row.photos; track photo) {
+          <span class="photo-chip"><app-icon name="image" [size]="14" />{{ photo }}</span>
+        } @empty {
+          <span class="muted-note">No photos uploaded yet.</span>
+        }
+        <button type="button" class="btn-outline small" *roleGate="['inspector']">
+          <app-icon name="camera" [size]="14" />
+          Upload Mock Photo
+        </button>
+      </div>
+
+      <h3 class="section-heading">Inspection Notes</h3>
+      <textarea rows="3" [(ngModel)]="draftNotes" placeholder="Add field notes..." *roleGate="['inspector']"></textarea>
+      @if (!row.notes && !draftNotes) {
+        <p class="muted-note" *roleGate="['tenant-admin', 'obo']">No notes recorded yet.</p>
+      }
+
+      <div class="modal-actions" *roleGate="['inspector']">
+        <button type="button" class="modal-btn cancel" (click)="saveDraft()">Save Draft</button>
+        <button type="button" class="modal-btn confirm" (click)="submitReport(true)">Recommend Pass</button>
+        <button type="button" class="modal-btn confirm alt" (click)="submitReport(false)">Recommend Correction</button>
+      </div>
+      <div class="modal-actions" *roleGate="['tenant-admin', 'obo']">
+        <button type="button" class="modal-btn cancel" (click)="close()">Close</button>
+      </div>
+    </div>
+  </div>
+}

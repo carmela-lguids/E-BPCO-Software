@@ -5,6 +5,7 @@ import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
+import { RoleGate } from '../../core/role-gate.directive';
 import {
   EVAL_TYPE_CARDS,
   EVAL_ROWS,
@@ -20,7 +21,7 @@ type View = 'list' | 'detail';
 
 @Component({
   selector: 'app-tenant-evaluations',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate],
   templateUrl: './tenant-evaluations.html',
   styleUrl: './tenant-evaluations.scss',
 })

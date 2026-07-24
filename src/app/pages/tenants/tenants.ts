@@ -5,6 +5,7 @@ import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
+import { RoleGate } from '../../core/role-gate.directive';
 
 type SubTab = 'analytics' | 'modules' | 'recent-activity';
 type ViewMode = 'list' | 'create';
@@ -115,7 +116,7 @@ const GROWTH_POINTS: GrowthPoint[] = [
 
 @Component({
   selector: 'app-tenants',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate],
   templateUrl: './tenants.html',
   styleUrl: './tenants.scss',
 })

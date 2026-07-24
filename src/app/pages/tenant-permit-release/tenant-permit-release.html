@@ -1,4 +1,4 @@
-<app-topbar title="Permit Release" [userRole]="'Admin'" />
+<app-topbar title="Permit Release" />
 
 <section class="ring-stat-row">
   @for (stat of ringStats; track stat.label) {
@@ -34,7 +34,7 @@
         <app-icon name="filter" [size]="15" />
         Filters
       </button>
-      <button type="button" class="btn-primary" (click)="generate()">
+      <button type="button" class="btn-primary" *roleGate="['releasing']" (click)="generate()">
         <app-icon name="sparkles" [size]="15" />
         Generate
       </button>
@@ -78,12 +78,13 @@
             </td>
             <td>
               <div class="actions-cell">
-                <button type="button" class="icon-btn generate" (click)="generate()">
+                <button type="button" class="icon-btn generate" *roleGate="['releasing']" (click)="generate()">
                   <app-icon name="sparkles" [size]="15" />
                 </button>
                 <button
                   type="button"
                   class="icon-btn release"
+                  *roleGate="['releasing']"
                   [disabled]="row.permitStatus === 'Released'"
                   (click)="release(row)"
                 >

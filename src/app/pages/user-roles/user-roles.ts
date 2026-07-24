@@ -5,6 +5,8 @@ import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { Pagination } from '../../shared/pagination/pagination';
+import { ROLE_ORDER as ROLE_KEYS, roleLabel } from '../../core/roles';
+import { RoleGate } from '../../core/role-gate.directive';
 
 type Tab = 'users' | 'roles';
 type UserStatus = 'Active' | 'Inactive' | 'Pending';
@@ -62,17 +64,10 @@ const DEPARTMENTS = [
   'City Administrator Office',
 ];
 
-const ROLE_ORDER = [
-  'Super Admin',
-  'Tenant Admin',
-  'Initial Evaluator',
-  'Zoning Evaluator',
-  'Fire Safety Evaluator',
-  'OBO Evaluator',
-  'Cashier',
-  'Releasing Officer',
-  'Viewer / Auditor',
-];
+// Labels driven by the canonical role model in `core/roles.ts` — this page
+// used to own its own 9-role list; it now mirrors the full 15-role model
+// shared with the mock account switcher, nav-by-role config, and RoleGate.
+const ROLE_ORDER = ROLE_KEYS.map(roleLabel);
 
 function emailFor(name: string): string {
   const handle = name
@@ -108,73 +103,115 @@ function buildUsers(): UserRow[] {
 
 const ROLES: RoleRow[] = [
   {
-    name: 'Super Admin',
+    name: 'Super Administrator',
     description: 'Full platform access across all tenants and modules.',
     userCount: 3,
     permissions: ['All Modules', 'User Management', 'System Settings'],
     iconBg: '#c81e2c',
   },
   {
-    name: 'Tenant Admin',
+    name: 'Platform Administrator',
+    description: 'Maintains platform infrastructure, modules, and tenant provisioning.',
+    userCount: 4,
+    permissions: ['Module Catalog', 'Tenant Provisioning', 'System Maintenance'],
+    iconBg: '#0f766e',
+  },
+  {
+    name: 'National Operations Manager',
+    description: 'Monitors nationwide permit statistics and LGU performance — read-only.',
+    userCount: 3,
+    permissions: ['National Analytics', 'LGU Performance', 'Export Reports'],
+    iconBg: '#2563eb',
+  },
+  {
+    name: 'System Auditor',
+    description: 'Reviews activity, access, and error logs plus compliance reports — read-only.',
+    userCount: 6,
+    permissions: ['View Logs', 'View Reports', 'Export Audit Data'],
+    iconBg: '#565c6b',
+  },
+  {
+    name: 'Technical Support Administrator',
+    description: 'Assists LGUs and uses tenant impersonation for troubleshooting.',
+    userCount: 5,
+    permissions: ['Tenant Lookup', 'Impersonation', 'Issue Tracking'],
+    iconBg: '#9333ea',
+  },
+  {
+    name: 'Security Administrator',
+    description: 'Manages user security, sessions, login activity, and permissions.',
+    userCount: 4,
+    permissions: ['User Security', 'Session Monitoring', 'Password Policy'],
+    iconBg: '#1d4ed8',
+  },
+  {
+    name: 'Tenant Administrator',
     description: 'Manages a single LGU tenant workspace, staff, and settings.',
     userCount: 12,
     permissions: ['Tenant Settings', 'User Management', 'Reports'],
     iconBg: '#2563eb',
   },
   {
-    name: 'Initial Evaluator',
+    name: 'Office of the Building Official',
+    description: 'Office of the Building Official engineering review and final sign-off.',
+    userCount: 11,
+    permissions: ['View Applications', 'OBO Evaluation', 'Final Approval'],
+    iconBg: '#16a34a',
+  },
+  {
+    name: 'Initial Evaluation Officer',
     description: 'Performs first-level document verification and checklist review.',
     userCount: 18,
     permissions: ['View Applications', 'Initial Evaluation'],
     iconBg: '#7c3aed',
   },
   {
-    name: 'Zoning Evaluator',
+    name: 'Zoning Officer',
     description: 'Reviews land-use classification and zoning compliance.',
     userCount: 14,
     permissions: ['View Applications', 'Zoning Evaluation'],
     iconBg: '#f59e0b',
   },
   {
-    name: 'Fire Safety Evaluator',
+    name: 'Fire Safety Officer',
     description: 'Validates Bureau of Fire Protection compliance and inspection reports.',
     userCount: 9,
     permissions: ['View Applications', 'Fire Safety Evaluation'],
     iconBg: '#dc2626',
   },
   {
-    name: 'OBO Evaluator',
-    description: 'Office of the Building Official engineering review and sign-off.',
-    userCount: 11,
-    permissions: ['View Applications', 'OBO Evaluation', 'Final Approval'],
-    iconBg: '#16a34a',
+    name: 'Building Inspector',
+    description: 'Conducts field inspections to verify compliance with approved plans.',
+    userCount: 8,
+    permissions: ['View Applications', 'Field Inspection', 'Inspection Reports'],
+    iconBg: '#b45309',
   },
   {
-    name: 'Cashier',
+    name: 'Cashier / Payment Officer',
     description: 'Processes application fee payments and issues official receipts.',
     userCount: 7,
     permissions: ['View Applications', 'Payment Processing'],
     iconBg: '#0891b2',
   },
   {
-    name: 'Releasing Officer',
+    name: 'Permit Releasing Officer',
     description: 'Generates and releases approved permit documents to applicants.',
     userCount: 5,
     permissions: ['View Applications', 'Document Release'],
     iconBg: '#65a30d',
   },
   {
-    name: 'Viewer / Auditor',
-    description: 'Read-only access across applications and reports for oversight.',
+    name: 'Records Officer',
+    description: 'Maintains permit records, document archives, and long-term accessibility.',
     userCount: 6,
-    permissions: ['View Applications', 'View Reports'],
-    iconBg: '#565c6b',
+    permissions: ['View Applications', 'View Reports', 'Records Archive'],
+    iconBg: '#78716c',
   },
 ];
 
 @Component({
   selector: 'app-user-roles',
-  imports: [Topbar, StatCard, Icon, Avatar, Pagination, FormsModule],
+  imports: [Topbar, StatCard, Icon, Avatar, Pagination, FormsModule, RoleGate],
   templateUrl: './user-roles.html',
   styleUrl: './user-roles.scss',
 })

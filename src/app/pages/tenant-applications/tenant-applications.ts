@@ -6,6 +6,7 @@ import { Avatar } from '../../shared/avatar/avatar';
 import { DilgSeal } from '../../shared/dilg-seal/dilg-seal';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
+import { RoleGate } from '../../core/role-gate.directive';
 import {
   APP_ROWS,
   AppRow,
@@ -72,7 +73,7 @@ interface RingStat {
 
 @Component({
   selector: 'app-tenant-applications',
-  imports: [Topbar, Icon, Avatar, DilgSeal, DonutChart, Pagination, FormsModule],
+  imports: [Topbar, Icon, Avatar, DilgSeal, DonutChart, Pagination, FormsModule, RoleGate],
   templateUrl: './tenant-applications.html',
   styleUrl: './tenant-applications.scss',
 })

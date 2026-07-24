@@ -17,12 +17,12 @@
 
     <div class="user-chip">
       <span class="avatar-wrap">
-        <app-avatar [name]="userName()" [size]="38" />
+        <app-avatar [name]="account().fullName" [size]="38" />
         <span class="status-dot"></span>
       </span>
       <span class="user-text">
-        <span class="user-name">{{ userName() }}</span>
-        <span class="user-role">{{ userRole() }}</span>
+        <span class="user-name">{{ account().fullName }}</span>
+        <span class="user-role">{{ account().roleLabel }}</span>
       </span>
     </div>
   </div>

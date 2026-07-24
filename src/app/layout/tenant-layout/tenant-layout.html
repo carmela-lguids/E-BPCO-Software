@@ -1,6 +1,11 @@
 <div class="admin-shell">
-  <app-sidebar class="admin-sidebar" [navItems]="tenantNav" logoutPath="/login" />
-  <main class="admin-content">
-    <router-outlet />
-  </main>
+  <app-sidebar class="admin-sidebar" [navItems]="navItems()" logoutPath="/login" />
+  <div class="admin-main">
+    <app-impersonation-banner />
+    <div class="tenant-banner">Municipality of {{ activeTenant() }} <span>· Tenant Workspace</span></div>
+    <main class="admin-content">
+      <router-outlet />
+    </main>
+  </div>
 </div>
+<app-account-switcher />

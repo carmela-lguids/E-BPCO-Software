@@ -1,4 +1,4 @@
-<app-topbar title="Payments" [userRole]="'Admin'" />
+<app-topbar title="Payments" />
 
 @if (view() === 'list') {
   <section class="ring-stat-row">
@@ -87,9 +87,12 @@
                   @if (row.verified) {
                     <button type="button" class="pill-btn verified" disabled>Verified</button>
                   } @else {
-                    <button type="button" class="pill-btn verify" (click)="requestVerify(row)">
+                    <button type="button" class="pill-btn verify" *roleGate="['cashier']" (click)="requestVerify(row)">
                       Verify
                     </button>
+                    <span class="pill-btn verify static" *roleGate="['tenant-admin', 'obo', 'releasing', 'records']">{{
+                      row.status
+                    }}</span>
                   }
                 </div>
               </td>
