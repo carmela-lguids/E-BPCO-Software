@@ -1,0 +1,59 @@
+<div class="modal-backdrop" (click)="close()">
+  <div class="modal-box wide" (click)="$event.stopPropagation()">
+    <button type="button" class="modal-close" (click)="close()">&#10005;</button>
+
+    @if (!submitted()) {
+      <h2>Report Incorrect Account Assignment</h2>
+      <p class="modal-sub">
+        You can't change your own role or tenant — reporting sends this to the administrator who can.
+      </p>
+
+      <dl class="kv-list">
+        <div><dt>Current role</dt><dd>{{ account().roleLabel }}</dd></div>
+        <div><dt>Current department</dt><dd>{{ account().department }}</dd></div>
+        <div><dt>Current tenant</dt><dd>{{ account().tenant ?? 'National Administration' }}</dd></div>
+      </dl>
+
+      <div class="form-grid">
+        <div>
+          <label for="expected-role">Expected role</label>
+          <input id="expected-role" type="text" [(ngModel)]="expectedRole" placeholder="What role did you expect to have?" />
+        </div>
+        <div>
+          <label for="expected-dept">Expected department</label>
+          <input id="expected-dept" type="text" [(ngModel)]="expectedDepartment" placeholder="What department did you expect?" />
+        </div>
+        <div>
+          <label for="issue-desc">Issue description</label>
+          <textarea id="issue-desc" rows="3" [(ngModel)]="description" placeholder="Describe what's incorrect about your account assignment..."></textarea>
+        </div>
+        <div>
+          <label for="issue-note">Supporting note (optional)</label>
+          <textarea id="issue-note" rows="2" [(ngModel)]="note" placeholder="Anything else the administrator should know..."></textarea>
+        </div>
+      </div>
+
+      <h3 class="admin-heading">This report will be sent to</h3>
+      <ul class="admin-list">
+        @for (admin of administrators(); track admin) {
+          <li>{{ admin }}</li>
+        }
+      </ul>
+
+      <div class="modal-actions">
+        <button type="button" class="modal-btn confirm" [disabled]="!canSubmit()" (click)="submit()">Submit Report</button>
+        <button type="button" class="modal-btn cancel" (click)="close()">Cancel</button>
+      </div>
+    } @else {
+      <span class="modal-icon">✓</span>
+      <h2>Report submitted</h2>
+      <p>
+        Your report has been submitted to <strong>{{ administrators()[0] }}</strong>. Your account
+        assignment report is under review.
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn confirm" (click)="close()">Close</button>
+      </div>
+    }
+  </div>
+</div>

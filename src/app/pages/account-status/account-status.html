@@ -1,0 +1,13 @@
+<div class="status-wrap">
+  <div class="status-card" [class]="copy().tone">
+    <span class="status-icon"><app-icon [name]="copy().icon" [size]="30" /></span>
+    <h1>{{ copy().heading }}</h1>
+    <p>{{ copy().message }}</p>
+    <p class="account-line">Signed in as {{ account().fullName }} — {{ account().roleLabel }}</p>
+    @if (!contacted()) {
+      <button type="button" class="btn-primary" (click)="contactAdministrator()">{{ copy().action }}</button>
+    } @else {
+      <p class="contacted-note">A mock message has been sent to your administrator.</p>
+    }
+  </div>
+</div>

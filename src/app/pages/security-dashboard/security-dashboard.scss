@@ -17,9 +17,7 @@
 }
 
 .stat-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.1rem;
+  @include fluid-grid(220px);
   margin-bottom: 1.5rem;
 }
 
@@ -78,9 +76,6 @@
 }
 
 @media (max-width: 1300px) {
-  .stat-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .mid-row {
     grid-template-columns: 1fr;
   }

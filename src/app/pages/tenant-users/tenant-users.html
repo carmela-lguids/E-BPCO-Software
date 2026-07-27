@@ -1,0 +1,203 @@
+<app-topbar title="Users" />
+
+<section class="card">
+  <div class="filter-bar">
+    <div class="search-box">
+      <app-icon name="search" [size]="16" />
+      <input type="text" placeholder="Search name or email..." [(ngModel)]="searchTerm" />
+    </div>
+
+    <select class="filter-select" [(ngModel)]="roleFilter">
+      <option [ngValue]="'All Roles'">All Roles</option>
+      @for (role of creatableRoles; track role) {
+        <option [ngValue]="role">{{ roleLabelOf(role) }}</option>
+      }
+    </select>
+    <select class="filter-select" [(ngModel)]="statusFilter">
+      <option>All Statuses</option>
+      <option>Active</option>
+      <option>Pending Confirmation</option>
+      <option>Suspended</option>
+      <option>Inactive</option>
+      <option>Reported</option>
+    </select>
+
+    <div class="spacer"></div>
+
+    <button type="button" class="btn-primary" (click)="openAdd()">
+      <app-icon name="plus" [size]="15" />
+      Add User
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Department</th>
+          <th>Status</th>
+          <th>Confirmed</th>
+          <th>Last Login</th>
+          <th>Created By</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of filteredRows(); track row.id) {
+          <tr>
+            <td>
+              <div class="user-cell">
+                <app-avatar [name]="row.fullName" [size]="32" />
+                <div>
+                  <div class="user-name">{{ row.fullName }}</div>
+                  <div class="user-email">{{ row.email }}</div>
+                </div>
+              </div>
+            </td>
+            <td><app-role-badge [role]="row.role" [label]="row.roleLabel" [compact]="true" /></td>
+            <td>{{ row.department }}</td>
+            <td><span class="status-pill" [class]="row.status.toLowerCase().replace(' ', '-')">{{ row.status }}</span></td>
+            <td>{{ row.accountConfirmed ? 'Confirmed' : 'Unconfirmed' }}</td>
+            <td>{{ row.lastLogin }}</td>
+            <td>{{ row.createdBy }}</td>
+            <td class="actions-cell">
+              <button type="button" class="icon-btn view" (click)="view(row)"><app-icon name="eye" [size]="14" /></button>
+              <button type="button" class="icon-btn edit" (click)="edit(row)"><app-icon name="edit" [size]="14" /></button>
+              <button type="button" class="icon-btn del" (click)="remove(row)"><app-icon name="trash" [size]="14" /></button>
+            </td>
+          </tr>
+        } @empty {
+          <tr class="table-empty-row">
+            <td colspan="8">No users match your search.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</section>
+
+@if (modal() === 'view') {
+  @if (selected(); as row) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+        <h2>User Details</h2>
+        <dl class="kv-list">
+          <div><dt>Name</dt><dd>{{ row.fullName }}</dd></div>
+          <div><dt>Email</dt><dd>{{ row.email }}</dd></div>
+          <div><dt>Employee ID</dt><dd>{{ row.employeeId }}</dd></div>
+          <div><dt>Role</dt><dd>{{ row.roleLabel }}</dd></div>
+          <div><dt>Department</dt><dd>{{ row.department }}</dd></div>
+          <div><dt>Status</dt><dd>{{ row.status }}</dd></div>
+          <div><dt>Assigned By</dt><dd>{{ row.assignedBy }} ({{ row.assignedByRole }})</dd></div>
+          <div><dt>Assignment Date</dt><dd>{{ row.assignedDate }}</dd></div>
+        </dl>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn cancel" (click)="closeModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (modal() === 'edit') {
+  @if (selected()) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal-box wide" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+        <h2>Edit User</h2>
+        <div class="form-grid">
+          <div>
+            <label for="edit-name">Full Name</label>
+            <input id="edit-name" type="text" [(ngModel)]="editForm.fullName" />
+          </div>
+          <div>
+            <label for="edit-dept">Department</label>
+            <input id="edit-dept" type="text" [(ngModel)]="editForm.department" />
+          </div>
+          <div>
+            <label for="edit-status">Status</label>
+            <select id="edit-status" [(ngModel)]="editForm.status">
+              <option>Active</option>
+              <option>Pending Confirmation</option>
+              <option>Suspended</option>
+              <option>Inactive</option>
+              <option>Reported</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="saveEdit()">Save Changes</button>
+          <button type="button" class="modal-btn cancel" (click)="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (modal() === 'delete') {
+  @if (selected(); as row) {
+    <div class="modal-backdrop" (click)="closeModal()">
+      <div class="modal-box" (click)="$event.stopPropagation()">
+        <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+        <h2>Remove {{ row.fullName }}?</h2>
+        <p>This will permanently remove this user from your tenant workspace. This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button type="button" class="modal-btn confirm" (click)="confirmDelete()">Yes, Remove</button>
+          <button type="button" class="modal-btn cancel" (click)="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  }
+}
+
+@if (addStep() === 'form') {
+  <div class="modal-backdrop" (click)="cancelAdd()">
+    <div class="modal-box wide" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="cancelAdd()">&#10005;</button>
+      <h2>Add User</h2>
+      <div class="form-grid">
+        <div>
+          <label for="add-name">Full Name</label>
+          <input id="add-name" type="text" [(ngModel)]="addForm.fullName" />
+        </div>
+        <div>
+          <label for="add-email">Email</label>
+          <input id="add-email" type="email" [(ngModel)]="addForm.email" />
+        </div>
+        <div>
+          <label for="add-dept">Department</label>
+          <input id="add-dept" type="text" [(ngModel)]="addForm.department" />
+        </div>
+        <div>
+          <label for="add-role">Assign Role</label>
+          <select id="add-role" [(ngModel)]="addForm.role">
+            @for (role of creatableRoles; track role) {
+              <option [ngValue]="role">{{ roleLabelOf(role) }}</option>
+            }
+          </select>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn confirm" (click)="goToPreview()">Preview Access</button>
+        <button type="button" class="modal-btn cancel" (click)="cancelAdd()">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (addStep() === 'preview') {
+  <div class="modal-backdrop" (click)="cancelAdd()">
+    <div class="modal-box wide" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="cancelAdd()">&#10005;</button>
+      <h2>Review Before Assigning</h2>
+      <app-role-assignment-preview [role]="addForm.role" />
+      <div class="modal-actions">
+        <button type="button" class="modal-btn confirm" (click)="confirmAdd()">Confirm Assignment</button>
+        <button type="button" class="modal-btn cancel" (click)="backToForm()">Back</button>
+      </div>
+    </div>
+  </div>
+}

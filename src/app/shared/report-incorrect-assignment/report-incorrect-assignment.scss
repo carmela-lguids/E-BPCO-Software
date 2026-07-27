@@ -1,0 +1,46 @@
+@use '../styles/modal';
+@use '../styles/tokens' as *;
+
+.modal-sub {
+  text-align: center;
+  color: $color-ink-300;
+  font-size: 0.85rem;
+  margin: -0.5rem 0 1.25rem;
+}
+
+.admin-heading {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: $color-ink-900;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.admin-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  font-size: 0.85rem;
+  color: $color-ink-600;
+
+  li {
+    margin-bottom: 0.2rem;
+  }
+}
+
+.modal-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.modal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: $color-success-bg;
+  color: $color-success;
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 auto 1rem;
+}

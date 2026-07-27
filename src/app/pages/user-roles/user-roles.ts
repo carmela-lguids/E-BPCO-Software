@@ -5,8 +5,9 @@ import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { Pagination } from '../../shared/pagination/pagination';
-import { ROLE_ORDER as ROLE_KEYS, roleLabel } from '../../core/roles';
+import { ROLE_ORDER as ROLE_KEYS, roleLabel, roleKeyFromLabel, RoleKey } from '../../core/roles';
 import { RoleGate } from '../../core/role-gate.directive';
+import { RoleAssignmentPreview } from '../../shared/role-assignment-preview/role-assignment-preview';
 
 type Tab = 'users' | 'roles';
 type UserStatus = 'Active' | 'Inactive' | 'Pending';
@@ -211,7 +212,7 @@ const ROLES: RoleRow[] = [
 
 @Component({
   selector: 'app-user-roles',
-  imports: [Topbar, StatCard, Icon, Avatar, Pagination, FormsModule, RoleGate],
+  imports: [Topbar, StatCard, Icon, Avatar, Pagination, FormsModule, RoleGate, RoleAssignmentPreview],
   templateUrl: './user-roles.html',
   styleUrl: './user-roles.scss',
 })
@@ -339,6 +340,13 @@ export class UserRoles {
   closeUserModal(): void {
     this.userModal.set(null);
     this.selectedUser.set(null);
+  }
+
+  /** Resolves the plain-text role label in the edit form back to a RoleKey
+   *  so the shared Role Assignment Preview (Identity memo §09) can show
+   *  what this user will and won't have access to before saving. */
+  protected editUserRoleKey(): RoleKey | null {
+    return roleKeyFromLabel(this.editUserForm.role) ?? null;
   }
 
   saveUser(): void {

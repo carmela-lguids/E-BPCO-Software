@@ -12,9 +12,7 @@
 }
 
 .ring-stat-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.1rem;
+  @include fluid-grid(240px);
   margin-bottom: 1.5rem;
 }
 
@@ -63,14 +61,3 @@
   font-variant-numeric: tabular-nums;
 }
 
-@media (max-width: 1400px) {
-  .ring-stat-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 640px) {
-  .ring-stat-row {
-    grid-template-columns: 1fr;
-  }
-}

@@ -1,0 +1,14 @@
+<ol class="role-history">
+  @for (entry of entries(); track entry.date + entry.event) {
+    <li>
+      <span class="rh-date">{{ entry.date }}</span>
+      <span class="rh-event">{{ entry.event }}</span>
+      <span class="rh-by">Changed by: {{ entry.changedBy }}, {{ entry.changedByRole }}</span>
+      @if (entry.reason) {
+        <span class="rh-reason">Reason: {{ entry.reason }}</span>
+      }
+    </li>
+  } @empty {
+    <li class="rh-empty">No role history recorded yet.</li>
+  }
+</ol>

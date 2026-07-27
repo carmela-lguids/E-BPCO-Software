@@ -1,0 +1,58 @@
+<app-topbar title="My Access" />
+
+<section class="card identity-card">
+  <div class="identity-left">
+    <h1>{{ account().fullName }}</h1>
+    <div class="identity-meta">
+      <app-role-badge [role]="account().role" [label]="account().roleLabel" />
+      <span class="status-pill" [class]="account().status.toLowerCase().replace(' ', '-')">{{ account().status }}</span>
+    </div>
+    <p class="identity-org">
+      {{ account().department }} ·
+      {{ account().tenant ? 'Municipality of ' + account().tenant : 'National Administration' }}
+    </p>
+  </div>
+  <div class="scope-chip">
+    <span class="scope-label">Access Scope</span>
+    <span class="scope-value">{{ account().accessScope }}</span>
+  </div>
+</section>
+
+<section class="access-grid">
+  <div class="card">
+    <h2><app-icon name="check-circle" [size]="17" /> Allowed Modules</h2>
+    <ul class="plain-list">
+      @for (item of allowedModules(); track item.path) {
+        <li><app-icon [name]="item.icon" [size]="14" />{{ item.label }}</li>
+      }
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 class="hidden-heading"><app-icon name="eye-off" [size]="17" /> Restricted Modules</h2>
+    <ul class="plain-list hidden-list">
+      @for (label of restrictedModules(); track label) {
+        <li>{{ label }}</li>
+      }
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2><app-icon name="thumb-up" [size]="17" /> Allowed Actions</h2>
+    <ul class="plain-list">
+      @for (action of capabilities().allowed; track action) {
+        <li>{{ action }}</li>
+      }
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2 class="hidden-heading"><app-icon name="thumb-down" [size]="17" /> Restricted Actions</h2>
+    <ul class="plain-list hidden-list">
+      @for (action of capabilities().restricted; track action) {
+        <li>Cannot {{ action[0].toLowerCase() + action.slice(1) }}</li>
+      }
+      <li>Cannot change my own role, tenant, or department</li>
+    </ul>
+  </div>
+</section>

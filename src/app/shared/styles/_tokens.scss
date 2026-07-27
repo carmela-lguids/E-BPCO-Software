@@ -72,3 +72,31 @@ $shadow-badge: 0 4px 10px rgba(0, 0, 0, 0.12);
 
 $ease-base: 0.2s ease;
 $ease-fast: 0.15s ease;
+
+// Breakpoints — named so every page reasons about the same handful of
+// widths instead of hand-picking a new pixel value per file.
+$bp-tablet: 900px;
+$bp-phone: 640px;
+$bp-phone-sm: 400px;
+
+// A KPI/stat-tile row that reflows to however many columns actually fit,
+// instead of jumping between a couple of hard-coded `repeat(N, 1fr)`
+// breakpoints. Replaces the fixed-column + 1-2-breakpoint pattern that used
+// to be copy-pasted per page.
+@mixin fluid-grid($min: 220px, $gap: 1.1rem) {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax($min, 1fr));
+  gap: $gap;
+}
+
+// A two-column content split (sidebar-ish card + main card) that drops to a
+// single column once the narrow column can no longer fit comfortably.
+@mixin split-grid($ratio: 1fr 1fr, $gap: 1.5rem, $collapse: $bp-tablet) {
+  display: grid;
+  grid-template-columns: $ratio;
+  gap: $gap;
+
+  @media (max-width: $collapse) {
+    grid-template-columns: 1fr;
+  }
+}

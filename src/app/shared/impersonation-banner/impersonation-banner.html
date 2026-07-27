@@ -2,8 +2,8 @@
   <div class="imp-banner" role="status">
     <app-icon name="eye" [size]="16" />
     <span>
-      You are viewing the <strong>Municipality of {{ imp.tenant }}</strong> as
-      <strong>{{ account().roleLabel }}</strong>.
+      <strong>{{ imp.by.fullName }}</strong> ({{ imp.by.roleLabel }}) is viewing the
+      <strong>Municipality of {{ imp.tenant }}</strong> workspace. Started {{ imp.startedAt }}.
     </span>
     <button type="button" class="end-btn" (click)="end()">End Impersonation</button>
   </div>

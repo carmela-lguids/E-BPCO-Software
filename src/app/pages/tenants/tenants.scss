@@ -251,9 +251,7 @@ h2 {
 }
 
 .metric-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  @include fluid-grid(200px, 1rem);
 }
 
 .metric-tile {
@@ -325,7 +323,7 @@ h2 {
 
 .module-row {
   display: grid;
-  grid-template-columns: 200px 110px 1fr;
+  grid-template-columns: minmax(120px, 200px) minmax(70px, 110px) minmax(140px, 1fr);
   align-items: center;
   gap: 1.25rem;
   padding: 0.9rem 0;
@@ -333,6 +331,11 @@ h2 {
 
   &:last-child {
     border-bottom: none;
+  }
+
+  @media (max-width: $bp-phone) {
+    grid-template-columns: 1fr;
+    row-gap: 0.4rem;
   }
 }
 

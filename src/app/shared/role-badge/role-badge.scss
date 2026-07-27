@@ -1,0 +1,68 @@
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  padding: 0.24rem 0.6rem;
+  border-radius: 0.35rem;
+
+  &::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    flex: none;
+  }
+
+  &.national {
+    background: #fdeceb;
+    color: #c81e2c;
+    &::before {
+      background: #c81e2c;
+    }
+  }
+  &.tenant {
+    background: #e7edfc;
+    color: #2563eb;
+    &::before {
+      background: #2563eb;
+    }
+  }
+  &.evaluator {
+    background: #f1e9fd;
+    color: #7c3aed;
+    &::before {
+      background: #7c3aed;
+    }
+  }
+  &.finance {
+    background: #e0f4f8;
+    color: #0891b2;
+    &::before {
+      background: #0891b2;
+    }
+  }
+  &.inspection {
+    background: #fbeee0;
+    color: #b45309;
+    &::before {
+      background: #b45309;
+    }
+  }
+  &.records {
+    background: #eeecea;
+    color: #78716c;
+    &::before {
+      background: #78716c;
+    }
+  }
+
+  &.compact {
+    font-size: 0.62rem;
+    padding: 0.18rem 0.45rem;
+  }
+}

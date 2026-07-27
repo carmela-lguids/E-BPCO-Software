@@ -17,9 +17,7 @@
 }
 
 .stat-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.1rem;
+  @include fluid-grid(240px);
   margin-bottom: 1.5rem;
 }
 
@@ -65,8 +63,3 @@
   color: $color-danger;
 }
 
-@media (max-width: 1400px) {
-  .stat-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}

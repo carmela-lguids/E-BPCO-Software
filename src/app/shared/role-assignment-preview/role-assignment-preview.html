@@ -1,0 +1,25 @@
+<div class="rap">
+  <div class="rap-head">
+    <span class="rap-label">Selected role</span>
+    <app-role-badge [role]="role()" [label]="label()" />
+  </div>
+
+  <div class="rap-cols">
+    <div class="rap-col receive">
+      <h4>This account will receive access to</h4>
+      <ul>
+        @for (item of willReceive(); track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </div>
+    <div class="rap-col deny">
+      <h4>This account will not receive access to</h4>
+      <ul>
+        @for (item of willNotReceive(); track item) {
+          <li>{{ item }}</li>
+        }
+      </ul>
+    </div>
+  </div>
+</div>

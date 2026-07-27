@@ -75,4 +75,61 @@ export function roleLabel(key: RoleKey): string {
   return ROLES[key].label;
 }
 
+export function roleKeyFromLabel(label: string): RoleKey | undefined {
+  return ROLE_ORDER.find((key) => ROLES[key].label === label);
+}
+
 export const EVALUATOR_ROLES: RoleKey[] = ['obo', 'initial-eval', 'zoning', 'fire-safety'];
+
+// Badge category — a coarser grouping than RoleKey, used only to color the
+// role badge shown beside a user's name (header, sidebar, profile). Six
+// groups, reusing the exact hex values already assigned to each role's
+// iconBg in the User & Roles page rather than inventing a new palette.
+export type BadgeCategory = 'national' | 'tenant' | 'evaluator' | 'finance' | 'inspection' | 'records';
+
+export const BADGE_CATEGORY: Record<RoleKey, BadgeCategory> = {
+  'super-admin': 'national',
+  'platform-admin': 'national',
+  'ops-manager': 'national',
+  auditor: 'national',
+  'support-admin': 'national',
+  'security-admin': 'national',
+  'tenant-admin': 'tenant',
+  obo: 'evaluator',
+  'initial-eval': 'evaluator',
+  zoning: 'evaluator',
+  'fire-safety': 'evaluator',
+  inspector: 'inspection',
+  cashier: 'finance',
+  releasing: 'records',
+  records: 'records',
+};
+
+// One access-scope label per role, shown on My Access, the profile header,
+// and the dashboard identity block. See the Account Identity memo §06.
+export type AccessScope =
+  | 'National Access'
+  | 'Tenant-Wide Access'
+  | 'Department Access'
+  | 'Assigned Records Only'
+  | 'Read-Only Access'
+  | 'Support Access'
+  | 'Audit Access';
+
+export const ACCESS_SCOPE: Record<RoleKey, AccessScope> = {
+  'super-admin': 'National Access',
+  'platform-admin': 'National Access',
+  'ops-manager': 'Read-Only Access',
+  auditor: 'Audit Access',
+  'support-admin': 'Support Access',
+  'security-admin': 'National Access',
+  'tenant-admin': 'Tenant-Wide Access',
+  obo: 'Assigned Records Only',
+  'initial-eval': 'Assigned Records Only',
+  zoning: 'Assigned Records Only',
+  'fire-safety': 'Assigned Records Only',
+  inspector: 'Assigned Records Only',
+  cashier: 'Department Access',
+  releasing: 'Department Access',
+  records: 'Read-Only Access',
+};

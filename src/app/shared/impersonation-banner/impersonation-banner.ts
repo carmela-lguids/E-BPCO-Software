@@ -12,7 +12,6 @@ export class ImpersonationBanner {
   private readonly session = inject(Session);
 
   protected readonly impersonating = this.session.impersonating;
-  protected readonly account = this.session.currentAccount;
 
   end(): void {
     this.session.endImpersonation();

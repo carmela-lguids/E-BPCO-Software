@@ -40,6 +40,7 @@ export const NAV_BY_ROLE: Record<RoleKey, NavItem[]> = {
     { label: 'Dashboard', icon: 'home', path: '/tenant/dashboard' },
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
+    { label: 'Users', icon: 'user-check', path: '/tenant/users' },
     { label: 'Payments', icon: 'wallet', path: '/tenant/payments' },
     { label: 'Permit Release', icon: 'file-check', path: '/tenant/permit-release' },
     { label: 'Inspections', icon: 'clipboard-check', path: '/tenant/inspections' },
@@ -70,3 +71,15 @@ export const NAV_BY_ROLE: Record<RoleKey, NavItem[]> = {
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
   ],
 };
+
+// Every distinct module label that appears in any role's sidebar, across
+// both portals — used by My Access (§06) to compute "Restricted modules" as
+// the inverse of a role's own nav, without hand-maintaining a second list.
+export const ALL_MODULE_LABELS: string[] = Array.from(
+  new Set(Object.values(NAV_BY_ROLE).flatMap((items) => items.map((i) => i.label))),
+).sort();
+
+export function restrictedModulesFor(role: RoleKey): string[] {
+  const allowed = new Set(NAV_BY_ROLE[role].map((i) => i.label));
+  return ALL_MODULE_LABELS.filter((label) => !allowed.has(label));
+}

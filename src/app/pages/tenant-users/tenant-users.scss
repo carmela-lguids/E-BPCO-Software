@@ -1,0 +1,84 @@
+@use '../../shared/styles/data-table';
+@use '../../shared/styles/modal';
+@use '../../shared/styles/tokens' as *;
+
+@keyframes section-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:host {
+  display: block;
+}
+
+.card {
+  background: $color-surface;
+  border-radius: $radius-xl;
+  padding: 1.5rem 1.6rem;
+  border: 1px solid $color-border;
+  animation: section-in 0.4s ease both;
+}
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 0.55rem 0.7rem;
+  color: $color-ink-200;
+  min-width: 220px;
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 0.85rem;
+    color: $color-ink-700;
+  }
+}
+
+.spacer {
+  flex: 1;
+}
+
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 0.87rem;
+  color: $color-ink-900;
+}
+
+.user-email {
+  font-size: 0.78rem;
+  color: $color-ink-300;
+}
+
+.status-pill.pending-confirmation {
+  background: #fef3c7;
+  color: #92400e;
+}
+.status-pill.reported {
+  background: $color-info-bg;
+  color: $color-info-700;
+}

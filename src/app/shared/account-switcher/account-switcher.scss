@@ -145,6 +145,34 @@ ul {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
+}
+
+.acct-status {
+  flex: none;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.4rem;
+  border-radius: $radius-sm;
+
+  &.pending {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  &.suspended {
+    background: #fee2e2;
+    color: #b91c1c;
+  }
+  &.inactive {
+    background: $color-bg-muted;
+    color: $color-ink-300;
+  }
+  &.reported {
+    background: $color-info-bg;
+    color: $color-info-700;
+  }
 }
 
 .acct-name {

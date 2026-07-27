@@ -1,0 +1,47 @@
+<app-auth-layout>
+  <div class="auth-card">
+    <div class="brand">
+      <app-dilg-seal [size]="52" />
+      <span class="brand-name">E-BPCO</span>
+    </div>
+
+    @if (!confirmed()) {
+      <h1 class="title">Confirm Your Account</h1>
+      <p class="subtitle">This appears once, on your very first sign-in. Review the details below before continuing.</p>
+
+      <dl class="kv-list">
+        <div><dt>Full Name</dt><dd>{{ account().fullName }}</dd></div>
+        <div><dt>Email</dt><dd>{{ account().email }}</dd></div>
+        <div><dt>Employee ID</dt><dd>{{ account().employeeId }}</dd></div>
+        <div><dt>Assigned Role</dt><dd><app-role-badge [role]="account().role" [label]="account().roleLabel" /></dd></div>
+        <div><dt>Department</dt><dd>{{ account().department }}</dd></div>
+        <div><dt>Tenant / Organization</dt><dd>{{ account().tenant ?? 'National Administration' }}</dd></div>
+        <div><dt>Account Status</dt><dd>Pending Confirmation</dd></div>
+        <div><dt>Role Assigned By</dt><dd>{{ account().assignedBy }} ({{ account().assignedByRole }})</dd></div>
+      </dl>
+
+      <p class="note">
+        Your role is assigned by your administrator and can't be changed here. If something above looks
+        wrong, use Report Incorrect Assignment instead of confirming.
+      </p>
+
+      <div class="action-row">
+        <button type="button" class="btn-primary" (click)="confirm()">Confirm Account</button>
+        <button type="button" class="btn-outline" (click)="openReport()">Report Incorrect Assignment</button>
+      </div>
+    } @else {
+      <span class="success-icon">✓</span>
+      <h1 class="title">Account Confirmed</h1>
+      <p class="subtitle">
+        Welcome, {{ account().fullName }}. Taking you to your {{ account().roleLabel }} dashboard.
+      </p>
+      <div class="action-row">
+        <button type="button" class="btn-primary" (click)="continue()">Continue</button>
+      </div>
+    }
+  </div>
+</app-auth-layout>
+
+@if (reportOpen()) {
+  <app-report-incorrect-assignment (closed)="closeReport()" />
+}

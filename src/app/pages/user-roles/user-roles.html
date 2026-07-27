@@ -242,6 +242,12 @@
             </select>
           </div>
         </div>
+
+        @if (editUserRoleKey(); as roleKey) {
+          <h3 class="preview-heading">Access preview for this role</h3>
+          <app-role-assignment-preview [role]="roleKey" />
+        }
+
         <div class="modal-actions">
           <button type="button" class="modal-btn confirm" (click)="saveUser()">Save Changes</button>
           <button type="button" class="modal-btn cancel" (click)="closeUserModal()">Cancel</button>

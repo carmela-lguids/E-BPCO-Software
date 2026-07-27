@@ -1,0 +1,34 @@
+@use '../styles/tokens' as *;
+
+.status-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: $color-info-bg;
+  color: $color-info-700;
+  border-bottom: 1px solid #bfdbfe;
+  padding: 0.6rem 1.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+
+  span {
+    flex: 1;
+  }
+}
+
+.status-link {
+  border: 1px solid $color-info-700;
+  background: $color-surface;
+  color: $color-info-700;
+  border-radius: $radius-sm;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background $ease-fast;
+
+  &:hover {
+    background: $color-info-700;
+    color: $color-surface;
+  }
+}

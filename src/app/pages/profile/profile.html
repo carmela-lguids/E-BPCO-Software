@@ -1,0 +1,106 @@
+<app-topbar title="My Profile" />
+
+<section class="card profile-head" id="account-information">
+  <div class="head-left">
+    <app-avatar [name]="account().fullName" [size]="64" />
+    <div>
+      <h1>{{ account().fullName }}</h1>
+      <div class="head-meta">
+        <app-role-badge [role]="account().role" [label]="account().roleLabel" />
+        <span class="status-pill" [class]="account().status.toLowerCase().replace(' ', '-')">{{ account().status }}</span>
+      </div>
+      <p class="head-org">{{ account().tenant ? 'Municipality of ' + account().tenant : 'National Administration' }}</p>
+    </div>
+  </div>
+  <button type="button" class="btn-outline" (click)="openReport()">
+    <app-icon name="alert-triangle" [size]="15" />
+    Report Incorrect Assignment
+  </button>
+</section>
+
+<section class="card">
+  <h2>Account Information</h2>
+  <div class="field-grid">
+    <div class="field">
+      <label>Profile Photo</label>
+      <div class="photo-row">
+        <app-avatar [name]="account().fullName" [size]="40" />
+        <button type="button" class="btn-outline small" disabled title="Mock only — photo upload isn't implemented in this simulation">
+          Change Photo
+        </button>
+      </div>
+    </div>
+    <div class="field readonly"><label>Full Name</label><span>{{ account().fullName }}</span></div>
+    <div class="field readonly"><label>Email</label><span>{{ account().email }}</span></div>
+    <div class="field readonly"><label>Username</label><span>{{ account().username }}</span></div>
+    <div class="field readonly"><label>Employee ID</label><span>{{ account().employeeId }}</span></div>
+    <div class="field">
+      <label>Contact Number</label>
+      @if (editingContact()) {
+        <div class="edit-row">
+          <input type="text" [(ngModel)]="contactDraft" />
+          <button type="button" class="icon-btn-sm confirm" (click)="saveContact()"><app-icon name="check-circle" [size]="15" /></button>
+          <button type="button" class="icon-btn-sm cancel" (click)="cancelEditContact()"><app-icon name="trash" [size]="15" /></button>
+        </div>
+      } @else {
+        <div class="edit-row">
+          <span>{{ account().contactNumber }}</span>
+          <button type="button" class="icon-btn-sm" (click)="startEditContact()"><app-icon name="edit" [size]="14" /></button>
+        </div>
+      }
+    </div>
+    <div class="field readonly"><label>Account Type</label><span>{{ account().accountType }}</span></div>
+    <div class="field readonly"><label>Account Status</label><span>{{ account().status }}</span></div>
+    <div class="field readonly"><label>Last Login</label><span>{{ account().lastLogin }}</span></div>
+  </div>
+</section>
+
+<section class="card">
+  <h2>Organizational Information</h2>
+  <div class="field-grid">
+    <div class="field readonly"><label>Assigned Role</label><span>{{ account().roleLabel }}</span></div>
+    <div class="field readonly"><label>Department / Office</label><span>{{ account().department }}</span></div>
+    <div class="field readonly"><label>Tenant / LGU</label><span>{{ account().tenant ?? 'National Administration' }}</span></div>
+    @if (account().region) {
+      <div class="field readonly"><label>Region</label><span>{{ account().region }}</span></div>
+    }
+    @if (account().province) {
+      <div class="field readonly"><label>Province</label><span>{{ account().province }}</span></div>
+    }
+    @if (account().city) {
+      <div class="field readonly"><label>City / Municipality</label><span>{{ account().city }}</span></div>
+    }
+  </div>
+</section>
+
+<section class="card">
+  <h2>Role Assignment Information</h2>
+  <div class="field-grid">
+    <div class="field readonly"><label>Role Assigned By</label><span>{{ account().assignedBy }} ({{ account().assignedByRole }})</span></div>
+    <div class="field readonly"><label>Role Assignment Date</label><span>{{ account().assignedDate }}</span></div>
+    <div class="field readonly"><label>Account Created By</label><span>{{ account().createdBy }}</span></div>
+    <div class="field readonly"><label>Account Created Date</label><span>{{ account().createdDate }}</span></div>
+    <div class="field readonly"><label>Last Role Update</label><span>{{ account().lastRoleUpdate }}</span></div>
+    <div class="field readonly"><label>Role Status</label><span>{{ account().status }}</span></div>
+  </div>
+
+  <h3 class="sub-heading">Role Assignment History</h3>
+  <app-role-history [entries]="account().roleHistory" />
+</section>
+
+<section class="card" id="notifications">
+  <h2>Notification Preferences</h2>
+  <p class="muted-sub">Mock preferences only — nothing here is sent anywhere in this simulation.</p>
+  <label class="toggle-row">
+    <input type="checkbox" [(ngModel)]="notifyEmail" />
+    Email notifications for assigned applications
+  </label>
+  <label class="toggle-row">
+    <input type="checkbox" [(ngModel)]="notifySms" />
+    SMS notifications for urgent items
+  </label>
+</section>
+
+@if (reportOpen()) {
+  <app-report-incorrect-assignment (closed)="closeReport()" />
+}

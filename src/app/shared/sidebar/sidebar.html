@@ -1,4 +1,8 @@
-<aside class="sidebar">
+@if (uiState.sidebarOpen()) {
+  <div class="sidebar-backdrop" (click)="uiState.closeSidebar()"></div>
+}
+
+<aside class="sidebar" [class.open]="uiState.sidebarOpen()">
   <div class="brand">
     <app-dilg-seal [size]="36" />
     <span>E-BPCO</span>
@@ -12,15 +16,11 @@
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: false }"
         [title]="item.label"
+        (click)="uiState.closeSidebar()"
       >
         <app-icon [name]="item.icon" [size]="19" />
         <span>{{ item.label }}</span>
       </a>
     }
   </nav>
-
-  <button type="button" class="logout-btn" (click)="logout()" title="Log Out">
-    <app-icon name="logout" [size]="17" />
-    <span>Log Out</span>
-  </button>
 </aside>

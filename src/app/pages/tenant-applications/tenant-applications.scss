@@ -765,9 +765,7 @@ h3 {
 
 /* Evaluations grid */
 .eval-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.25rem;
+  @include fluid-grid(280px, 1.25rem);
 }
 
 .eval-card {
@@ -1435,17 +1433,7 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .eval-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .app-info-cols {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 1400px) {
-  .eval-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
 }

@@ -1,0 +1,7 @@
+@if (account().status === 'Reported') {
+  <div class="status-banner" role="status">
+    <app-icon name="alert-circle" [size]="16" />
+    <span>Your account assignment report is under review. Your access remains read-only in the meantime.</span>
+    <a routerLink="/profile" class="status-link">View my report</a>
+  </div>
+}

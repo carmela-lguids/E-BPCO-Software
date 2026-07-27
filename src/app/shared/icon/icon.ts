@@ -212,6 +212,11 @@ const ICONS: Record<string, Shape[]> = {
     { tag: 'path', d: 'M16 16.5 20.5 12 16 7.5' },
     { tag: 'line', x1: 20.5, y1: 12, x2: 9.5, y2: 12 },
   ],
+  menu: [
+    { tag: 'line', x1: 4, y1: 6.5, x2: 20, y2: 6.5 },
+    { tag: 'line', x1: 4, y1: 12, x2: 20, y2: 12 },
+    { tag: 'line', x1: 4, y1: 17.5, x2: 20, y2: 17.5 },
+  ],
   'dots-vertical': [
     { tag: 'circle', cx: 12, cy: 5.5, r: 1, fill: 'currentColor' },
     { tag: 'circle', cx: 12, cy: 12, r: 1, fill: 'currentColor' },

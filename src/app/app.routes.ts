@@ -16,6 +16,34 @@ export const routes: Routes = [
       import('./pages/access-denied/access-denied').then((m) => m.AccessDenied),
   },
   {
+    path: 'confirm-account',
+    loadComponent: () =>
+      import('./pages/confirm-account/confirm-account').then((m) => m.ConfirmAccount),
+  },
+  {
+    path: 'session-expired',
+    loadComponent: () =>
+      import('./pages/session-expired/session-expired').then((m) => m.SessionExpired),
+  },
+  {
+    path: 'account-status/suspended',
+    loadComponent: () =>
+      import('./pages/account-status/account-status').then((m) => m.AccountStatus),
+    data: { variant: 'suspended' },
+  },
+  {
+    path: 'account-status/inactive',
+    loadComponent: () =>
+      import('./pages/account-status/account-status').then((m) => m.AccountStatus),
+    data: { variant: 'inactive' },
+  },
+  {
+    path: 'account-status/tenant-inactive',
+    loadComponent: () =>
+      import('./pages/account-status/account-status').then((m) => m.AccountStatus),
+    data: { variant: 'tenant-inactive' },
+  },
+  {
     path: '',
     loadComponent: () =>
       import('./layout/admin-layout/admin-layout').then((m) => m.AdminLayout),
@@ -55,6 +83,14 @@ export const routes: Routes = [
         path: 'security/dashboard',
         loadComponent: () =>
           import('./pages/security-dashboard/security-dashboard').then((m) => m.SecurityDashboard),
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./pages/profile/profile').then((m) => m.Profile),
+      },
+      {
+        path: 'my-access',
+        loadComponent: () => import('./pages/my-access/my-access').then((m) => m.MyAccess),
       },
     ],
   },
@@ -109,6 +145,18 @@ export const routes: Routes = [
         path: 'records',
         loadComponent: () =>
           import('./pages/tenant-records/tenant-records').then((m) => m.TenantRecords),
+      },
+      {
+        path: 'users',
+        loadComponent: () => import('./pages/tenant-users/tenant-users').then((m) => m.TenantUsers),
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import('./pages/profile/profile').then((m) => m.Profile),
+      },
+      {
+        path: 'my-access',
+        loadComponent: () => import('./pages/my-access/my-access').then((m) => m.MyAccess),
       },
     ],
   },

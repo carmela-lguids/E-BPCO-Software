@@ -1,6 +1,7 @@
 @use '../../shared/styles/data-table';
 @use '../../shared/styles/tabs';
 @use '../../shared/styles/modal';
+@use '../../shared/styles/tokens' as *;
 
 @keyframes section-in {
   from {
@@ -29,9 +30,7 @@
 }
 
 .stat-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1.1rem;
+  @include fluid-grid(200px);
   margin-bottom: 1.5rem;
 }
 
@@ -124,14 +123,3 @@
   margin-top: 1.25rem;
 }
 
-@media (max-width: 1400px) {
-  .stat-row {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .stat-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}

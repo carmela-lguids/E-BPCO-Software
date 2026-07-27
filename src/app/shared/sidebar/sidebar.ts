@@ -1,7 +1,8 @@
-import { Component, input } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Component, inject, input } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { Icon } from '../icon/icon';
 import { DilgSeal } from '../dilg-seal/dilg-seal';
+import { UiState } from '../../core/ui-state';
 
 export interface NavItem {
   label: string;
@@ -17,6 +18,10 @@ const SUPER_ADMIN_NAV: NavItem[] = [
   { label: 'Workflow', icon: 'workflow', path: '/workflow' },
 ];
 
+// Identity (name, role badge, org) and Sign Out both already live in the
+// topbar's account dropdown — the sidebar stays navigation-only rather than
+// duplicating them. Below the phone breakpoint this becomes an off-canvas
+// drawer, opened by the hamburger button in Topbar via the shared UiState.
 @Component({
   selector: 'app-sidebar',
   imports: [RouterLink, RouterLinkActive, Icon, DilgSeal],
@@ -24,12 +29,7 @@ const SUPER_ADMIN_NAV: NavItem[] = [
   styleUrl: './sidebar.scss',
 })
 export class Sidebar {
+  protected readonly uiState = inject(UiState);
+
   readonly navItems = input<NavItem[]>(SUPER_ADMIN_NAV);
-  readonly logoutPath = input<string>('/login');
-
-  constructor(private readonly router: Router) {}
-
-  logout(): void {
-    this.router.navigateByUrl(this.logoutPath());
-  }
 }

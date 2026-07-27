@@ -18,9 +18,7 @@
 }
 
 .stat-row {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1.1rem;
+  @include fluid-grid(220px);
   margin-bottom: 1.5rem;
 }
 
@@ -261,17 +259,7 @@ h2 {
   font-weight: 600;
 }
 
-@media (max-width: 1400px) {
-  .stat-row {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 @media (max-width: 900px) {
-  .stat-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
   .mid-row {
     grid-template-columns: 1fr;
   }

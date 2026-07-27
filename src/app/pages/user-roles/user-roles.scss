@@ -3,6 +3,13 @@
 @use '../../shared/styles/modal';
 @use '../../shared/styles/tokens' as *;
 
+.preview-heading {
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: $color-ink-900;
+  margin: 1.25rem 0 0.75rem;
+}
+
 @keyframes section-in {
   from {
     opacity: 0;
@@ -19,9 +26,7 @@
 }
 
 .stat-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.1rem;
+  @include fluid-grid(220px);
   margin-bottom: 1.5rem;
 }
 
@@ -114,9 +119,7 @@
 
 /* Roles & Permissions */
 .role-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1.1rem;
+  @include fluid-grid(300px);
 }
 
 .role-card {
@@ -201,22 +204,3 @@
   }
 }
 
-@media (max-width: 1400px) {
-  .stat-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .role-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 900px) {
-  .stat-row {
-    grid-template-columns: 1fr;
-  }
-
-  .role-grid {
-    grid-template-columns: 1fr;
-  }
-}

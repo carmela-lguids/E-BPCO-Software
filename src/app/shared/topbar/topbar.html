@@ -1,5 +1,10 @@
 <header class="topbar">
-  <h1 class="page-title">{{ title() }}</h1>
+  <div class="title-row">
+    <button type="button" class="menu-btn" (click)="uiState.toggleSidebar()" aria-label="Open menu">
+      <app-icon name="menu" [size]="20" />
+    </button>
+    <h1 class="page-title">{{ title() }}</h1>
+  </div>
 
   <div class="topbar-right">
     <div class="search-box">
@@ -15,15 +20,47 @@
       }
     </button>
 
-    <div class="user-chip">
-      <span class="avatar-wrap">
-        <app-avatar [name]="account().fullName" [size]="38" />
-        <span class="status-dot"></span>
-      </span>
-      <span class="user-text">
-        <span class="user-name">{{ account().fullName }}</span>
-        <span class="user-role">{{ account().roleLabel }}</span>
-      </span>
+    <div class="user-menu-wrap">
+      <button type="button" class="user-chip" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()">
+        <span class="avatar-wrap">
+          <app-avatar [name]="account().fullName" [size]="38" />
+          <span class="status-dot" [class]="account().status.toLowerCase().replace(' ', '-')"></span>
+        </span>
+        <span class="user-text">
+          <span class="user-name-row">
+            <span class="user-name">{{ account().fullName }}</span>
+            <app-role-badge [role]="account().role" [label]="account().roleLabel" [compact]="true" />
+          </span>
+          <span class="user-org">{{ orgLabel() }}</span>
+        </span>
+        <app-icon name="chevron-down" [size]="14" />
+      </button>
+
+      @if (menuOpen()) {
+        <div class="menu-backdrop" (click)="closeMenu()"></div>
+        <div class="user-menu">
+          <a routerLink="/profile" (click)="closeMenu()">
+            <app-icon name="user" [size]="15" />
+            My Profile
+          </a>
+          <a routerLink="/my-access" (click)="closeMenu()">
+            <app-icon name="shield" [size]="15" />
+            My Access
+          </a>
+          <a routerLink="/profile" (click)="closeMenu()">
+            <app-icon name="info" [size]="15" />
+            Account Information
+          </a>
+          <a routerLink="/profile" fragment="notifications" (click)="closeMenu()">
+            <app-icon name="bell" [size]="15" />
+            Notifications
+          </a>
+          <button type="button" class="sign-out" (click)="signOut()">
+            <app-icon name="logout" [size]="15" />
+            Sign Out
+          </button>
+        </div>
+      }
     </div>
   </div>
 </header>

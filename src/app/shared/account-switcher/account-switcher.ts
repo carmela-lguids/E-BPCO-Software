@@ -4,7 +4,7 @@ import { Icon } from '../icon/icon';
 import { Avatar } from '../avatar/avatar';
 import { Session } from '../../core/session';
 import { MOCK_ACCOUNTS, MockAccount } from '../../core/mock-accounts';
-import { ROLES } from '../../core/roles';
+import { resolveLandingRoute } from '../../core/verification-flow';
 
 @Component({
   selector: 'app-account-switcher',
@@ -19,8 +19,8 @@ export class AccountSwitcher {
   protected readonly open = signal(false);
   protected readonly currentAccount = this.session.currentAccount;
 
-  protected readonly superAdminAccounts = MOCK_ACCOUNTS.filter((a) => a.accountType === 'Super Admin');
-  protected readonly tenantAccounts = MOCK_ACCOUNTS.filter((a) => a.accountType === 'Tenant Admin');
+  protected readonly superAdminAccounts = MOCK_ACCOUNTS.filter((a) => a.accountType === 'Super Admin User');
+  protected readonly tenantAccounts = MOCK_ACCOUNTS.filter((a) => a.accountType === 'Tenant User');
 
   protected readonly tenantGroups = computed(() => {
     const groups = new Map<string, MockAccount[]>();
@@ -36,9 +36,24 @@ export class AccountSwitcher {
     this.open.update((v) => !v);
   }
 
+  protected statusClass(status: MockAccount['status']): string {
+    switch (status) {
+      case 'Pending Confirmation':
+        return 'pending';
+      case 'Suspended':
+        return 'suspended';
+      case 'Inactive':
+        return 'inactive';
+      case 'Reported':
+        return 'reported';
+      default:
+        return '';
+    }
+  }
+
   select(account: MockAccount): void {
     this.session.switchAccount(account.id);
     this.open.set(false);
-    this.router.navigateByUrl(ROLES[account.role].landingPath);
+    this.router.navigateByUrl(resolveLandingRoute(account));
   }
 }

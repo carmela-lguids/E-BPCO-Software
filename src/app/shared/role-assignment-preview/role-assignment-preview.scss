@@ -1,0 +1,65 @@
+@use '../styles/tokens' as *;
+
+.rap {
+  text-align: left;
+}
+
+.rap-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: $color-bg-subtle;
+  border-radius: $radius-md;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.rap-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $color-ink-300;
+  font-weight: 700;
+}
+
+.rap-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+.rap-col {
+  h4 {
+    font-size: 0.78rem;
+    font-weight: 800;
+    margin: 0 0 0.6rem;
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.83rem;
+  }
+
+  &.receive h4 {
+    color: $color-success;
+  }
+  &.deny {
+    h4 {
+      color: $color-danger;
+    }
+    li {
+      color: $color-ink-300;
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .rap-cols {
+    grid-template-columns: 1fr;
+  }
+}
