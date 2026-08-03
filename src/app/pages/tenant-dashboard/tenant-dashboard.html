@@ -1,22 +1,295 @@
-<app-topbar title="Dashboard" />
+<app-topbar title="Tenant Command Center" />
 
-<section class="ring-stat-row">
-  @for (stat of ringStats; track stat.label) {
-    <div class="ring-card">
-      <app-donut-chart
-        [segments]="ringSegments(stat)"
-        [size]="72"
-        [ringWidth]="11"
-        [showLabels]="false"
-        holeColor="#fff"
-      />
-      <div class="ring-text">
-        <span class="ring-label">{{ stat.label }}</span>
-        <span class="ring-value">{{ stat.value }}</span>
+<div class="cc-header">
+  <div class="cc-header-text">
+    <div class="cc-title-row">
+      <span class="cc-scope-badge tenant">{{ lguName() }} — Tenant Scope</span>
+      <span class="cc-proto-badge">Prototype data</span>
+    </div>
+    <p class="cc-sub">Operational overview for your assigned LGU only.</p>
+  </div>
+  <div class="cc-filter-bar">
+    <div class="cc-filter-field">
+      <label for="cc-date-range">Date range</label>
+      <select id="cc-date-range" [(ngModel)]="dateRange">
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+        <option value="custom">Custom</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="cc-alert-band" role="status" aria-live="polite">
+  @if (bottleneckedStages.length === 0 && slaOverdueCount === 0 && slaDueTodayCount === 0) {
+    <p class="cc-alert-clear">
+      <app-icon name="check-circle" [size]="15" />
+      All systems nominal — no bottlenecks, no SLA breaches right now.
+    </p>
+  } @else {
+    <div class="cc-alert-content">
+      <div class="cc-alert-row">
+        <app-icon name="alert-triangle" [size]="15" />
+        <span>
+          <strong>{{ bottleneckedStages.length }}</strong>
+          stage{{ bottleneckedStages.length === 1 ? '' : 's' }} running over target:
+        </span>
+        <div class="cc-alert-chips">
+          @for (s of bottleneckedStages; track s.key) {
+            <span class="cc-sla-chip overdue">{{ s.label }} — {{ s.avgDwellDays }}d avg (target {{ s.targetDays }}d)</span>
+          }
+        </div>
+        <a routerLink="/tenant/workflow" class="cc-alert-link">View Workflow Monitor →</a>
+      </div>
+      <div class="cc-alert-row">
+        <app-icon name="alert-circle" [size]="15" />
+        <span><strong>{{ slaOverdueCount }}</strong> overdue · <strong>{{ slaDueTodayCount }}</strong> due today in this LGU</span>
+        <a href="#sla-monitoring" class="cc-alert-link" (click)="scrollToSlaMonitoring($event)">View SLA Monitoring ↓</a>
       </div>
     </div>
   }
+</div>
+
+<section class="cc-tier">
+  <div class="cc-tier-eyebrow tier-1"><span class="cc-tier-dot"></span><h2>Immediate Attention</h2></div>
+  <div class="cc-kpi-grid">
+    @for (kpi of kpiCards; track kpi.label) {
+      @if (kpi.route) {
+        <a [routerLink]="kpi.route" class="cc-kpi-link" [attr.aria-label]="kpi.ariaLabel">
+          <app-stat-card
+            [icon]="kpi.icon"
+            [iconBg]="kpi.iconBg"
+            [cardTint]="kpi.tint"
+            [label]="kpi.label"
+            [value]="kpi.value"
+            [deltas]="kpi.deltas"
+            [footnote]="kpi.footnote ?? ''"
+          />
+        </a>
+      } @else {
+        <app-stat-card
+          [icon]="kpi.icon"
+          [iconBg]="kpi.iconBg"
+          [cardTint]="kpi.tint"
+          [label]="kpi.label"
+          [value]="kpi.value"
+          [deltas]="kpi.deltas"
+          [footnote]="kpi.footnote ?? ''"
+          [ariaLabel]="kpi.ariaLabel"
+        />
+      }
+    }
+  </div>
+
+  <div class="card cc-sla-card" style="margin-top: 1.25rem;">
+    <div class="cc-sla-head">
+      <h3>System Health</h3>
+      <span class="status-pill" [class]="overallHealthTier">{{ overallHealthLabel }} overall</span>
+    </div>
+    <p class="cc-sla-caption">
+      Simulated infrastructure status — not connected to any real monitoring system. Platform-wide, not specific to
+      this LGU.
+    </p>
+    <div class="cc-health-grid">
+      @for (check of healthChecks; track check.key) {
+        <div class="cc-health-row">
+          <div class="cc-health-head">
+            <span class="cc-health-label">{{ check.label }}</span>
+            <span class="status-pill" [class]="healthTier(check.status)">{{ healthLabel(check.status) }}</span>
+          </div>
+          <span class="cc-health-detail">{{ check.detail }}</span>
+        </div>
+      }
+    </div>
+  </div>
 </section>
+
+<section class="cc-tier">
+  <div class="cc-tier-eyebrow tier-2"><span class="cc-tier-dot"></span><h2>Operational Detail</h2></div>
+  <div class="cc-grid-3">
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>Department Workload</h3>
+        <a routerLink="/tenant/workflow" class="cc-alert-link">View Workflow Monitor →</a>
+      </div>
+      <p class="cc-sla-caption">Capacity and staffing shown are configurable prototype figures.</p>
+      <div class="cc-workload-list">
+        @for (d of departmentWorkload; track d.key) {
+          <div class="cc-workload-row">
+            <div class="cc-workload-head">
+              <span class="cc-workload-label">{{ d.label }}</span>
+              <span class="status-pill" [class]="workloadTier(d)">{{ workloadLabel(d) }}</span>
+            </div>
+            <div class="cc-workload-bar-track">
+              <div class="cc-workload-bar-fill" [class]="workloadTier(d)" [style.width.%]="d.capacityPct"></div>
+            </div>
+            <div class="cc-workload-meta">
+              <span
+                >{{ d.count }} pending{{ d.overdueCount ? ' · ' + d.overdueCount + ' overdue' : '' }} ·
+                {{ d.assignedStaff }} staff · {{ d.avgDwellDays }}d avg (target {{ d.targetDays }}d) ·
+                {{ d.capacityPct }}% capacity</span
+              >
+              <span class="cc-workload-trend" [class.up]="d.trend === 'up'" [class.down]="d.trend === 'down'">
+                <app-icon [name]="d.trend === 'up' ? 'trend-up' : 'trend-down'" [size]="11" />{{ d.trendLabel }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>Staff Availability</h3>
+        <a routerLink="/tenant/users" class="cc-alert-link">Manage Staff →</a>
+      </div>
+      <p class="cc-sla-caption">Presence shown is simulated — not connected to a real session/activity service.</p>
+      <div class="cc-staff-list">
+        @for (row of myStaff(); track row.account.id) {
+          <div class="cc-staff-row">
+            <span class="cc-staff-avatar-wrap">
+              <app-avatar [name]="row.account.fullName" [size]="34" />
+              <span class="cc-staff-dot" [class]="row.availabilityStatus"></span>
+            </span>
+            <div class="cc-staff-info">
+              <span class="cc-staff-name">{{ row.account.fullName }}</span>
+              <span class="cc-staff-role">{{ row.account.roleLabel }} · {{ row.account.department }}</span>
+            </div>
+            <div class="cc-staff-meta">
+              <span class="cc-staff-status-label" [class]="row.availabilityStatus">{{
+                availabilityLabel(row.availabilityStatus)
+              }}</span>
+              <span class="cc-staff-tasks">{{ row.activeTaskCount }} active task{{ row.activeTaskCount === 1 ? '' : 's' }}</span>
+              <span class="cc-staff-activity">Last active: {{ row.account.lastLogin }}</span>
+            </div>
+          </div>
+        } @empty {
+          <app-empty-state icon="user-check" title="No staff on record" message="This LGU has no staff accounts yet." />
+        }
+      </div>
+    </div>
+    <div class="card cc-sla-card" id="sla-monitoring">
+      <div class="cc-sla-head">
+        <h3>SLA Monitoring</h3>
+        <a routerLink="/tenant/applications" class="cc-alert-link">View Applications →</a>
+      </div>
+      <p class="cc-sla-caption">
+        Targets shown are configurable prototype operational targets, not legally mandated processing periods.
+      </p>
+
+      <div class="overdue-list">
+        @for (item of slaWatchItems; track item.id) {
+          <div class="overdue-item" [class]="item.slaStatus">
+            <span class="overdue-dot" [class]="item.slaStatus"></span>
+            <div class="overdue-body">
+              <p>{{ item.id }} — {{ item.applicant }}, {{ item.currentStage }} ({{ item.assignedOfficer }})</p>
+              <div class="overdue-footer">
+                <span class="cc-sla-chip" [class]="item.slaStatus">{{ slaChipLabel(item) }}</span>
+                <a class="review-link" [class]="item.slaStatus" routerLink="/tenant/applications">Review now</a>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+      <h4 class="cc-sla-subhead" style="margin-top: 1.1rem;">Department SLA Compliance</h4>
+      <ul class="cc-compliance-list">
+        @for (s of stageStats; track s.key) {
+          <li>
+            <span class="cc-compliance-label">{{ s.label }}</span>
+            <span class="status-pill" [class]="complianceTier(s)">{{ complianceLabel(s) }} · {{ complianceFor(s) }}%</span>
+          </li>
+        }
+      </ul>
+
+      <p class="cc-sla-caption" style="margin: 0.75rem 0 0;">Avg. processing time: {{ avgProcessingDays }} days per stage.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cc-tier">
+  <div class="cc-tier-eyebrow tier-3"><span class="cc-tier-dot"></span><h2>Detailed Reference</h2></div>
+  <div class="cc-grid-3">
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>Recent Incidents</h3>
+      </div>
+      <p class="cc-sla-caption">High-priority and critical notifications for this LGU.</p>
+      <div class="cc-incident-list">
+        @for (n of recentIncidents(); track n.id) {
+          <div class="cc-incident-row">
+            <div class="cc-incident-head">
+              <span class="status-pill" [class]="notifications.severityTier(n)">{{ notifications.severity(n) }}</span>
+              <span class="cc-incident-time">{{ n.timestamp }}</span>
+            </div>
+            <p class="cc-incident-desc">{{ n.message }}</p>
+            <div class="cc-incident-meta">
+              <span>Source: {{ notifications.sourceLabel(n.type) }}</span>
+              <span>Module: {{ notifications.moduleLabel(n.relatedRoute) }}</span>
+              @if (n.assignedAdmin) {
+                <span>Assigned: {{ n.assignedAdmin }}</span>
+              }
+              <span class="cc-incident-status" [class.open]="notifications.incidentStatus(n) === 'Open'">{{
+                notifications.incidentStatus(n)
+              }}</span>
+            </div>
+          </div>
+        } @empty {
+          <app-empty-state icon="check-circle" title="No incidents" message="No high-priority items right now." />
+        }
+      </div>
+    </div>
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>This LGU vs. National Average</h3>
+      </div>
+      @if (myLguPerformance(); as mine) {
+        <p class="cc-sla-caption">Rank #{{ mine.rank }} of {{ lguCount }} LGUs nationally.</p>
+        <div class="cc-lgu-compare-list">
+          <div class="cc-lgu-compare-row">
+            <span class="cc-workload-label">Approval Rate</span>
+            <div class="cc-lgu-compare-values">
+              <span>{{ mine.approvalRate }}%</span>
+              <span class="cc-lgu-vs">vs {{ lguNationalAverage.approvalRate }}% national avg</span>
+            </div>
+          </div>
+          <div class="cc-lgu-compare-row">
+            <span class="cc-workload-label">SLA Compliance</span>
+            <div class="cc-lgu-compare-values">
+              <span class="status-pill" [class]="lguComplianceTier(mine.slaCompliancePct)"
+                >{{ lguComplianceLabel(mine.slaCompliancePct) }} · {{ mine.slaCompliancePct }}%</span
+              >
+              <span class="cc-lgu-vs">vs {{ lguNationalAverage.slaCompliancePct }}% national avg</span>
+            </div>
+          </div>
+          <div class="cc-lgu-compare-row">
+            <span class="cc-workload-label">Avg. Processing Time</span>
+            <div class="cc-lgu-compare-values">
+              <span>{{ mine.avgProcessingDays }}d</span>
+              <span class="cc-lgu-vs">vs {{ lguNationalAverage.avgProcessingDays }}d national avg</span>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <app-empty-state
+          icon="building"
+          title="No ranking data"
+          message="This LGU isn't in the national ranking dataset yet."
+        />
+      }
+    </div>
+    <div class="cc-placeholder-card">
+      <app-empty-state icon="users" title="Active Users" message="Who's online right now, in this LGU." />
+      <span class="cc-phase-tag">Phase 8</span>
+    </div>
+  </div>
+</section>
+
+<p class="cc-sub" style="margin: -0.5rem 0 1.5rem;">
+  The reporting widgets below are retained from the existing dashboard during this phased rollout — later phases
+  will replace, relocate, or retire each one individually.
+</p>
 
 <section class="card queue-card">
   <div class="queue-header">
@@ -40,46 +313,16 @@
   <app-stacked-bar-chart [rows]="permitQueueRows" />
 </section>
 
-<section class="mid-row">
-  <div class="card pending-card">
-    <div class="card-head">
-      <h2>Pending Applications</h2>
-      <button type="button" class="save-report-btn">
-        <app-icon name="download" [size]="16" />
-        Save Report
-      </button>
-    </div>
-
-    <app-h-bar-chart [rows]="pendingRows" [maxValue]="700" [ticks]="[0, 175, 350, 525, 700]" />
+<section class="card pending-card">
+  <div class="card-head">
+    <h2>Pending Applications</h2>
+    <button type="button" class="save-report-btn">
+      <app-icon name="download" [size]="16" />
+      Save Report
+    </button>
   </div>
 
-  <div class="card overdue-card">
-    <div class="card-head">
-      <h2>Overdue Review</h2>
-      <a class="view-all-link" routerLink="/tenant/applications">View All</a>
-    </div>
-
-    <div class="severity-legend">
-      <span><i style="background: #f5c518"></i>Low</span>
-      <span><i style="background: #f59e0b"></i>Medium</span>
-      <span><i style="background: #ef4444"></i>High</span>
-    </div>
-
-    <div class="overdue-list">
-      @for (item of overdueItems; track item.text) {
-        <div class="overdue-item" [style.border-left-color]="item.color">
-          <span class="overdue-dot" [style.background]="item.color"></span>
-          <div class="overdue-body">
-            <p>{{ item.text }}</p>
-            <div class="overdue-footer">
-              <span class="ago">{{ item.agoLabel }}</span>
-              <a class="review-link" [style.color]="item.color" routerLink="/tenant/applications">Review now</a>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-  </div>
+  <app-h-bar-chart [rows]="pendingRows" [maxValue]="700" [ticks]="[0, 175, 350, 525, 700]" />
 </section>
 
 <section class="card recent-card">

@@ -21,4 +21,11 @@ export class StatCard {
   readonly value = input.required<string>();
   readonly deltas = input<StatDelta[]>([]);
   readonly footnote = input<string>('');
+
+  /** Full accessible sentence (value + trend + comparison period) for screen
+   *  readers — visual deltas convey the same info via icon + color + short
+   *  text, which doesn't read as a complete sentence on its own. Leave unset
+   *  when the card is wrapped in its own labelled link (Phase 2 dashboards)
+   *  so the name isn't announced twice. */
+  readonly ariaLabel = input<string>('');
 }

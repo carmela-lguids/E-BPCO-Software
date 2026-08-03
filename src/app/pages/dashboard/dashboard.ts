@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { Topbar } from '../../shared/topbar/topbar';
@@ -12,15 +12,42 @@ import { Avatar } from '../../shared/avatar/avatar';
 import { Pagination } from '../../shared/pagination/pagination';
 import { buildPermitQueueRows } from '../../shared/permit-queue/permit-queue';
 import { RoleGate } from '../../core/role-gate.directive';
+import { EmptyState } from '../../shared/empty-state/empty-state';
+import { STAGE_STATS, StageStat, isBottleneck } from '../../shared/workflow-monitor/stage-summary-data';
+import { DEPARTMENT_WORKLOAD, DepartmentWorkloadRow } from '../../shared/workflow-monitor/department-workload-data';
+import { staffSummaryByLgu } from '../../core/staff-availability-data';
+import { Notifications } from '../../core/notifications';
+import { LGU_PERFORMANCE, LguPerformanceRow, complianceTier, complianceLabel } from '../../core/lgu-performance-data';
+import {
+  SYSTEM_HEALTH_CHECKS,
+  SystemHealthStatus,
+  overallSystemStatus,
+  statusTier,
+  statusLabel,
+} from '../../core/system-health-data';
 
-interface StatCardData {
+// Phase 2 KPI card shape — supersedes the old ad hoc statCards array, which
+// mixed platform-admin concerns (Total Tenants, Total Users) with reporting
+// numbers that overlapped this KPI grid's own definitions (Total
+// Applications, Applications In Process/Approved). Kept local to this file
+// rather than shared, matching this codebase's existing per-page mock-data
+// convention (see TenantApplication below, duplicated rather than shared
+// with tenant-dashboard's near-identical ApplicationRow).
+interface KpiCardData {
   icon: string;
   iconBg: string;
   tint: string;
   label: string;
   value: string;
-  deltas?: StatDelta[];
+  deltas: StatDelta[];
   footnote?: string;
+  /** Existing route this KPI drills into — omitted where no real
+   *  destination page exists yet, per "don't create dead buttons." */
+  route?: string;
+  /** Full accessible sentence — value, trend, and comparison periods,
+   *  since the visual deltas don't read as a complete sentence on their
+   *  own. Includes the drill-down hint when `route` is set. */
+  ariaLabel: string;
 }
 
 interface TenantApplication {
@@ -32,6 +59,8 @@ interface TenantApplication {
   officer: string;
   status: 'Approved' | 'Pending' | 'Rejected';
 }
+
+export type DateRangeKey = 'today' | 'week' | 'month' | 'year' | 'custom';
 
 @Component({
   selector: 'app-dashboard',
@@ -48,56 +77,318 @@ interface TenantApplication {
     FormsModule,
     RoleGate,
     RouterLink,
+    EmptyState,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
 export class Dashboard {
-  protected readonly statCards: StatCardData[] = [
-    {
-      icon: 'users',
-      iconBg: '#2563eb',
-      tint: 'tint-blue',
-      label: 'Total Tenants',
-      value: '20',
-      deltas: [
-        { text: '28 Active', direction: 'up', tone: 'good' },
-        { text: '2 InActive', direction: 'up', tone: 'bad' },
-      ],
-    },
-    {
-      icon: 'user',
-      iconBg: '#2563eb',
-      tint: 'tint-purple',
-      label: 'Total Users',
-      value: '15,000',
-      footnote: 'Across All Tenants',
-    },
+  // --- Executive Command Center shell (Phase 1: filters only, no widgets
+  // read these yet — later phases wire actual data to them). ---
+  protected readonly dateRange = signal<DateRangeKey>('month');
+  protected readonly lguFilter = signal<string>('all');
+
+  // Phase 2 — Live KPI Dashboard (Tier 1). Structured mock data, internally
+  // consistent: Pending + Under Review + Approved + Rejected = Total
+  // Applications (742 + 1,318 + 2,840 + 314 = 5,214); Released Permits is a
+  // subset of Approved, not an additional bucket. "Under Review" follows the
+  // brief's definition — assigned to Initial Evaluation, Zoning, Fire
+  // Safety, or OBO Review and actively being processed — as distinct from
+  // "Pending" (submitted, not yet assigned to any department).
+  protected readonly kpiCards: KpiCardData[] = [
     {
       icon: 'logs',
       iconBg: '#2563eb',
       tint: 'tint-blue',
       label: 'Total Applications',
-      value: '5,000',
-      footnote: 'All Time',
+      value: '5,214',
+      footnote: 'All LGUs, all time',
+      deltas: [
+        { text: '+3.1% vs yesterday', direction: 'up', tone: 'good' },
+        { text: '+18.6% vs last month', direction: 'up', tone: 'good' },
+      ],
+      ariaLabel: 'Total Applications: 5,214. Up 3.1 percent versus yesterday, up 18.6 percent versus last month.',
+    },
+    {
+      icon: 'alert-circle',
+      iconBg: '#f59e0b',
+      tint: 'tint-neutral',
+      label: 'Pending Applications',
+      value: '742',
+      footnote: 'Submitted, not yet assigned',
+      deltas: [
+        { text: '+8.4% vs yesterday', direction: 'up', tone: 'bad' },
+        { text: '-2.1% vs last month', direction: 'down', tone: 'good' },
+      ],
+      ariaLabel: 'Pending Applications: 742. Up 8.4 percent versus yesterday, down 2.1 percent versus last month.',
+    },
+    {
+      icon: 'workflow',
+      iconBg: '#2563eb',
+      tint: 'tint-blue',
+      label: 'Under Review',
+      value: '1,318',
+      footnote: 'Initial Eval, Zoning, Fire Safety, OBO Review',
+      route: '/workflow',
+      deltas: [
+        { text: '+1.9% vs yesterday', direction: 'up', tone: 'good' },
+        { text: '+6.0% vs last month', direction: 'up', tone: 'good' },
+      ],
+      ariaLabel:
+        'Under Review: 1,318. Up 1.9 percent versus yesterday, up 6 percent versus last month. View the workflow monitor.',
     },
     {
       icon: 'check-circle',
-      iconBg: '#22c55e',
+      iconBg: '#16a34a',
       tint: 'tint-green',
-      label: 'Applications In Process',
-      value: '2,400',
-      footnote: 'Across All Tenants',
+      label: 'Approved Applications',
+      value: '2,840',
+      deltas: [
+        { text: '+1.2% vs yesterday', direction: 'up', tone: 'good' },
+        { text: '+9.4% vs last month', direction: 'up', tone: 'good' },
+      ],
+      ariaLabel: 'Approved Applications: 2,840. Up 1.2 percent versus yesterday, up 9.4 percent versus last month.',
     },
     {
-      icon: 'check-circle',
+      icon: 'alert-triangle',
       iconBg: '#dc2626',
       tint: 'tint-red',
-      label: 'Applications Approved',
-      value: '730',
-      footnote: 'All Time',
+      label: 'Rejected Applications',
+      value: '314',
+      deltas: [
+        { text: '-0.6% vs yesterday', direction: 'down', tone: 'good' },
+        { text: '+3.1% vs last month', direction: 'up', tone: 'bad' },
+      ],
+      ariaLabel: 'Rejected Applications: 314. Down 0.6 percent versus yesterday, up 3.1 percent versus last month.',
+    },
+    {
+      icon: 'file-check',
+      iconBg: '#16a34a',
+      tint: 'tint-green',
+      label: 'Released Permits',
+      value: '2,102',
+      footnote: 'Subset of Approved',
+      deltas: [
+        { text: '+2.0% vs yesterday', direction: 'up', tone: 'good' },
+        { text: '+11.3% vs last month', direction: 'up', tone: 'good' },
+      ],
+      ariaLabel: 'Released Permits: 2,102. Up 2 percent versus yesterday, up 11.3 percent versus last month.',
+    },
+    {
+      icon: 'calendar',
+      iconBg: '#7c3aed',
+      tint: 'tint-purple',
+      label: "Today's Applications",
+      value: '46',
+      deltas: [
+        { text: '+4 vs yesterday', direction: 'up', tone: 'good' },
+        { text: '+9.5% vs 30-day avg', direction: 'up', tone: 'good' },
+      ],
+      ariaLabel: "Today's Applications: 46. Up 4 versus yesterday, up 9.5 percent versus the 30-day average.",
+    },
+    {
+      icon: 'user-check',
+      iconBg: '#7c3aed',
+      tint: 'tint-purple',
+      label: 'Active Users',
+      value: '142',
+      route: '/security/dashboard',
+      deltas: [
+        { text: '+5.1% vs yesterday', direction: 'up', tone: 'good' },
+        { text: '-1.8% vs last month', direction: 'down', tone: 'bad' },
+      ],
+      ariaLabel:
+        'Active Users: 142. Up 5.1 percent versus yesterday, down 1.8 percent versus last month. View session monitoring.',
+    },
+    {
+      icon: 'building',
+      iconBg: '#2563eb',
+      tint: 'tint-blue',
+      label: 'Active LGUs',
+      value: '28',
+      footnote: '28 of 30 onboarded LGUs',
+      route: '/tenants',
+      deltas: [
+        { text: '28 Active', direction: 'up', tone: 'good' },
+        { text: '2 Inactive', direction: 'up', tone: 'bad' },
+      ],
+      ariaLabel: 'Active LGUs: 28 of 30 onboarded. 2 inactive. View tenants.',
     },
   ];
+
+  // --- Phase 3 — Alert Band + SLA Monitoring ---
+  // Bottleneck detection reuses the existing Workflow Monitor's own
+  // STAGE_STATS + isBottleneck() rather than a second calculation — the
+  // same stage data already backs /workflow and /tenant/workflow.
+  protected readonly stageStats = STAGE_STATS;
+  protected readonly bottleneckedStages = STAGE_STATS.filter(isBottleneck);
+  protected readonly avgProcessingDays = (
+    STAGE_STATS.reduce((sum, s) => sum + s.avgDwellDays, 0) / STAGE_STATS.length
+  ).toFixed(1);
+
+  // No named-application rows nationally — there's no cross-LGU application
+  // list page to drill into (applications only exist under /tenant/...), so
+  // the national SLA summary stays aggregate rather than inventing
+  // per-application rows with nowhere to click through to. These are
+  // structured prototype operational targets, not derived legal SLA
+  // durations.
+  protected readonly slaOverdueCount: number = 47;
+  protected readonly slaDueTodayCount: number = 63;
+  protected readonly slaNearDeadlineCount: number = 118;
+
+  // A bare href="#sla-monitoring" resolves against <base href="/"> (see
+  // index.html), not the current path — the browser sends it to "/" and the
+  // router's empty-path route redirects to /login. Intercept the click and
+  // scroll manually instead of relying on native fragment resolution.
+  protected scrollToSlaMonitoring(event: Event): void {
+    event.preventDefault();
+    document.getElementById('sla-monitoring')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  protected complianceFor(stat: StageStat): number {
+    return Math.round(Math.min(100, (stat.targetDays / stat.avgDwellDays) * 100));
+  }
+
+  protected complianceTier(stat: StageStat): 'approved' | 'pending' | 'rejected' {
+    const pct = this.complianceFor(stat);
+    if (pct >= 90) return 'approved';
+    if (pct >= 75) return 'pending';
+    return 'rejected';
+  }
+
+  protected complianceLabel(stat: StageStat): string {
+    const pct = this.complianceFor(stat);
+    if (pct >= 90) return 'Compliant';
+    if (pct >= 75) return 'At Risk';
+    return 'Non-Compliant';
+  }
+
+  // --- Phase 4 — Department Workload ---
+  // Reuses the same DEPARTMENT_WORKLOAD (built on STAGE_STATS) shown on the
+  // Tenant Command Center, matching the existing precedent that STAGE_STATS
+  // itself is already shared identically between /workflow and
+  // /tenant/workflow rather than split by scope.
+  protected readonly departmentWorkload = DEPARTMENT_WORKLOAD;
+
+  protected workloadTier(row: DepartmentWorkloadRow): 'approved' | 'pending' | 'rejected' {
+    if (row.workloadState === 'critical') return 'rejected';
+    if (row.workloadState === 'elevated') return 'pending';
+    return 'approved';
+  }
+
+  protected workloadLabel(row: DepartmentWorkloadRow): string {
+    if (row.workloadState === 'critical') return 'Critical';
+    if (row.workloadState === 'elevated') return 'Elevated';
+    return 'Normal';
+  }
+
+  // --- Phase 5 — Staff Availability ---
+  // Super Admin sees an aggregated-by-LGU summary, not a national roster —
+  // reads from the same mock account data as the Tenant Command Center's
+  // per-person list, just rolled up. Only the LGUs with real mock records
+  // (Esperanza, Manila, Cebu — the same three TENANT_STATUS tracks) appear;
+  // this widget doesn't fabricate staff counts for the other "onboarded"
+  // LGUs the KPI grid's Active LGUs card refers to.
+  protected readonly lguStaffSummary = staffSummaryByLgu();
+
+  // --- Phase 6 — Recent Incidents + System Health ---
+  // Filters the existing Notifications service rather than a second feed.
+  // National scope = system/security-type notifications only (platform-wide
+  // operational/security events) — the tenant-scoped workflow notifications
+  // (assignment/payment/evaluation/...) belong on the Tenant Command Center
+  // instead, not here.
+  protected readonly notifications = inject(Notifications);
+
+  protected readonly recentIncidents = computed(() =>
+    this.notifications.forCurrentRole().filter((n) => n.type === 'system' || n.type === 'security'),
+  );
+
+  protected readonly healthChecks = SYSTEM_HEALTH_CHECKS;
+  protected readonly overallHealth = overallSystemStatus();
+  protected readonly overallHealthTier = statusTier(this.overallHealth);
+  protected readonly overallHealthLabel = statusLabel(this.overallHealth);
+
+  protected healthTier(status: SystemHealthStatus): 'approved' | 'pending' | 'rejected' | 'info' {
+    return statusTier(status);
+  }
+
+  protected healthLabel(status: SystemHealthStatus): string {
+    return statusLabel(status);
+  }
+
+  // --- Phase 7 — LGU Performance Ranking (Super Administrator only) ---
+  // Extends the existing data-table conventions (status-pill, table-wrap,
+  // the same view-modal pattern already used below for Recent Tenants)
+  // rather than a bespoke leaderboard component.
+  protected readonly lguPerformance = LGU_PERFORMANCE;
+
+  protected readonly lguSearchTerm = signal('');
+  protected readonly lguTierFilter = signal<'all' | 'approved' | 'pending' | 'rejected'>('all');
+  protected readonly lguSortKey = signal<keyof LguPerformanceRow>('rank');
+  protected readonly lguSortDir = signal<'asc' | 'desc'>('asc');
+  protected readonly lguPage = signal(1);
+  protected readonly lguPageSize = 5;
+
+  protected readonly lguFilteredSorted = computed(() => {
+    const term = this.lguSearchTerm().trim().toLowerCase();
+    const tier = this.lguTierFilter();
+    const filtered = this.lguPerformance.filter(
+      (r) =>
+        (!term || r.name.toLowerCase().includes(term)) &&
+        (tier === 'all' || complianceTier(r.slaCompliancePct) === tier),
+    );
+    const key = this.lguSortKey();
+    const dir = this.lguSortDir() === 'asc' ? 1 : -1;
+    return [...filtered].sort((a, b) => {
+      const av = a[key];
+      const bv = b[key];
+      if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * dir;
+      return String(av).localeCompare(String(bv)) * dir;
+    });
+  });
+
+  protected readonly lguPaged = computed(() => {
+    const start = (this.lguPage() - 1) * this.lguPageSize;
+    return this.lguFilteredSorted().slice(start, start + this.lguPageSize);
+  });
+
+  onLguSearchChange(): void {
+    this.lguPage.set(1);
+  }
+
+  onLguFilterChange(): void {
+    this.lguPage.set(1);
+  }
+
+  setLguSort(key: keyof LguPerformanceRow): void {
+    if (this.lguSortKey() === key) {
+      this.lguSortDir.set(this.lguSortDir() === 'asc' ? 'desc' : 'asc');
+    } else {
+      this.lguSortKey.set(key);
+      this.lguSortDir.set(key === 'rank' ? 'asc' : 'desc');
+    }
+    this.lguPage.set(1);
+  }
+
+  protected lguComplianceTier(pct: number): 'approved' | 'pending' | 'rejected' {
+    return complianceTier(pct);
+  }
+
+  protected lguComplianceLabel(pct: number): string {
+    return complianceLabel(pct);
+  }
+
+  // --- LGU row drill-down (view only — reuses the same modal markup
+  // pattern as the Recent Tenants table below, not a new component) ---
+  protected readonly selectedLguRow = signal<LguPerformanceRow | null>(null);
+
+  viewLgu(row: LguPerformanceRow): void {
+    this.selectedLguRow.set(row);
+  }
+
+  closeLguModal(): void {
+    this.selectedLguRow.set(null);
+  }
 
   // One stacked bar per permit type — bar length is that permit's total
   // queue volume, and the fill is its own Pending/Approved/Rejected split.
@@ -134,6 +425,10 @@ export class Dashboard {
     { name: 'Antipolo LGU', value: 12 },
     { name: 'Cavite LGU', value: 9 },
   ];
+
+  // Reuses the same LGU names already shown in the tenant bar-list rather
+  // than inventing a second mock roster for the Command Center's LGU filter.
+  protected readonly lguOptions = this.tenantRows.map((r) => r.name);
 
   protected readonly tenantPage = signal(1);
   protected readonly tenantPageSize = 5;

@@ -1,0 +1,805 @@
+@use 'tokens' as *;
+
+// Shared layout for the Executive Command Center shell — used by both
+// dashboard.scss (Super Admin) and tenant-dashboard.scss (Tenant Admin) so
+// the two role variants stay visually consistent without duplicating grid
+// rules. Widget-specific styling (KPI card internals, alert row content,
+// etc.) belongs in later phases, not here.
+
+.cc-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.cc-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cc-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.cc-title-row h1 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: $color-ink-900;
+}
+
+.cc-scope-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  padding: 0.2rem 0.65rem;
+  border-radius: $radius-pill;
+  background: $color-info-bg;
+  color: $color-info-700;
+  white-space: nowrap;
+}
+
+.cc-scope-badge.tenant {
+  background: $color-brand-tint-a;
+  color: $color-brand-700;
+}
+
+.cc-proto-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.6rem;
+  border-radius: $radius-pill;
+  background: $color-warning-bg;
+  color: $color-warning;
+  white-space: nowrap;
+}
+
+.cc-sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: $color-ink-300;
+}
+
+.cc-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.cc-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cc-filter-field label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $color-ink-200;
+}
+
+.cc-filter-field select {
+  border: 1px solid $color-border-strong;
+  background: $color-surface;
+  border-radius: $radius-md;
+  padding: 0.45rem 0.7rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: $color-ink-700;
+  min-width: 150px;
+}
+
+.cc-tier {
+  margin-bottom: 1.75rem;
+}
+
+.cc-tier-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.cc-tier-eyebrow h2 {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: $color-ink-300;
+}
+
+.cc-tier-eyebrow .cc-tier-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.cc-tier-eyebrow.tier-1 .cc-tier-dot {
+  background: $color-danger-700;
+}
+.cc-tier-eyebrow.tier-2 .cc-tier-dot {
+  background: $color-warning;
+}
+.cc-tier-eyebrow.tier-3 .cc-tier-dot {
+  background: $color-ink-100;
+}
+
+.cc-alert-band {
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-lg;
+  background: $color-bg-subtle;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.25rem;
+}
+
+.cc-alert-clear {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $color-success-700;
+}
+
+.cc-alert-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cc-alert-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  color: $color-ink-700;
+
+  app-icon {
+    flex: none;
+    color: $color-danger-700;
+  }
+}
+
+.cc-alert-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.cc-alert-link {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $color-brand-600;
+  text-decoration: none;
+  white-space: nowrap;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.cc-sla-chip {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.15rem 0.6rem;
+  border-radius: $radius-pill;
+  white-space: nowrap;
+
+  &.due-soon {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+  &.due-today {
+    background: #ffedd5;
+    color: #c2410c;
+  }
+  &.overdue {
+    background: $color-danger-bg;
+    color: $color-danger-700;
+  }
+}
+
+.cc-sla-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.cc-sla-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.3rem;
+
+  h3 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: $color-ink-900;
+  }
+}
+
+.cc-sla-caption {
+  margin: 0 0 0.9rem;
+  font-size: 0.72rem;
+  color: $color-ink-200;
+  font-style: italic;
+}
+
+.cc-sla-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 1.1rem;
+
+  @media (max-width: $bp-phone) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    background: $color-bg-subtle;
+    border-radius: $radius-md;
+    padding: 0.55rem 0.65rem;
+  }
+}
+
+.cc-sla-summary-value {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: $color-ink-900;
+  font-variant-numeric: tabular-nums;
+}
+
+.cc-sla-summary-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: $color-ink-300;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.cc-sla-subhead {
+  margin: 0 0 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $color-ink-300;
+}
+
+.cc-compliance-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.6rem;
+  }
+}
+
+.cc-compliance-label {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: $color-ink-600;
+}
+
+.cc-kpi-grid {
+  @include fluid-grid(220px);
+}
+
+.cc-kpi-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: $radius-lg;
+}
+
+.cc-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
+
+  @media (max-width: $bp-tablet) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cc-placeholder-card {
+  background: $color-surface;
+  border: 1px dashed $color-border-strong;
+  border-radius: $radius-xl;
+  padding: 0.4rem;
+}
+
+.cc-phase-tag {
+  display: inline-block;
+  font-size: 0.64rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: $color-ink-200;
+  background: $color-bg-muted;
+  border-radius: $radius-pill;
+  padding: 0.1rem 0.55rem;
+  margin-top: 0.5rem;
+}
+
+/* Department Workload (Phase 4) */
+.cc-workload-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.cc-workload-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.cc-workload-row {
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.cc-workload-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.cc-workload-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $color-ink-700;
+}
+
+.cc-workload-bar-track {
+  height: 7px;
+  border-radius: $radius-pill;
+  background: $color-bg-muted;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.cc-workload-bar-fill {
+  height: 100%;
+  border-radius: $radius-pill;
+  transition: width 0.4s ease;
+
+  &.approved {
+    background: $color-success-700;
+  }
+  &.pending {
+    background: $color-warning;
+  }
+  &.rejected {
+    background: $color-danger-700;
+  }
+}
+
+.cc-workload-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.5rem;
+  font-size: 0.76rem;
+  color: $color-ink-300;
+}
+
+.cc-workload-trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-weight: 700;
+  margin-left: auto;
+
+  &.up {
+    color: $color-danger-700;
+  }
+  &.down {
+    color: $color-success-700;
+  }
+}
+
+/* Staff Availability (Phase 5) — simulated presence, not a real session feed */
+%cc-availability-color {
+  &.available {
+    background: $color-success-700;
+  }
+  &.busy {
+    background: $color-info-700;
+  }
+  &.on-leave {
+    background: $chart-violet;
+  }
+  &.offline {
+    background: $color-ink-100;
+  }
+}
+
+.cc-staff-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  max-height: 420px;
+  overflow-y: auto;
+}
+
+.cc-staff-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.cc-staff-avatar-wrap {
+  position: relative;
+  flex: none;
+  line-height: 0;
+}
+
+.cc-staff-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid $color-surface;
+  @extend %cc-availability-color;
+}
+
+.cc-dot-sm {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+  @extend %cc-availability-color;
+}
+
+.cc-staff-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.cc-staff-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $color-ink-700;
+}
+
+.cc-staff-role {
+  font-size: 0.74rem;
+  color: $color-ink-300;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cc-staff-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex: none;
+  text-align: right;
+}
+
+.cc-staff-status-label {
+  display: inline-block;
+  font-size: 0.66rem;
+  font-weight: 800;
+  padding: 0.1rem 0.5rem;
+  border-radius: $radius-pill;
+
+  &.available {
+    background: $color-success-bg;
+    color: $color-success-700;
+  }
+  &.busy {
+    background: $color-info-bg;
+    color: $color-info-700;
+  }
+  &.on-leave {
+    background: #ede9fe;
+    color: $chart-violet;
+  }
+  &.offline {
+    background: $color-bg-muted;
+    color: $color-ink-300;
+  }
+}
+
+.cc-staff-tasks,
+.cc-staff-activity {
+  font-size: 0.68rem;
+  color: $color-ink-200;
+}
+
+.cc-staff-lgu-row {
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.cc-staff-lgu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.cc-staff-lgu-name {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $color-ink-700;
+}
+
+.cc-staff-lgu-total {
+  font-size: 0.74rem;
+  color: $color-ink-300;
+}
+
+.cc-staff-counts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.9rem;
+}
+
+.cc-staff-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: $color-ink-600;
+}
+
+/* Recent Incidents (Phase 6) */
+.cc-incident-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  max-height: 460px;
+  overflow-y: auto;
+}
+
+.cc-incident-row {
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.cc-incident-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.4rem;
+}
+
+.cc-incident-time {
+  font-size: 0.72rem;
+  color: $color-ink-200;
+}
+
+.cc-incident-desc {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $color-ink-700;
+  line-height: 1.4;
+}
+
+.cc-incident-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.8rem;
+  font-size: 0.71rem;
+  color: $color-ink-300;
+}
+
+.cc-incident-status {
+  font-weight: 800;
+  color: $color-success-700;
+
+  &.open {
+    color: $color-danger-700;
+  }
+}
+
+/* System Health (Phase 6) — frontend simulation only */
+.cc-health-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.9rem 1.5rem;
+
+  @media (max-width: $bp-phone) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cc-health-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding-bottom: 0.7rem;
+  border-bottom: 1px solid $color-border;
+}
+
+.cc-health-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.cc-health-label {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: $color-ink-700;
+}
+
+.cc-health-detail {
+  font-size: 0.72rem;
+  color: $color-ink-300;
+}
+
+/* LGU Performance Ranking (Phase 7) */
+.cc-lgu-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  flex: 1;
+  min-width: min(260px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 0.65rem 0.9rem;
+  color: $color-ink-200;
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 0.86rem;
+    color: $color-ink-700;
+
+    &::placeholder {
+      color: $color-ink-100;
+    }
+  }
+}
+
+.cc-sort-btn {
+  all: unset;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  display: inline-flex;
+  align-items: center;
+
+  &:hover {
+    color: $color-ink-700;
+  }
+}
+
+/* "This LGU vs. National Average" scorecard (Tenant Command Center) */
+.cc-lgu-compare-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.cc-lgu-compare-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid $color-border;
+
+  &:last-child {
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.cc-lgu-compare-values {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: $color-ink-900;
+}
+
+.cc-lgu-vs {
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: $color-ink-300;
+}
+
+@media (max-width: $bp-phone) {
+  .cc-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cc-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cc-filter-field select {
+    width: 100%;
+  }
+}

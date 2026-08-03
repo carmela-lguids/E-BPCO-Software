@@ -1,5 +1,6 @@
 @use '../../shared/styles/data-table';
 @use '../../shared/styles/modal';
+@use '../../shared/styles/command-center';
 @use '../../shared/styles/tokens' as *;
 
 @keyframes section-in {
@@ -15,11 +16,6 @@
 
 :host {
   display: block;
-}
-
-.stat-row {
-  @include fluid-grid(220px);
-  margin-bottom: 1.5rem;
 }
 
 .card {

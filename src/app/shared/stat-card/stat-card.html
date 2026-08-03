@@ -1,4 +1,4 @@
-<div class="stat-card" [class]="cardTint()">
+<div class="stat-card" [class]="cardTint()" role="group" [attr.aria-label]="ariaLabel() || null">
   <div class="stat-top">
     <div>
       <p class="label">{{ label() }}</p>

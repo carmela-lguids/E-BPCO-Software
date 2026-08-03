@@ -1,18 +1,349 @@
-<app-topbar title="Dashboard" />
+<app-topbar title="National Executive Command Center" />
 
-<section class="stat-row">
-  @for (c of statCards; track c.label) {
-    <app-stat-card
-      [icon]="c.icon"
-      [iconBg]="c.iconBg"
-      [cardTint]="c.tint"
-      [label]="c.label"
-      [value]="c.value"
-      [deltas]="c.deltas ?? []"
-      [footnote]="c.footnote ?? ''"
-    />
+<div class="cc-header">
+  <div class="cc-header-text">
+    <div class="cc-title-row">
+      <span class="cc-scope-badge">National Scope — All LGUs</span>
+      <span class="cc-proto-badge">Prototype data</span>
+    </div>
+    <p class="cc-sub">Platform-wide operational overview across every onboarded LGU.</p>
+  </div>
+  <div class="cc-filter-bar">
+    <div class="cc-filter-field">
+      <label for="cc-date-range">Date range</label>
+      <select id="cc-date-range" [(ngModel)]="dateRange">
+        <option value="today">Today</option>
+        <option value="week">This Week</option>
+        <option value="month">This Month</option>
+        <option value="year">This Year</option>
+        <option value="custom">Custom</option>
+      </select>
+    </div>
+    <div class="cc-filter-field">
+      <label for="cc-lgu-filter">LGU</label>
+      <select id="cc-lgu-filter" [(ngModel)]="lguFilter">
+        <option value="all">All LGUs</option>
+        @for (name of lguOptions; track name) {
+          <option [value]="name">{{ name }}</option>
+        }
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="cc-alert-band" role="status" aria-live="polite">
+  @if (bottleneckedStages.length === 0 && slaOverdueCount === 0 && slaDueTodayCount === 0) {
+    <p class="cc-alert-clear">
+      <app-icon name="check-circle" [size]="15" />
+      All systems nominal — no bottlenecks, no SLA breaches right now.
+    </p>
+  } @else {
+    <div class="cc-alert-content">
+      <div class="cc-alert-row">
+        <app-icon name="alert-triangle" [size]="15" />
+        <span>
+          <strong>{{ bottleneckedStages.length }}</strong>
+          stage{{ bottleneckedStages.length === 1 ? '' : 's' }} running over target:
+        </span>
+        <div class="cc-alert-chips">
+          @for (s of bottleneckedStages; track s.key) {
+            <span class="cc-sla-chip overdue">{{ s.label }} — {{ s.avgDwellDays }}d avg (target {{ s.targetDays }}d)</span>
+          }
+        </div>
+        <a routerLink="/workflow" class="cc-alert-link">View Workflow Monitor →</a>
+      </div>
+      <div class="cc-alert-row">
+        <app-icon name="alert-circle" [size]="15" />
+        <span><strong>{{ slaOverdueCount }}</strong> overdue · <strong>{{ slaDueTodayCount }}</strong> due today nationally</span>
+        <a href="#sla-monitoring" class="cc-alert-link" (click)="scrollToSlaMonitoring($event)">View SLA Monitoring ↓</a>
+      </div>
+    </div>
   }
+</div>
+
+<section class="cc-tier">
+  <div class="cc-tier-eyebrow tier-1"><span class="cc-tier-dot"></span><h2>Immediate Attention</h2></div>
+  <div class="cc-kpi-grid">
+    @for (kpi of kpiCards; track kpi.label) {
+      @if (kpi.route) {
+        <a [routerLink]="kpi.route" class="cc-kpi-link" [attr.aria-label]="kpi.ariaLabel">
+          <app-stat-card
+            [icon]="kpi.icon"
+            [iconBg]="kpi.iconBg"
+            [cardTint]="kpi.tint"
+            [label]="kpi.label"
+            [value]="kpi.value"
+            [deltas]="kpi.deltas"
+            [footnote]="kpi.footnote ?? ''"
+          />
+        </a>
+      } @else {
+        <app-stat-card
+          [icon]="kpi.icon"
+          [iconBg]="kpi.iconBg"
+          [cardTint]="kpi.tint"
+          [label]="kpi.label"
+          [value]="kpi.value"
+          [deltas]="kpi.deltas"
+          [footnote]="kpi.footnote ?? ''"
+          [ariaLabel]="kpi.ariaLabel"
+        />
+      }
+    }
+  </div>
+
+  <div class="card cc-sla-card" style="margin-top: 1.25rem;">
+    <div class="cc-sla-head">
+      <h3>System Health</h3>
+      <span class="status-pill" [class]="overallHealthTier">{{ overallHealthLabel }} overall</span>
+    </div>
+    <p class="cc-sla-caption">Simulated infrastructure status — not connected to any real monitoring system.</p>
+    <div class="cc-health-grid">
+      @for (check of healthChecks; track check.key) {
+        <div class="cc-health-row">
+          <div class="cc-health-head">
+            <span class="cc-health-label">{{ check.label }}</span>
+            <span class="status-pill" [class]="healthTier(check.status)">{{ healthLabel(check.status) }}</span>
+          </div>
+          <span class="cc-health-detail">{{ check.detail }}</span>
+        </div>
+      }
+    </div>
+  </div>
 </section>
+
+<section class="cc-tier">
+  <div class="cc-tier-eyebrow tier-2"><span class="cc-tier-dot"></span><h2>Operational Detail</h2></div>
+  <div class="cc-grid-3">
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>Department Workload</h3>
+        <a routerLink="/workflow" class="cc-alert-link">View Workflow Monitor →</a>
+      </div>
+      <p class="cc-sla-caption">Capacity and staffing shown are configurable prototype figures.</p>
+      <div class="cc-workload-list">
+        @for (d of departmentWorkload; track d.key) {
+          <div class="cc-workload-row">
+            <div class="cc-workload-head">
+              <span class="cc-workload-label">{{ d.label }}</span>
+              <span class="status-pill" [class]="workloadTier(d)">{{ workloadLabel(d) }}</span>
+            </div>
+            <div class="cc-workload-bar-track">
+              <div class="cc-workload-bar-fill" [class]="workloadTier(d)" [style.width.%]="d.capacityPct"></div>
+            </div>
+            <div class="cc-workload-meta">
+              <span
+                >{{ d.count }} pending{{ d.overdueCount ? ' · ' + d.overdueCount + ' overdue' : '' }} ·
+                {{ d.assignedStaff }} staff · {{ d.avgDwellDays }}d avg (target {{ d.targetDays }}d) ·
+                {{ d.capacityPct }}% capacity</span
+              >
+              <span class="cc-workload-trend" [class.up]="d.trend === 'up'" [class.down]="d.trend === 'down'">
+                <app-icon [name]="d.trend === 'up' ? 'trend-up' : 'trend-down'" [size]="11" />{{ d.trendLabel }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>Staff Availability</h3>
+        <a routerLink="/user-roles" class="cc-alert-link">Manage Users →</a>
+      </div>
+      <p class="cc-sla-caption">
+        Aggregated by LGU, simulated presence — not connected to a real session/activity service. Only LGUs with
+        mock staff records appear.
+      </p>
+      <div class="cc-staff-list">
+        @for (s of lguStaffSummary; track s.tenant) {
+          <div class="cc-staff-lgu-row">
+            <div class="cc-staff-lgu-head">
+              <span class="cc-staff-lgu-name">{{ s.tenant }}</span>
+              <span class="cc-staff-lgu-total">{{ s.total }} staff</span>
+            </div>
+            <div class="cc-staff-counts">
+              <span class="cc-staff-count"><span class="cc-dot-sm available"></span>{{ s.available }} Available</span>
+              <span class="cc-staff-count"><span class="cc-dot-sm busy"></span>{{ s.busy }} Busy</span>
+              <span class="cc-staff-count"><span class="cc-dot-sm on-leave"></span>{{ s.onLeave }} On Leave</span>
+              <span class="cc-staff-count"><span class="cc-dot-sm offline"></span>{{ s.offline }} Offline</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="card cc-sla-card" id="sla-monitoring">
+      <div class="cc-sla-head">
+        <h3>SLA Monitoring</h3>
+        <a routerLink="/workflow" class="cc-alert-link">View Workflow Monitor →</a>
+      </div>
+      <p class="cc-sla-caption">
+        Targets shown are configurable prototype operational targets, not legally mandated processing periods.
+      </p>
+
+      <div class="cc-sla-summary">
+        <div><span class="cc-sla-summary-value">{{ slaOverdueCount }}</span><span class="cc-sla-summary-label">Overdue</span></div>
+        <div><span class="cc-sla-summary-value">{{ slaDueTodayCount }}</span><span class="cc-sla-summary-label">Due Today</span></div>
+        <div><span class="cc-sla-summary-value">{{ slaNearDeadlineCount }}</span><span class="cc-sla-summary-label">Near Deadline (3d)</span></div>
+        <div><span class="cc-sla-summary-value">{{ avgProcessingDays }}d</span><span class="cc-sla-summary-label">Avg. Processing / Stage</span></div>
+      </div>
+
+      <h4 class="cc-sla-subhead">Department SLA Compliance</h4>
+      <ul class="cc-compliance-list">
+        @for (s of stageStats; track s.key) {
+          <li>
+            <span class="cc-compliance-label">{{ s.label }}</span>
+            <span class="status-pill" [class]="complianceTier(s)">{{ complianceLabel(s) }} · {{ complianceFor(s) }}%</span>
+          </li>
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="cc-tier">
+  <div class="cc-tier-eyebrow tier-3"><span class="cc-tier-dot"></span><h2>Detailed Reference</h2></div>
+
+  <div class="card cc-lgu-card" style="margin-bottom: 1.25rem;">
+    <div class="cc-sla-head">
+      <h3>LGU Performance Ranking</h3>
+    </div>
+    <p class="cc-sla-caption">Ranked by performance score — average of approval rate and SLA compliance.</p>
+
+    <div class="cc-lgu-toolbar">
+      <div class="search-input">
+        <app-icon name="search" [size]="16" />
+        <input type="text" placeholder="Search LGU" [(ngModel)]="lguSearchTerm" (ngModelChange)="onLguSearchChange()" />
+      </div>
+      <div class="cc-filter-field">
+        <label for="cc-lgu-tier-filter">Compliance filter</label>
+        <select id="cc-lgu-tier-filter" [(ngModel)]="lguTierFilter" (ngModelChange)="onLguFilterChange()">
+          <option value="all">All</option>
+          <option value="approved">Compliant</option>
+          <option value="pending">At Risk</option>
+          <option value="rejected">Non-Compliant</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table aria-label="LGU performance ranking">
+        <thead>
+          <tr>
+            <th scope="col"><button type="button" class="cc-sort-btn" (click)="setLguSort('rank')">Rank</button></th>
+            <th scope="col"><button type="button" class="cc-sort-btn" (click)="setLguSort('name')">LGU</button></th>
+            <th scope="col">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('totalApplications')">Total Applications</button>
+            </th>
+            <th scope="col"><button type="button" class="cc-sort-btn" (click)="setLguSort('approvalRate')">Approval Rate</button></th>
+            <th scope="col">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('avgProcessingDays')">Avg. Processing</button>
+            </th>
+            <th scope="col">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('slaCompliancePct')">SLA Compliance</button>
+            </th>
+            <th scope="col">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('releasedPermits')">Released Permits</button>
+            </th>
+            <th scope="col">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('activeApplications')">Active Applications</button>
+            </th>
+            <th scope="col">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('performanceScore')">Performance Score</button>
+            </th>
+            <th scope="col">Trend</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of lguPaged(); track row.name) {
+            <tr>
+              <td>#{{ row.rank }}</td>
+              <td class="id-cell">{{ row.name }}</td>
+              <td>{{ row.totalApplications }}</td>
+              <td>{{ row.approvalRate }}%</td>
+              <td>{{ row.avgProcessingDays }}d</td>
+              <td>
+                <span class="status-pill" [class]="lguComplianceTier(row.slaCompliancePct)"
+                  >{{ lguComplianceLabel(row.slaCompliancePct) }} · {{ row.slaCompliancePct }}%</span
+                >
+              </td>
+              <td>{{ row.releasedPermits }}</td>
+              <td>{{ row.activeApplications }}</td>
+              <td>{{ row.performanceScore }}</td>
+              <td>
+                <span class="cc-workload-trend" [class.up]="row.trend === 'up'" [class.down]="row.trend === 'down'">
+                  <app-icon [name]="row.trend === 'up' ? 'trend-up' : 'trend-down'" [size]="12" />{{ row.trendPct }}%
+                </span>
+              </td>
+              <td class="actions-cell">
+                <button
+                  type="button"
+                  class="icon-btn view"
+                  [attr.aria-label]="'View ' + row.name"
+                  (click)="viewLgu(row)"
+                >
+                  <app-icon name="eye" [size]="15" />
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="11">
+                <app-empty-state icon="search" title="No LGUs match" message="Try a different search or filter." />
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <app-pagination [totalItems]="lguFilteredSorted().length" [pageSize]="lguPageSize" [(page)]="lguPage" />
+  </div>
+
+  <div class="cc-grid-3">
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>Recent Incidents</h3>
+      </div>
+      <p class="cc-sla-caption">System and security notifications, platform-wide.</p>
+      <div class="cc-incident-list">
+        @for (n of recentIncidents(); track n.id) {
+          <div class="cc-incident-row">
+            <div class="cc-incident-head">
+              <span class="status-pill" [class]="notifications.severityTier(n)">{{ notifications.severity(n) }}</span>
+              <span class="cc-incident-time">{{ n.timestamp }}</span>
+            </div>
+            <p class="cc-incident-desc">{{ n.message }}</p>
+            <div class="cc-incident-meta">
+              <span>Source: {{ notifications.sourceLabel(n.type) }}</span>
+              <span>Module: {{ notifications.moduleLabel(n.relatedRoute) }}</span>
+              @if (n.relatedTenant) {
+                <span>LGU: {{ n.relatedTenant }}</span>
+              }
+              @if (n.assignedAdmin) {
+                <span>Assigned: {{ n.assignedAdmin }}</span>
+              }
+              <span class="cc-incident-status" [class.open]="notifications.incidentStatus(n) === 'Open'">{{
+                notifications.incidentStatus(n)
+              }}</span>
+            </div>
+          </div>
+        } @empty {
+          <app-empty-state icon="check-circle" title="No incidents" message="No system or security incidents right now." />
+        }
+      </div>
+    </div>
+    <div class="cc-placeholder-card">
+      <app-empty-state icon="users" title="Active Users" message="Who's online right now, across the platform." />
+      <span class="cc-phase-tag">Phase 8</span>
+    </div>
+  </div>
+</section>
+
+<p class="cc-sub" style="margin: -0.5rem 0 1.5rem;">
+  The reporting widgets below are retained from the existing dashboard during this phased rollout — later phases
+  will replace, relocate, or retire each one individually.
+</p>
 
 <section class="card queue-card">
   <div class="queue-header">
@@ -271,4 +602,27 @@
       </div>
     </div>
   }
+}
+
+@if (selectedLguRow(); as row) {
+  <div class="modal-backdrop" (click)="closeLguModal()">
+    <div class="modal-box wide" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeLguModal()" aria-label="Close">&#10005;</button>
+      <h2>{{ row.name }} — Performance Summary</h2>
+      <dl class="kv-list">
+        <div><dt>Rank</dt><dd>#{{ row.rank }} of {{ lguPerformance.length }}</dd></div>
+        <div><dt>Total Applications</dt><dd>{{ row.totalApplications }}</dd></div>
+        <div><dt>Approval Rate</dt><dd>{{ row.approvalRate }}%</dd></div>
+        <div><dt>Average Processing Time</dt><dd>{{ row.avgProcessingDays }} days</dd></div>
+        <div><dt>SLA Compliance</dt><dd>{{ lguComplianceLabel(row.slaCompliancePct) }} · {{ row.slaCompliancePct }}%</dd></div>
+        <div><dt>Released Permits</dt><dd>{{ row.releasedPermits }}</dd></div>
+        <div><dt>Active Applications</dt><dd>{{ row.activeApplications }}</dd></div>
+        <div><dt>Performance Score</dt><dd>{{ row.performanceScore }}</dd></div>
+        <div><dt>Trend</dt><dd>{{ row.trend === 'up' ? '▲' : '▼' }} {{ row.trendPct }}%</dd></div>
+      </dl>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn cancel" (click)="closeLguModal()">Close</button>
+      </div>
+    </div>
+  </div>
 }
