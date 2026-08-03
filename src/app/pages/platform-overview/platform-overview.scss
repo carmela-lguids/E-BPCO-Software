@@ -52,7 +52,7 @@
 
 .status-pill.stable {
   background: $color-success-bg;
-  color: $color-success;
+  color: $color-success-700;
 }
 .status-pill.maintenance {
   background: $color-warning-bg;
@@ -60,6 +60,6 @@
 }
 .status-pill.deprecated {
   background: $color-danger-bg;
-  color: $color-danger;
+  color: $color-danger-700;
 }
 

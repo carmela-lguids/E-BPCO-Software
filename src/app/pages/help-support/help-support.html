@@ -1,0 +1,81 @@
+<app-topbar title="Help & Support" />
+
+<div class="help-grid">
+  <div class="faq-column">
+    <div class="search-input">
+      <app-icon name="search" [size]="16" />
+      <input type="text" placeholder="Search help topics" [(ngModel)]="searchTerm" />
+    </div>
+
+    <div class="topic-chips">
+      <button type="button" class="chip" [class.active]="activeTopic() === 'all'" (click)="setTopic('all')">
+        All
+      </button>
+      @for (topic of topics; track topic) {
+        <button type="button" class="chip" [class.active]="activeTopic() === topic" (click)="setTopic(topic)">
+          {{ topic }}
+        </button>
+      }
+    </div>
+
+    <div class="faq-list">
+      @for (faq of filteredFaqs(); track faq.question) {
+        <details class="faq-item">
+          <summary>{{ faq.question }}</summary>
+          <p>{{ faq.answer }}</p>
+        </details>
+      } @empty {
+        <p class="empty-note">No help topics match your search.</p>
+      }
+    </div>
+  </div>
+
+  <aside class="side-column">
+    <section class="card">
+      <h3>{{ contactLabel() }}</h3>
+      @for (contact of escalationContacts(); track contact.email) {
+        <div class="contact-row">
+          <span class="contact-name">{{ contact.name }}</span>
+          <span class="contact-role">{{ contact.role }}</span>
+          <span class="contact-email">{{ contact.email }}</span>
+        </div>
+      } @empty {
+        <p class="empty-note">No contact on file yet.</p>
+      }
+    </section>
+
+    <section class="card">
+      <h3>Wrong role or access?</h3>
+      <p class="muted-sub">If your role, department, or tenant looks wrong, report it directly rather than filing a general ticket.</p>
+      <button type="button" class="btn-outline" (click)="openReport()">Report Incorrect Assignment</button>
+    </section>
+
+    <section class="card">
+      <h3>Still stuck?</h3>
+      @if (!ticketSubmitted()) {
+        <p class="muted-sub">Send a short description and we'll route it to the right place.</p>
+        <label class="field">
+          <span>Subject<span class="req" aria-hidden="true"></span></span>
+          <input type="text" required [(ngModel)]="ticketSubject" placeholder="e.g. Can't upload a document" />
+        </label>
+        <label class="field">
+          <span>Details<span class="req" aria-hidden="true"></span></span>
+          <textarea rows="4" required [(ngModel)]="ticketDetails" placeholder="What were you trying to do, and what happened?"></textarea>
+        </label>
+        <button type="button" class="btn-primary" [disabled]="!canSubmitTicket" (click)="submitTicket()">
+          Submit Request
+        </button>
+      } @else {
+        <div class="ticket-confirm">
+          <app-icon name="check-circle" [size]="22" />
+          <p>Your request has been logged. Someone will follow up by email.</p>
+          <button type="button" class="btn-outline" (click)="newTicket()">Send another</button>
+        </div>
+      }
+    </section>
+  </aside>
+</div>
+
+@if (reportOpen()) {
+  <app-report-incorrect-assignment (closed)="closeReport()" />
+}

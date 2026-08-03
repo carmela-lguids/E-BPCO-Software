@@ -1,0 +1,99 @@
+<app-topbar title="Reports" />
+
+@if (!activeReport()) {
+  <p class="page-sub">Choose a report to preview it with the current date range, then export.</p>
+
+  <div class="report-grid">
+    @for (report of reportDefs; track report.key) {
+      <button type="button" class="report-card" (click)="selectReport(report)">
+        <span class="report-icon"><app-icon [name]="report.icon" [size]="24" /></span>
+        <span class="report-title">{{ report.title }}</span>
+        <span class="report-desc">{{ report.description }}</span>
+      </button>
+    }
+  </div>
+
+  @if (savedReports().length > 0) {
+    <section class="card saved-card">
+      <h3>Recently exported</h3>
+      <ul class="saved-list">
+        @for (r of savedReports(); track r.generatedAt + r.title) {
+          <li>
+            <span class="saved-title">{{ r.title }}</span>
+            <span class="saved-meta">{{ r.dateRange }} &middot; {{ r.tenant }} &middot; {{ r.generatedAt }}</span>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+} @else {
+  <div class="report-head">
+    <button type="button" class="btn-outline" (click)="backToPicker()">
+      <app-icon name="chevron-left" [size]="14" />
+      All Reports
+    </button>
+    <h2>{{ activeReport()!.title }}</h2>
+  </div>
+
+  <div class="param-bar">
+    <label class="param-field">
+      <span>Date range</span>
+      <select [ngModel]="dateRange()" (ngModelChange)="setDateRange($event)">
+        @for (range of dateRanges; track range) {
+          <option [value]="range">{{ range }}</option>
+        }
+      </select>
+    </label>
+
+    @if (isNationalRole()) {
+      <label class="param-field">
+        <span>Tenant</span>
+        <select [ngModel]="tenantFilter()" (ngModelChange)="setTenantFilter($event)">
+          @for (t of reportTenants; track t) {
+            <option [value]="t">{{ t }}</option>
+          }
+        </select>
+      </label>
+    }
+
+    <button type="button" class="btn-primary export-btn" (click)="exportReport()">
+      <app-icon name="download" [size]="15" />
+      Export CSV
+    </button>
+  </div>
+
+  <section class="card chart-card">
+    @switch (activeReport()!.chartKind) {
+      @case ('stacked-bar') {
+        <app-stacked-bar-chart [rows]="stackedBarRows()" />
+      }
+      @case ('area') {
+        <app-area-chart [series]="areaSeries()" />
+      }
+      @case ('donut') {
+        <div class="donut-wrap">
+          <app-donut-chart [segments]="donutSegments()" [size]="180" [showCenterTotal]="true" centerLabel="Total" />
+        </div>
+      }
+    }
+  </section>
+
+  <section class="card summary-card">
+    <h3>Summary — {{ dateRange() }}</h3>
+    <dl class="summary-list">
+      @for (row of summaryRows(); track row.label) {
+        <div>
+          <dt>{{ row.label }}</dt>
+          <dd>{{ row.value }}</dd>
+        </div>
+      }
+    </dl>
+  </section>
+}
+
+@if (exportToast(); as toast) {
+  <div class="export-toast">
+    <app-icon name="check-circle" [size]="16" />
+    {{ toast }}
+  </div>
+}

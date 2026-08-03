@@ -1,5 +1,6 @@
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Topbar } from '../../shared/topbar/topbar';
 import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { Icon } from '../../shared/icon/icon';
@@ -46,6 +47,7 @@ interface TenantApplication {
     Pagination,
     FormsModule,
     RoleGate,
+    RouterLink,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

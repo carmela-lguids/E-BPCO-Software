@@ -62,7 +62,7 @@ h3 {
 
 .search-input {
   flex: 1;
-  min-width: 260px;
+  min-width: min(260px, 100%);
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -243,6 +243,24 @@ h3 {
   h2 {
     font-size: 1.05rem;
     margin-bottom: 0.6rem;
+  }
+}
+
+.waiting-on {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  color: #b45309;
+  background: #fef3c7;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.65rem;
+
+  strong {
+    color: #1f2430;
+  }
+
+  &.resolved {
+    color: #4b5563;
+    background: #f4f4f6;
   }
 }
 
@@ -481,6 +499,13 @@ h3 {
 .doc-file {
   font-size: 0.76rem;
   color: #9297a3;
+}
+
+.doc-version {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: $color-info;
+  margin-top: 0.2rem;
 }
 
 .preview-btn {
@@ -800,12 +825,12 @@ h3 {
 
   &.good {
     background: #dcfce7;
-    color: #16a34a;
+    color: #15803d;
   }
 
   &.progress {
     background: #dbeafe;
-    color: #2563eb;
+    color: #1d4ed8;
   }
 }
 
@@ -815,7 +840,7 @@ h3 {
   margin: 0 0 1.1rem;
 
   &.good {
-    color: #16a34a;
+    color: #15803d;
   }
 
   &.progress {
@@ -1042,6 +1067,15 @@ h3 {
   }
 }
 
+.eval-action-panel {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding: 0.85rem 0 0.25rem;
+  margin-top: -0.6rem;
+  box-shadow: 0 -8px 12px -8px rgba(31, 36, 48, 0.1);
+}
+
 .msg-send-btn,
 .forward-btn,
 .revision-btn,
@@ -1053,6 +1087,7 @@ h3 {
   font-weight: 700;
   color: #fff;
   cursor: pointer;
+  width: 100%;
   transition:
     filter 0.2s ease,
     transform 0.15s ease;
@@ -1435,5 +1470,316 @@ h3 {
 
   .app-info-cols {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Application Assignment (Volume III §01-20) */
+.list-tabs {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.list-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid #e2e2e6;
+  background: #fff;
+  border-radius: $radius-pill;
+  padding: 0.5rem 1rem;
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: $color-ink-500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    border-color: $color-info;
+    color: $color-info;
+  }
+
+  &.active {
+    background: $color-info-bg-soft;
+    border-color: #cfe0fd;
+    color: $color-info;
+  }
+}
+
+.tab-count {
+  background: $color-warning-bg;
+  color: $color-warning;
+  font-size: 0.7rem;
+  font-weight: 800;
+  border-radius: $radius-pill;
+  padding: 0.05rem 0.45rem;
+}
+
+.unassigned-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: $color-warning;
+  background: $color-warning-bg;
+  border-radius: $radius-pill;
+  padding: 0.15rem 0.55rem;
+}
+
+.unassigned-sub {
+  margin: 0;
+  font-size: 0.85rem;
+  color: $color-ink-200;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+}
+
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 17, 26, 0.35);
+  z-index: 95;
+}
+
+.assign-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  background: #fff;
+  z-index: 96;
+  box-shadow: -12px 0 32px rgba(20, 20, 40, 0.16);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  animation: drawer-in 0.2s ease both;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(24px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.3rem;
+
+  h3 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .icon-btn {
+    border: none;
+    background: none;
+    color: $color-ink-300;
+    cursor: pointer;
+    padding: 0.3rem;
+    transform: rotate(180deg);
+  }
+}
+
+.drawer-sub {
+  margin: 0 0 1.25rem;
+  font-size: 0.88rem;
+  color: $color-ink-500;
+  font-weight: 600;
+}
+
+.drawer-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $color-ink-100;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.6rem;
+}
+
+.evaluator-list {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.evaluator-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+  border: 1px solid #e2e2e6;
+  background: #fff;
+  border-radius: $radius-md;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:hover {
+    border-color: $color-info;
+  }
+
+  &.active {
+    border-color: $color-info;
+    background: $color-info-bg-soft;
+  }
+}
+
+.evaluator-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.evaluator-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: $color-ink-900;
+}
+
+.evaluator-load {
+  font-size: 0.74rem;
+  color: $color-ink-200;
+}
+
+.suggested-flag {
+  flex: none;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: $color-success;
+  background: $color-success-bg;
+  border-radius: $radius-pill;
+  padding: 0.15rem 0.45rem;
+  white-space: nowrap;
+}
+
+.drawer-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 0.75rem;
+  padding-top: 1rem;
+  // Clears the fixed "Development Role Preview" dev panel, which sits at a
+  // higher z-index than this drawer (by design, so it stays reachable while
+  // any modal is open) in the same bottom-right corner.
+  margin-bottom: 4rem;
+
+  .btn-outline,
+  .btn-primary {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* Application Detail progress tracker (Volume IV §06) */
+.progress-tracker {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 1rem 1.25rem;
+  background: #fff;
+  border: 1px solid #eeeef2;
+  border-radius: 0.9rem;
+  overflow-x: auto;
+}
+
+.progress-stage {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  position: relative;
+
+  &:not(:last-child)::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 2px;
+    background: $color-border-strong;
+    margin: 0 0.75rem;
+    min-width: 24px;
+  }
+
+  &.done:not(:last-child)::after {
+    background: $color-success;
+  }
+}
+
+.stage-dot {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid $color-border-strong;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+}
+
+.progress-stage.done .stage-dot {
+  background: $color-success;
+  border-color: $color-success;
+  color: #fff;
+}
+
+.progress-stage.current .stage-dot {
+  border-color: $color-info;
+  box-shadow: 0 0 0 3px $color-info-bg;
+}
+
+.progress-stage.rejected .stage-dot {
+  background: $color-danger;
+  border-color: $color-danger;
+  color: #fff;
+}
+
+.stage-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $color-ink-200;
+}
+
+.progress-stage.current .stage-name {
+  color: $color-info;
+}
+
+.progress-stage.done .stage-name {
+  color: $color-ink-700;
+}
+
+.progress-stage.rejected .stage-name {
+  color: $color-danger;
+}
+
+@media (max-width: $bp-phone) {
+  .progress-tracker {
+    justify-content: flex-start;
+  }
+
+  .stage-name {
+    display: none;
   }
 }

@@ -62,6 +62,17 @@
 
 .table-wrap {
   overflow-x: auto;
+  // A sticky thead needs ITS OWN bounded, vertically-scrolling ancestor to
+  // stick against — the page-level scroll container doesn't work, because
+  // this element already has non-visible overflow-x, which makes it (not
+  // the page) the nearest "scroll container" sticky resolves against. Since
+  // it wasn't vertically scrollable, sticky had nothing to stick to. Giving
+  // it a real max-height + overflow-y makes the table scroll in place, with
+  // the header pinned to the top of that region — the standard pattern for
+  // a data table with a sticky header (Notion/Linear-style), not a page that
+  // scrolls past a header.
+  max-height: 65vh;
+  overflow-y: auto;
 }
 
 table {
@@ -79,6 +90,13 @@ thead th {
   padding: 0.65rem 0.75rem;
   border-bottom: 1px solid $color-border;
   white-space: nowrap;
+  // Sticks to the top of the page's own scroll container (.admin-content /
+  // .tenant-content, both overflow-y: auto) — needs an opaque background so
+  // rows don't visibly scroll "through" the header underneath it.
+  position: sticky;
+  top: 0;
+  background: $color-surface;
+  z-index: 1;
 }
 
 tbody td {
@@ -108,7 +126,7 @@ tbody tr {
   &.active,
   &.good {
     background: $color-success-bg;
-    color: $color-success;
+    color: $color-success-700;
   }
   &.pending,
   &.warning {
@@ -119,11 +137,11 @@ tbody tr {
   &.inactive,
   &.critical {
     background: $color-danger-bg;
-    color: $color-danger;
+    color: $color-danger-700;
   }
   &.info {
     background: $color-info-bg;
-    color: $color-info;
+    color: $color-info-700;
   }
 }
 
@@ -169,9 +187,12 @@ tbody tr {
   color: $color-ink-700;
 }
 
+// Padding lives on the empty-state component itself (it's used inside this
+// cell everywhere now); keep this cell's own padding minimal so it doesn't
+// double up.
 .table-empty-row td {
   text-align: center;
-  padding: 2.5rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   color: $color-ink-300;
   font-size: 0.88rem;
   font-weight: 600;

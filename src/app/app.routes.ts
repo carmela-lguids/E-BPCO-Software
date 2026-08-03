@@ -67,7 +67,9 @@ export const routes: Routes = [
       },
       {
         path: 'workflow',
-        loadComponent: () => import('./pages/workflow/workflow').then((m) => m.Workflow),
+        loadComponent: () =>
+          import('./shared/workflow-monitor/workflow-monitor').then((m) => m.WorkflowMonitor),
+        data: { homeRoute: '/dashboard' },
       },
       {
         path: 'platform/overview',
@@ -91,6 +93,24 @@ export const routes: Routes = [
       {
         path: 'my-access',
         loadComponent: () => import('./pages/my-access/my-access').then((m) => m.MyAccess),
+      },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./pages/notifications/notifications').then((m) => m.NotificationsPage),
+      },
+      {
+        path: 'reports',
+        loadComponent: () => import('./pages/reports/reports').then((m) => m.Reports),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/system-settings/system-settings').then((m) => m.SystemSettings),
+      },
+      {
+        path: 'help',
+        loadComponent: () => import('./pages/help-support/help-support').then((m) => m.HelpSupport),
       },
     ],
   },
@@ -134,7 +154,8 @@ export const routes: Routes = [
       {
         path: 'workflow',
         loadComponent: () =>
-          import('./pages/tenant-workflow/tenant-workflow').then((m) => m.TenantWorkflow),
+          import('./shared/workflow-monitor/workflow-monitor').then((m) => m.WorkflowMonitor),
+        data: { homeRoute: '/tenant/dashboard' },
       },
       {
         path: 'inspections',
@@ -157,6 +178,24 @@ export const routes: Routes = [
       {
         path: 'my-access',
         loadComponent: () => import('./pages/my-access/my-access').then((m) => m.MyAccess),
+      },
+      {
+        path: 'notifications',
+        loadComponent: () =>
+          import('./pages/notifications/notifications').then((m) => m.NotificationsPage),
+      },
+      {
+        path: 'reports',
+        loadComponent: () => import('./pages/reports/reports').then((m) => m.Reports),
+      },
+      {
+        path: 'settings',
+        loadComponent: () =>
+          import('./pages/system-settings/system-settings').then((m) => m.SystemSettings),
+      },
+      {
+        path: 'help',
+        loadComponent: () => import('./pages/help-support/help-support').then((m) => m.HelpSupport),
       },
     ],
   },

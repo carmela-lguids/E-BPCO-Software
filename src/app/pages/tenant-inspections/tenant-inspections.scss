@@ -32,7 +32,7 @@
 
 .search-input {
   flex: 1;
-  min-width: 260px;
+  min-width: min(260px, 100%);
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -67,15 +67,15 @@
 }
 .status-pill.in-progress {
   background: $color-info-bg;
-  color: $color-info;
+  color: $color-info-700;
 }
 .status-pill.passed {
   background: $color-success-bg;
-  color: $color-success;
+  color: $color-success-700;
 }
 .status-pill.needs-correction {
   background: $color-danger-bg;
-  color: $color-danger;
+  color: $color-danger-700;
 }
 
 .id-cell {

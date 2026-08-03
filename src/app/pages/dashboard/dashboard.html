@@ -119,7 +119,7 @@
         <app-icon name="plus" [size]="15" />
         Application
       </button>
-      <a class="view-all" href="javascript:void(0)">View All</a>
+      <a class="view-all" routerLink="/tenants">View All</a>
     </div>
   </div>
 
@@ -197,7 +197,7 @@
   @if (selectedTenantApp(); as row) {
     <div class="modal-backdrop" (click)="closeTenantAppModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeTenantAppModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeTenantAppModal()" aria-label="Close">&#10005;</button>
         <h2>Application Details</h2>
         <dl class="kv-list">
           <div><dt>Application ID</dt><dd>{{ row.id }}</dd></div>
@@ -220,7 +220,7 @@
   @if (selectedTenantApp()) {
     <div class="modal-backdrop" (click)="closeTenantAppModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeTenantAppModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeTenantAppModal()" aria-label="Close">&#10005;</button>
         <h2>Edit Application</h2>
         <div class="form-grid">
           <div>
@@ -261,7 +261,7 @@
   @if (selectedTenantApp(); as row) {
     <div class="modal-backdrop" (click)="closeTenantAppModal()">
       <div class="modal-box" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeTenantAppModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeTenantAppModal()" aria-label="Close">&#10005;</button>
         <h2>Delete Application {{ row.id }}?</h2>
         <p>This will permanently remove this application record. This action cannot be undone.</p>
         <div class="modal-actions">

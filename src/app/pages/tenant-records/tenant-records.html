@@ -1,5 +1,9 @@
 <app-topbar title="Records" />
 
+@if (isRecordsOfficer()) {
+  <app-my-queue-strip [tiles]="queueTiles()" />
+}
+
 <section class="stat-row">
   <button type="button" class="stat-tile" [class.active]="typeFilter() === 'All'" (click)="selectType('All')">
     <span class="stat-label">All Records</span>
@@ -50,6 +54,7 @@
           <th>LOCATION</th>
           <th>ARCHIVED DATE</th>
           <th>ARCHIVED BY</th>
+          <th>RETENTION DEADLINE</th>
           <th>STATUS</th>
           <th>ACTION</th>
         </tr>
@@ -69,10 +74,16 @@
             <td>{{ row.archivedDate }}</td>
             <td>{{ row.archivedBy }}</td>
             <td>
+              {{ row.retentionDeadline }}
+              @if (row.eligibleForDisposal) {
+                <span class="disposal-flag">Eligible for disposal</span>
+              }
+            </td>
+            <td>
               <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
             </td>
             <td class="actions-cell">
-              <button type="button" class="icon-btn view" (click)="view(row)">
+              <button type="button" class="icon-btn view" [attr.aria-label]="'View ' + row.id" (click)="view(row)">
                 <app-icon name="eye" [size]="14" />
               </button>
               @if (row.status === 'Active') {
@@ -89,7 +100,13 @@
           </tr>
         } @empty {
           <tr class="table-empty-row">
-            <td colspan="8">No records match your search.</td>
+            <td colspan="9">
+              <app-empty-state
+                icon="search"
+                title="No records match your search"
+                message="Try a different applicant name, reference number, or location."
+              />
+            </td>
           </tr>
         }
       </tbody>
@@ -102,7 +119,7 @@
 @if (selected(); as row) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal-box wide" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
       <h2>Record Details</h2>
       <dl class="kv-list">
         <div><dt>Record ID</dt><dd>{{ row.id }}</dd></div>
@@ -112,6 +129,7 @@
         <div><dt>Status</dt><dd>{{ row.status }}</dd></div>
         <div><dt>Archived Date</dt><dd>{{ row.archivedDate }}</dd></div>
         <div><dt>Archived By</dt><dd>{{ row.archivedBy }}</dd></div>
+        <div><dt>Retention Deadline</dt><dd>{{ row.retentionDeadline }}</dd></div>
       </dl>
       <div class="modal-actions">
         <button type="button" class="modal-btn cancel" (click)="closeModal()">Close</button>

@@ -5,6 +5,7 @@ import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { RoleBadge } from '../../shared/role-badge/role-badge';
 import { RoleAssignmentPreview } from '../../shared/role-assignment-preview/role-assignment-preview';
+import { EmptyState } from '../../shared/empty-state/empty-state';
 import { Session } from '../../core/session';
 import { MOCK_ACCOUNTS, MockAccount } from '../../core/mock-accounts';
 import { ROLES, ROLE_ORDER, RoleKey } from '../../core/roles';
@@ -13,7 +14,7 @@ const CREATABLE_ROLES: RoleKey[] = ROLE_ORDER.filter((key) => ROLES[key].group =
 
 @Component({
   selector: 'app-tenant-users',
-  imports: [Topbar, Icon, Avatar, RoleBadge, RoleAssignmentPreview, FormsModule],
+  imports: [Topbar, Icon, Avatar, RoleBadge, RoleAssignmentPreview, FormsModule, EmptyState],
   templateUrl: './tenant-users.html',
   styleUrl: './tenant-users.scss',
 })

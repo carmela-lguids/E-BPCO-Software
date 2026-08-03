@@ -1,0 +1,77 @@
+<app-topbar title="Notifications" />
+
+<div class="page-head">
+  <p class="page-sub">Assignments, payments, and system events relevant to your role.</p>
+  <button type="button" class="mark-all-btn" (click)="markAllRead()">Mark all as read</button>
+</div>
+
+<div class="filter-chips">
+  <button
+    type="button"
+    class="chip"
+    [class.active]="activeFilter() === 'all'"
+    (click)="setFilter('all')"
+  >
+    All
+  </button>
+  <button
+    type="button"
+    class="chip"
+    [class.active]="activeFilter() === 'unread'"
+    (click)="setFilter('unread')"
+  >
+    Unread
+  </button>
+  @for (t of typeChips(); track t.key) {
+    <button
+      type="button"
+      class="chip"
+      [class.active]="activeFilter() === t.key"
+      (click)="setFilter(t.key)"
+    >
+      {{ t.label }}
+    </button>
+  }
+</div>
+
+<section class="card">
+  @if (filtered().length === 0) {
+    <app-empty-state icon="bell" title="No notifications here" message="Nothing matches this filter right now." />
+  } @else {
+    <ul class="notif-list">
+      @for (n of filtered(); track n.id) {
+        <li>
+          <button
+            type="button"
+            class="notif-row"
+            [class.unread]="!n.read"
+            [class.priority-critical]="n.priority === 'critical'"
+            [class.priority-high]="n.priority === 'high'"
+            (click)="open(n)"
+          >
+            <span class="notif-icon">
+              <app-icon [name]="iconFor(n.type)" [size]="17" />
+            </span>
+            <span class="notif-body">
+              <span class="notif-msg">{{ n.message }}</span>
+              <span class="notif-meta">
+                @if (n.priority !== 'normal') {
+                  <span class="priority-tag" [class]="'priority-' + n.priority">{{
+                    notifications.priorityLabel(n.priority)
+                  }}</span>
+                }
+                @if (n.relatedLabel) {
+                  <span class="notif-ref">{{ n.relatedLabel }}</span>
+                }
+                <span class="notif-time">{{ n.timestamp }}</span>
+              </span>
+            </span>
+            @if (!n.read) {
+              <span class="unread-dot" aria-hidden="true"></span>
+            }
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</section>

@@ -1,0 +1,150 @@
+<app-topbar title="System Settings" />
+
+<p class="page-sub">
+  @if (isNationalRole()) {
+    Platform-wide defaults. Fee schedules are managed per tenant — see the Modules tab to configure a specific tenant.
+  } @else {
+    Settings for your tenant workspace only.
+  }
+</p>
+
+<div class="settings-tabs">
+  @for (tab of tabs(); track tab.key) {
+    <button type="button" class="settings-tab" [class.active]="activeTab() === tab.key" (click)="setTab(tab.key)">
+      {{ tab.label }}
+    </button>
+  }
+</div>
+
+@if (activeTab() === 'general') {
+  <section class="card">
+    <h3>{{ isNationalRole() ? 'Platform Identity' : 'Organization' }}</h3>
+    <div class="settings-form-grid">
+      <label class="settings-field">
+        <span>{{ isNationalRole() ? 'Platform name' : 'Tenant name' }}<span class="req" aria-hidden="true"></span></span>
+        <input type="text" required [(ngModel)]="orgName" />
+      </label>
+      <label class="settings-field">
+        <span>Contact email<span class="req" aria-hidden="true"></span></span>
+        <input type="email" required [(ngModel)]="contactEmail" />
+      </label>
+      <label class="settings-field">
+        <span>Locale &amp; timezone</span>
+        <input type="text" [(ngModel)]="locale" />
+      </label>
+    </div>
+    <div class="form-actions">
+      <button type="button" class="btn-primary" (click)="saveGeneral()">Save</button>
+      @if (saveToast(); as t) {
+        <span class="saved-flag"><app-icon name="check-circle" [size]="14" /> {{ t }}</span>
+      }
+    </div>
+  </section>
+}
+
+@if (activeTab() === 'fees') {
+  <section class="card">
+    <h3>Fee Schedule</h3>
+    <p class="muted-sub">A summary of current fees. Line-item edits happen in the fee schedule record, not here.</p>
+    <dl class="fee-list">
+      @for (item of feeSummary; track item.name) {
+        <div>
+          <dt>{{ item.name }}</dt>
+          <dd>{{ item.amount }}</dd>
+        </div>
+      }
+    </dl>
+  </section>
+}
+
+@if (activeTab() === 'notifications') {
+  <section class="card">
+    <h3>Default Notification Rules</h3>
+    <p class="muted-sub">
+      Applies to every account in {{ isNationalRole() ? 'the platform' : 'this tenant' }} unless a person changes their
+      own preference on My Profile.
+    </p>
+    <label class="toggle-row">
+      <input type="checkbox" [(ngModel)]="notifyAssignments" />
+      Notify staff when an application is assigned to them
+    </label>
+    <label class="toggle-row">
+      <input type="checkbox" [(ngModel)]="notifyPayments" />
+      Notify cashiers when a payment needs verification
+    </label>
+    <label class="toggle-row">
+      <input type="checkbox" [(ngModel)]="notifyOverdue" />
+      Flag applications that exceed their stage's target processing time
+    </label>
+    <label class="toggle-row">
+      <input type="checkbox" [(ngModel)]="digestEmail" />
+      Send a daily email digest in addition to in-app notifications
+    </label>
+    <div class="form-actions">
+      <button type="button" class="btn-primary" (click)="saveNotifications()">Save</button>
+      @if (saveToast(); as t) {
+        <span class="saved-flag"><app-icon name="check-circle" [size]="14" /> {{ t }}</span>
+      }
+    </div>
+  </section>
+}
+
+@if (activeTab() === 'modules') {
+  <section class="card">
+    @if (isNationalRole()) {
+      <div class="tenant-picker">
+        <h3>Modules</h3>
+        <label class="settings-field inline">
+          <span>Tenant</span>
+          <select [ngModel]="selectedTenant()" (ngModelChange)="setSelectedTenant($event)">
+            @for (name of tenantNames; track name) {
+              <option [value]="name">{{ name }}</option>
+            }
+          </select>
+        </label>
+      </div>
+      <p class="muted-sub">Enabling or disabling a module here controls what {{ selectedTenant() }}'s staff see in their sidebar.</p>
+    } @else {
+      <h3>Modules Enabled for This Tenant</h3>
+      <p class="muted-sub">Turning a module off removes it from your staff's sidebar. It doesn't delete any data.</p>
+    }
+
+    <ul class="module-toggle-list">
+      @for (mod of modules(); track mod.key) {
+        <li>
+          <span class="module-text">
+            <span class="module-label">{{ mod.label }}</span>
+            <span class="module-desc">{{ mod.description }}</span>
+          </span>
+          <button
+            type="button"
+            class="switch"
+            role="switch"
+            [attr.aria-checked]="mod.enabled"
+            [class.on]="mod.enabled"
+            (click)="requestToggle(mod)"
+          >
+            <span class="switch-knob"></span>
+          </button>
+        </li>
+      }
+    </ul>
+  </section>
+}
+
+@if (pendingToggle(); as mod) {
+  <div class="modal-backdrop" (click)="cancelToggle()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h2>Turn off {{ mod.label }}?</h2>
+      <p>
+        This removes <strong>{{ mod.label }}</strong> from the sidebar for every account in
+        {{ isNationalRole() ? selectedTenant() : 'this tenant' }}. No data is deleted, and you can turn it back on
+        anytime.
+      </p>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn cancel" (click)="cancelToggle()">Cancel</button>
+        <button type="button" class="modal-btn confirm" (click)="confirmToggle()">Turn Off</button>
+      </div>
+    </div>
+  </div>
+}

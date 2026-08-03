@@ -1,6 +1,10 @@
 <app-topbar title="Payments" />
 
 @if (view() === 'list') {
+  @if (isCashier()) {
+    <app-my-queue-strip [tiles]="queueTiles()" />
+  }
+
   <section class="ring-stat-row">
     @for (stat of ringStats; track stat.label) {
       <div class="ring-card">
@@ -35,9 +39,13 @@
           <app-icon name="filter" [size]="15" />
           Filters
         </button>
-        <button type="button" class="btn-outline">
+        <button type="button" class="btn-outline" (click)="exportRows()">
           <app-icon name="download" [size]="15" />
-          Export
+          @if (selectedRowIds().size > 0) {
+            Export ({{ selectedRowIds().size }})
+          } @else {
+            Export
+          }
         </button>
         <button type="button" class="btn-primary">
           <app-icon name="plus" [size]="15" />
@@ -50,7 +58,14 @@
       <table>
         <thead>
           <tr>
-            <th><input type="checkbox" /></th>
+            <th>
+              <input
+                type="checkbox"
+                aria-label="Select all payments on this page"
+                [checked]="allPagedSelected()"
+                (change)="toggleSelectAllPaged()"
+              />
+            </th>
             <th>APPLICATION ID</th>
             <th>APPLICANT NAME</th>
             <th>LOCATION</th>
@@ -64,7 +79,14 @@
         <tbody>
           @for (row of pagedRows(); track row.id) {
             <tr>
-              <td><input type="checkbox" /></td>
+              <td>
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="'Select ' + row.id"
+                  [checked]="isRowSelected(row.id)"
+                  (change)="toggleSelectRow(row.id)"
+                />
+              </td>
               <td class="id-cell">{{ row.id }}</td>
               <td>
                 <div class="applicant-cell">
@@ -81,7 +103,7 @@
               </td>
               <td>
                 <div class="actions-cell">
-                  <button type="button" class="icon-btn view" (click)="openDetail(row)">
+                  <button type="button" class="icon-btn view" [attr.aria-label]="'View ' + row.id" (click)="openDetail(row)">
                     <app-icon name="eye" [size]="15" />
                   </button>
                   @if (row.verified) {
@@ -99,7 +121,13 @@
             </tr>
           } @empty {
             <tr class="table-empty-row">
-              <td colspan="9">No payments match your search.</td>
+              <td colspan="9">
+                <app-empty-state
+                  icon="search"
+                  title="No payments match your search"
+                  message="Try a different applicant name, reference number, or location."
+                />
+              </td>
             </tr>
           }
         </tbody>
@@ -115,7 +143,12 @@
       @if (row.verified) {
         <span class="pill-btn verified static">Verified</span>
       } @else {
-        <span class="pill-btn verify static">{{ row.status }}</span>
+        <button type="button" class="pill-btn verify" *roleGate="['cashier']" (click)="requestVerify(row)">
+          Verify
+        </button>
+        <span class="pill-btn verify static" *roleGate="['tenant-admin', 'obo', 'releasing', 'records']">{{
+          row.status
+        }}</span>
       }
       <button type="button" class="btn-primary" (click)="backToList()">Back to List</button>
     </div>
@@ -219,6 +252,41 @@
           </tbody>
         </table>
       </div>
+
+      <div class="refunds-head">
+        <h3>Refunds &amp; Adjustments</h3>
+        @if (row.verified) {
+          <button type="button" class="btn-outline btn-sm" *roleGate="['tenant-admin']" (click)="requestRefund(row)">
+            Issue Refund
+          </button>
+        }
+      </div>
+      <div class="table-wrap">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Amount</th>
+              <th>Reason</th>
+              <th>Date</th>
+              <th>Issued By</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of row.refunds; track r.date + r.amount) {
+              <tr>
+                <td>{{ r.amount }}</td>
+                <td>{{ r.reason }}</td>
+                <td class="muted">{{ r.date }}</td>
+                <td>{{ r.issuedBy }}</td>
+              </tr>
+            } @empty {
+              <tr class="table-empty-row">
+                <td colspan="4">No refunds or adjustments recorded.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 }
@@ -226,7 +294,7 @@
 @if (modal() === 'confirm') {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal-box" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
       <h2>Are you sure you want to Verify this payment?</h2>
       <p>After verifying the application will move forward to Permit Releasing.</p>
       <div class="modal-actions">
@@ -240,7 +308,7 @@
 @if (modal() === 'incomplete') {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal-box" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
       <h2>Can't process verification.</h2>
       <p>The applicant has not completed verification on their end.</p>
     </div>
@@ -253,6 +321,31 @@
       <h2>No authority to process action.</h2>
       <p>This application is handled by the other admin.</p>
       <div class="modal-actions centered">
+        <button type="button" class="modal-btn cancel" (click)="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+}
+
+@if (modal() === 'refund') {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal-box wide" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
+      <h2>Issue a Refund or Adjustment</h2>
+      <div class="form-grid">
+        <label>
+          Amount<span class="req" aria-hidden="true"></span>
+          <input type="text" required [(ngModel)]="refundAmount" placeholder="e.g. ₱200" />
+        </label>
+        <label>
+          Reason<span class="req" aria-hidden="true"></span>
+          <input type="text" required [(ngModel)]="refundReason" placeholder="e.g. Fee recalculated after correction" />
+        </label>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn confirm" [disabled]="!canSubmitRefund" (click)="confirmRefund()">
+          Record Refund
+        </button>
         <button type="button" class="modal-btn cancel" (click)="closeModal()">Cancel</button>
       </div>
     </div>

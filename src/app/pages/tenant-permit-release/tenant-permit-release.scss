@@ -36,7 +36,7 @@
 
 .search-input {
   flex: 1;
-  min-width: 260px;
+  min-width: min(260px, 100%);
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -108,7 +108,42 @@
 
 .status-pill.released {
   background: #dcfce7;
-  color: #16a34a;
+  color: #15803d;
+}
+
+.status-pill.voided {
+  background: #fdeceb;
+  color: #991b1b;
+}
+
+.history-list {
+  list-style: none;
+  margin: 1.1rem 0 0;
+  padding: 0;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.history-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #f4f4f7;
+  font-size: 0.85rem;
+}
+
+.history-action {
+  font-weight: 700;
+  color: #1f2430;
+}
+
+.history-meta {
+  color: #7a7f8c;
+  font-size: 0.78rem;
 }
 
 .actions-cell {
@@ -129,6 +164,21 @@
     opacity: 0.4;
     cursor: not-allowed;
   }
+}
+
+.icon-btn.history {
+  background: #f4f4f7;
+  color: #6b7080;
+}
+
+.icon-btn.reprint {
+  background: #e8f1ff;
+  color: #2563eb;
+}
+
+.icon-btn.void {
+  background: #fdeceb;
+  color: #991b1b;
 }
 
 .modal-icon {
@@ -167,5 +217,28 @@
 
   &:active {
     transform: scale(0.96);
+  }
+}
+
+.void-confirm-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1f2430;
+  margin-top: 1rem;
+
+  input {
+    font-weight: 400;
+    border: 1px solid #e2e2e6;
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.88rem;
+
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.18);
+    }
   }
 }

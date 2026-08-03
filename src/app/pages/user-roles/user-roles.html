@@ -133,7 +133,13 @@
             </tr>
           } @empty {
             <tr class="table-empty-row">
-              <td colspan="6">No users match your search.</td>
+              <td colspan="6">
+                <app-empty-state
+                  icon="search"
+                  title="No users match your search"
+                  message="Try a different name, email, or role."
+                />
+              </td>
             </tr>
           }
         </tbody>
@@ -188,7 +194,7 @@
   @if (selectedUser(); as u) {
     <div class="modal-backdrop" (click)="closeUserModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeUserModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeUserModal()" aria-label="Close">&#10005;</button>
         <h2>User Details</h2>
         <dl class="kv-list">
           <div><dt>Name</dt><dd>{{ u.name }}</dd></div>
@@ -210,7 +216,7 @@
   @if (selectedUser()) {
     <div class="modal-backdrop" (click)="closeUserModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeUserModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeUserModal()" aria-label="Close">&#10005;</button>
         <h2>Edit User</h2>
         <div class="form-grid">
           <div>
@@ -261,7 +267,7 @@
   @if (selectedUser(); as u) {
     <div class="modal-backdrop" (click)="closeUserModal()">
       <div class="modal-box" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeUserModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeUserModal()" aria-label="Close">&#10005;</button>
         <h2>Remove {{ u.name }}?</h2>
         <p>This will permanently remove this user from the platform. This action cannot be undone.</p>
         <div class="modal-actions">
@@ -277,7 +283,7 @@
   @if (selectedRole()) {
     <div class="modal-backdrop" (click)="closeRoleModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeRoleModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeRoleModal()" aria-label="Close">&#10005;</button>
         <h2>Edit Role</h2>
         <div class="form-grid">
           <div>
@@ -302,7 +308,7 @@
   @if (selectedRole(); as role) {
     <div class="modal-backdrop" (click)="closeRoleModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeRoleModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeRoleModal()" aria-label="Close">&#10005;</button>
         <h2>{{ role.name }} — Users</h2>
         <dl class="kv-list">
           @for (u of roleUsers(); track u.email) {

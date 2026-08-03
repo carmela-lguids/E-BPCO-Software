@@ -50,3 +50,15 @@ input[type='password']::-ms-clear {
   white-space: nowrap;
   border: 0;
 }
+
+// Global required-field marker — one app-wide convention rather than each
+// form inventing (or forgetting) its own. Purely decorative (aria-hidden in
+// markup) — the accessible "required" announcement comes from the actual
+// required/aria-required attribute on the input itself, not this glyph.
+.req {
+  color: #c81e2c;
+  margin-left: 0.15em;
+}
+.req::after {
+  content: '*';
+}

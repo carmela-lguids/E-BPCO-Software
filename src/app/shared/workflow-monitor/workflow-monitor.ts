@@ -1,18 +1,21 @@
-import { Component, computed, signal } from '@angular/core';
-import { Router } from '@angular/router';
-import { Topbar } from '../../shared/topbar/topbar';
-import { Icon } from '../../shared/icon/icon';
-import { FlowChart } from '../../shared/flow-chart/flow-chart';
-import { buildAllFlows, FlowDef } from '../workflow/workflow-flows';
+import { Component, computed, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Topbar } from '../topbar/topbar';
+import { Icon } from '../icon/icon';
+import { FlowChart } from '../flow-chart/flow-chart';
+import { buildAllFlows, FlowDef } from './workflow-flows';
+import { STAGE_STATS, StageStat, isBottleneck } from './stage-summary-data';
 
 @Component({
-  selector: 'app-tenant-workflow',
+  selector: 'app-workflow-monitor',
   imports: [Topbar, Icon, FlowChart],
-  templateUrl: './tenant-workflow.html',
-  styleUrl: '../workflow/workflow.scss',
+  templateUrl: './workflow-monitor.html',
+  styleUrl: './workflow-monitor.scss',
 })
-export class TenantWorkflow {
+export class WorkflowMonitor {
+  private readonly route = inject(ActivatedRoute);
   private readonly flows = buildAllFlows();
+  private readonly homeRoute = this.route.snapshot.data['homeRoute'] as string | undefined;
 
   protected readonly filters: { key: string; label: string }[] = [
     { key: 'overall', label: 'Overall' },
@@ -25,6 +28,8 @@ export class TenantWorkflow {
     { key: 'releasing', label: 'Releasing' },
   ];
 
+  protected readonly stageStats: StageStat[] = STAGE_STATS;
+
   protected readonly activeFilter = signal('overall');
   protected readonly filterMenuOpen = signal(false);
 
@@ -36,6 +41,10 @@ export class TenantWorkflow {
 
   constructor(private readonly router: Router) {}
 
+  protected isBottleneck(stat: StageStat): boolean {
+    return isBottleneck(stat);
+  }
+
   toggleFilterMenu(): void {
     this.filterMenuOpen.update((v) => !v);
   }
@@ -46,6 +55,6 @@ export class TenantWorkflow {
   }
 
   backToList(): void {
-    this.router.navigateByUrl('/tenant/dashboard');
+    this.router.navigateByUrl(this.homeRoute ?? '/dashboard');
   }
 }

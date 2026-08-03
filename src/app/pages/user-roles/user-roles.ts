@@ -8,6 +8,7 @@ import { Pagination } from '../../shared/pagination/pagination';
 import { ROLE_ORDER as ROLE_KEYS, roleLabel, roleKeyFromLabel, RoleKey } from '../../core/roles';
 import { RoleGate } from '../../core/role-gate.directive';
 import { RoleAssignmentPreview } from '../../shared/role-assignment-preview/role-assignment-preview';
+import { EmptyState } from '../../shared/empty-state/empty-state';
 
 type Tab = 'users' | 'roles';
 type UserStatus = 'Active' | 'Inactive' | 'Pending';
@@ -212,7 +213,7 @@ const ROLES: RoleRow[] = [
 
 @Component({
   selector: 'app-user-roles',
-  imports: [Topbar, StatCard, Icon, Avatar, Pagination, FormsModule, RoleGate, RoleAssignmentPreview],
+  imports: [Topbar, StatCard, Icon, Avatar, Pagination, FormsModule, RoleGate, RoleAssignmentPreview, EmptyState],
   templateUrl: './user-roles.html',
   styleUrl: './user-roles.scss',
 })

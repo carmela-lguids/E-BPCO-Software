@@ -1,4 +1,4 @@
-import { FlowEdge, FlowNode } from '../../shared/flow-chart/flow-chart';
+import { FlowEdge, FlowNode } from '../flow-chart/flow-chart';
 import { FlowBuilder, ROW_GAP } from './flow-builder';
 
 export interface FlowDef {

@@ -11,29 +11,41 @@ export const NAV_BY_ROLE: Record<RoleKey, NavItem[]> = {
     { label: 'System Logs', icon: 'logs', path: '/system-logs' },
     { label: 'Tenants', icon: 'building', path: '/tenants' },
     { label: 'Workflow', icon: 'workflow', path: '/workflow' },
+    { label: 'Reports', icon: 'trend-up', path: '/reports' },
+    { label: 'Settings', icon: 'gear', path: '/settings' },
+    { label: 'Help & Support', icon: 'info', path: '/help' },
   ],
   'platform-admin': [
     { label: 'Platform Overview', icon: 'cloud', path: '/platform/overview' },
     { label: 'Tenant Provisioning', icon: 'building', path: '/tenants' },
     { label: 'System Logs', icon: 'logs', path: '/system-logs' },
+    { label: 'Reports', icon: 'trend-up', path: '/reports' },
+    { label: 'Settings', icon: 'gear', path: '/settings' },
+    { label: 'Help & Support', icon: 'info', path: '/help' },
   ],
   'ops-manager': [
     { label: 'National Dashboard', icon: 'home', path: '/dashboard' },
     { label: 'Tenants', icon: 'building', path: '/tenants' },
+    { label: 'Reports', icon: 'trend-up', path: '/reports' },
+    { label: 'Help & Support', icon: 'info', path: '/help' },
   ],
   auditor: [
-    { label: 'System Logs', icon: 'logs', path: '/system-logs' },
+    { label: 'Audit Logs', icon: 'logs', path: '/system-logs' },
     { label: 'Tenants', icon: 'building', path: '/tenants' },
     { label: 'User & Roles', icon: 'user-check', path: '/user-roles' },
+    { label: 'Reports', icon: 'trend-up', path: '/reports' },
+    { label: 'Help & Support', icon: 'info', path: '/help' },
   ],
   'support-admin': [
     { label: 'Support Dashboard', icon: 'info', path: '/support/dashboard' },
     { label: 'Tenant Directory', icon: 'building', path: '/tenants' },
     { label: 'User Lookup', icon: 'user-check', path: '/user-roles' },
+    { label: 'Help & Support', icon: 'info', path: '/help' },
   ],
   'security-admin': [
     { label: 'Security Dashboard', icon: 'lock', path: '/security/dashboard' },
     { label: 'Roles & Permissions', icon: 'user-check', path: '/user-roles' },
+    { label: 'Help & Support', icon: 'info', path: '/help' },
   ],
 
   'tenant-admin': [
@@ -46,29 +58,46 @@ export const NAV_BY_ROLE: Record<RoleKey, NavItem[]> = {
     { label: 'Inspections', icon: 'clipboard-check', path: '/tenant/inspections' },
     { label: 'Records', icon: 'archive', path: '/tenant/records' },
     { label: 'Workflow', icon: 'workflow', path: '/tenant/workflow' },
+    { label: 'Reports', icon: 'trend-up', path: '/tenant/reports' },
+    { label: 'Settings', icon: 'gear', path: '/tenant/settings' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   obo: [
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   'initial-eval': [
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   zoning: [
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   'fire-safety': [
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
-  inspector: [{ label: 'Inspections', icon: 'clipboard-check', path: '/tenant/inspections' }],
-  cashier: [{ label: 'Payments', icon: 'wallet', path: '/tenant/payments' }],
-  releasing: [{ label: 'Permit Release', icon: 'file-check', path: '/tenant/permit-release' }],
+  inspector: [
+    { label: 'Inspections', icon: 'clipboard-check', path: '/tenant/inspections' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
+  ],
+  cashier: [
+    { label: 'Payments', icon: 'wallet', path: '/tenant/payments' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
+  ],
+  releasing: [
+    { label: 'Permit Release', icon: 'file-check', path: '/tenant/permit-release' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
+  ],
   records: [
     { label: 'Records', icon: 'archive', path: '/tenant/records' },
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
+    { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
 };
 

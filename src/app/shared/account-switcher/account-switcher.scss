@@ -36,12 +36,29 @@
 
 .panel {
   width: 340px;
+  max-width: calc(100vw - 2.5rem);
   max-height: 70vh;
   overflow-y: auto;
   background: $color-surface;
   border-radius: $radius-lg;
   border: 1px solid #fbbf24;
   box-shadow: $shadow-card-hover;
+}
+
+@media (max-width: $bp-phone-sm) {
+  :host {
+    right: 0.75rem;
+    bottom: 0.75rem;
+  }
+
+  .fab span {
+    display: none;
+  }
+
+  .fab {
+    padding: 0.85rem;
+    border-radius: 50%;
+  }
 }
 
 .panel-head {

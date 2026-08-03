@@ -44,7 +44,7 @@ h2 {
 
 .search-input {
   flex: 1;
-  min-width: 260px;
+  min-width: min(260px, 100%);
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -317,6 +317,22 @@ h2 {
   }
 }
 
+.refunds-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+
+  h3 {
+    margin: 0;
+  }
+}
+
+.btn-sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.78rem;
+}
+
 .verified-note {
   margin: 0;
   font-size: 0.85rem;
@@ -355,7 +371,7 @@ h2 {
 
 .status-pill.unsuccessful {
   background: #fee2e2;
-  color: #dc2626;
+  color: #b91c1c;
 }
 
 /* Modal buttons on this page use blue instead of the shared red "cancel" shade. */

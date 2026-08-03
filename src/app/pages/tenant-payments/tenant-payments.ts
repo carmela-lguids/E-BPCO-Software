@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
@@ -6,10 +6,14 @@ import { Avatar } from '../../shared/avatar/avatar';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
 import { RoleGate } from '../../core/role-gate.directive';
+import { Toast } from '../../core/toast';
+import { Session } from '../../core/session';
+import { MyQueueStrip, QueueTile } from '../../shared/my-queue-strip/my-queue-strip';
+import { EmptyState } from '../../shared/empty-state/empty-state';
+import { SearchIndex } from '../../core/search-index';
+import { PAYMENT_BASE_ROWS, PayStatus, VerifyResult } from './payments-seed';
 
-type PayStatus = 'Paid' | 'Unpaid' | 'Pending';
-type VerifyResult = 'success' | 'incomplete' | 'no-authority';
-type ModalKind = 'confirm' | 'incomplete' | 'no-authority' | null;
+type ModalKind = 'confirm' | 'incomplete' | 'no-authority' | 'refund' | null;
 
 interface HistoryEntry {
   ref: string;
@@ -18,6 +22,13 @@ interface HistoryEntry {
   status: 'Paid' | 'Unsuccessful';
   method: string;
   verifiedBy: string;
+}
+
+interface RefundEntry {
+  amount: string;
+  reason: string;
+  date: string;
+  issuedBy: string;
 }
 
 interface PaymentRow {
@@ -35,6 +46,7 @@ interface PaymentRow {
   paymentMethod: string;
   fees: { processing: string; zoning: string; fire: string; obo: string; total: string };
   history: HistoryEntry[];
+  refunds: RefundEntry[];
 }
 
 interface RingStat {
@@ -45,30 +57,8 @@ interface RingStat {
   pct: number;
 }
 
-const BASE_ROWS: Array<{
-  id: string;
-  applicant: string;
-  city: string;
-  type: string;
-  dateSubmitted: string;
-  status: PayStatus;
-  verifyResult: VerifyResult;
-  method: string;
-}> = [
-  { id: '#WA-2026', applicant: 'Raul Villa', city: 'Taguig City', type: 'Residential', dateSubmitted: '12 Apr 2024', status: 'Paid', verifyResult: 'success', method: 'Onsite' },
-  { id: '#WA-2025', applicant: 'Fea Sims', city: 'Quezon City', type: 'Commercial', dateSubmitted: '24 Apr 2024', status: 'Pending', verifyResult: 'success', method: 'GCash' },
-  { id: '#WA-2024', applicant: 'David Roderick', city: 'Pasig City', type: 'Renovation', dateSubmitted: '25 Apr 2024', status: 'Paid', verifyResult: 'success', method: 'Maya' },
-  { id: '#WA-2023', applicant: 'James Zavel', city: 'Pasay City', type: 'Renovation', dateSubmitted: '14 Dec 2024', status: 'Paid', verifyResult: 'success', method: 'E-wallet' },
-  { id: '#WA-2022', applicant: 'Denese Martin', city: 'Makati City', type: 'Renovation', dateSubmitted: '14 Jan 2024', status: 'Unpaid', verifyResult: 'incomplete', method: 'Maya' },
-  { id: '#WA-2021', applicant: 'Jack Nunnally', city: 'Paranaque City', type: 'Renovation', dateSubmitted: '2 Dec 2024', status: 'Pending', verifyResult: 'no-authority', method: 'GCash' },
-  { id: '#WA-2020', applicant: 'James Zavel', city: 'Bulacan City', type: 'Residential', dateSubmitted: '14 Dec 2024', status: 'Paid', verifyResult: 'success', method: 'Onsite' },
-  { id: '#WA-2019', applicant: 'Anthony Williams', city: 'Mandaluyong City', type: 'Commercial', dateSubmitted: '1 Jul 2024', status: 'Unpaid', verifyResult: 'success', method: 'Maya' },
-  { id: '#WA-2018', applicant: 'Axie Barnes', city: 'Marikina City', type: 'Commercial', dateSubmitted: '28 Aug 2024', status: 'Paid', verifyResult: 'success', method: 'E-wallet' },
-  { id: '#WA-2017', applicant: 'Glen Morning', city: 'Caloocan City', type: 'Commercial', dateSubmitted: '30 Aug 2024', status: 'Pending', verifyResult: 'incomplete', method: 'Maya' },
-];
-
 function buildRows(): PaymentRow[] {
-  return BASE_ROWS.map((r, i) => {
+  return PAYMENT_BASE_ROWS.map((r, i) => {
     const refNo = `0122${8300 + i * 40}`;
     const history: HistoryEntry[] =
       r.status === 'Paid'
@@ -94,17 +84,39 @@ function buildRows(): PaymentRow[] {
       paymentMethod: r.method,
       fees: { processing: '₱250', zoning: '₱150', fire: '₱500', obo: '₱500', total: '₱1,400' },
       history,
+      refunds: [],
     };
   });
 }
 
 @Component({
   selector: 'app-tenant-payments',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState],
   templateUrl: './tenant-payments.html',
   styleUrl: './tenant-payments.scss',
 })
 export class TenantPayments {
+  private readonly toast = inject(Toast);
+  private readonly session = inject(Session);
+  private readonly searchIndex = inject(SearchIndex);
+
+  // Cashier lands directly on this page (no separate dashboard) — this is
+  // their "what's mine today" summary, distinct from the page-wide ring
+  // stats below it.
+  protected readonly isCashier = computed(() => this.session.currentRole() === 'cashier');
+
+  protected readonly queueTiles = computed<QueueTile[]>(() => {
+    const rows = this.rows();
+    const pending = rows.filter((r) => r.status === 'Pending').length;
+    const paid = rows.filter((r) => r.status === 'Paid').length;
+    const unpaid = rows.filter((r) => r.status === 'Unpaid').length;
+    return [
+      { label: 'Pending Verification', value: String(pending), tone: 'warn' },
+      { label: 'Verified', value: String(paid), tone: 'good' },
+      { label: 'Unpaid', value: String(unpaid) },
+    ];
+  });
+
   protected readonly view = signal<'list' | 'detail'>('list');
   protected readonly rows = signal<PaymentRow[]>(buildRows());
   protected readonly selectedId = signal<string | null>(null);
@@ -138,6 +150,48 @@ export class TenantPayments {
     this.page.set(1);
   }
 
+  // --- Row selection + bulk/toolbar export ---
+  protected readonly selectedRowIds = signal<Set<string>>(new Set());
+
+  protected readonly allPagedSelected = computed(() => {
+    const paged = this.pagedRows();
+    if (paged.length === 0) return false;
+    const selected = this.selectedRowIds();
+    return paged.every((r) => selected.has(r.id));
+  });
+
+  toggleSelectAllPaged(): void {
+    const paged = this.pagedRows();
+    const allSelected = this.allPagedSelected();
+    this.selectedRowIds.update((set) => {
+      const next = new Set(set);
+      for (const r of paged) {
+        if (allSelected) next.delete(r.id);
+        else next.add(r.id);
+      }
+      return next;
+    });
+  }
+
+  toggleSelectRow(id: string): void {
+    this.selectedRowIds.update((set) => {
+      const next = new Set(set);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  isRowSelected(id: string): boolean {
+    return this.selectedRowIds().has(id);
+  }
+
+  exportRows(): void {
+    const count = this.selectedRowIds().size || this.filteredRows().length;
+    this.toast.show(`${count} payment${count === 1 ? '' : 's'} exported.`);
+    this.selectedRowIds.set(new Set());
+  }
+
   protected readonly ringStats: RingStat[] = [
     { label: 'Pending', value: '524', color: '#f59e0b', light: '#fef3c7', pct: 45 },
     { label: 'Paid', value: '849', color: '#16a34a', light: '#dcfce7', pct: 75 },
@@ -158,6 +212,14 @@ export class TenantPayments {
   openDetail(row: PaymentRow): void {
     this.selectedId.set(row.id);
     this.view.set('detail');
+    this.searchIndex.recordView({
+      id: `pay-${row.id}`,
+      title: row.applicant,
+      subtitle: `${row.id} · Payment · ${row.status}`,
+      category: 'Payment',
+      route: '/tenant/payments',
+      icon: 'wallet',
+    });
   }
 
   backToList(): void {
@@ -190,10 +252,45 @@ export class TenantPayments {
       rows.map((r) => (r.id === id ? { ...r, status: 'Paid', verified: true } : r)),
     );
     this.modal.set(null);
+    this.toast.show(`${row.id} payment verified. Application moved to Permit Release.`);
   }
 
   closeModal(): void {
     this.modal.set(null);
     this.pendingVerifyId.set(null);
+    this.refundAmount = '';
+    this.refundReason = '';
+  }
+
+  // --- Refunds & Adjustments ---
+  protected refundAmount = '';
+  protected refundReason = '';
+
+  get canSubmitRefund(): boolean {
+    return this.refundAmount.trim().length > 0 && this.refundReason.trim().length > 0;
+  }
+
+  requestRefund(row: PaymentRow): void {
+    this.pendingVerifyId.set(row.id);
+    this.modal.set('refund');
+  }
+
+  confirmRefund(): void {
+    if (!this.canSubmitRefund) return;
+    const id = this.pendingVerifyId();
+    this.rows.update((rows) =>
+      rows.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              refunds: [
+                ...r.refunds,
+                { amount: this.refundAmount, reason: this.refundReason, date: 'Just now', issuedBy: 'You' },
+              ],
+            }
+          : r,
+      ),
+    );
+    this.closeModal();
   }
 }

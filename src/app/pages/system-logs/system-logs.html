@@ -109,13 +109,13 @@
                 <td><span class="status-pill" [class]="row.severity.toLowerCase()">{{ row.severity }}</span></td>
                 <td>
                   <div class="actions-cell">
-                    <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
+                    <button type="button" class="icon-btn view" aria-label="View log entry" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" aria-label="Edit log entry" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" aria-label="Delete log entry" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -156,13 +156,13 @@
                 <td><span class="status-pill active">{{ row.sessionDuration }}</span></td>
                 <td>
                   <div class="actions-cell">
-                    <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
+                    <button type="button" class="icon-btn view" aria-label="View log entry" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" aria-label="Edit log entry" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" aria-label="Delete log entry" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -203,13 +203,13 @@
                 <td>{{ row.requestId }}</td>
                 <td>
                   <div class="actions-cell">
-                    <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
+                    <button type="button" class="icon-btn view" aria-label="View log entry" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" aria-label="Edit log entry" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" aria-label="Delete log entry" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -250,13 +250,13 @@
                 <td><span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span></td>
                 <td>
                   <div class="actions-cell">
-                    <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
+                    <button type="button" class="icon-btn view" aria-label="View log entry" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" aria-label="Edit log entry" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" aria-label="Delete log entry" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -295,13 +295,13 @@
                 <td><span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span></td>
                 <td>
                   <div class="actions-cell">
-                    <button type="button" class="icon-btn view" (click)="viewLogRow(row)">
+                    <button type="button" class="icon-btn view" aria-label="View log entry" (click)="viewLogRow(row)">
                       <app-icon name="eye" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editLogRow(row)">
+                    <button type="button" class="icon-btn edit" *roleGate="['super-admin']" aria-label="Edit log entry" (click)="editLogRow(row)">
                       <app-icon name="edit" [size]="14" />
                     </button>
-                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteLogRow(row)">
+                    <button type="button" class="icon-btn del" *roleGate="['super-admin']" aria-label="Delete log entry" (click)="deleteLogRow(row)">
                       <app-icon name="trash" [size]="14" />
                     </button>
                   </div>
@@ -326,7 +326,7 @@
   @if (selectedLogRow(); as row) {
     <div class="modal-backdrop" (click)="closeLogModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeLogModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeLogModal()" aria-label="Close">&#10005;</button>
         <h2>Log Entry Details</h2>
         <dl class="kv-list">
           @for (key of logFieldKeys(); track key) {
@@ -345,7 +345,7 @@
   @if (selectedLogRow()) {
     <div class="modal-backdrop" (click)="closeLogModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeLogModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeLogModal()" aria-label="Close">&#10005;</button>
         <h2>Edit Log Entry</h2>
         <div class="form-grid">
           @for (key of logFieldKeys(); track key) {
@@ -385,7 +385,7 @@
   @if (selectedLogRow()) {
     <div class="modal-backdrop" (click)="closeLogModal()">
       <div class="modal-box" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeLogModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeLogModal()" aria-label="Close">&#10005;</button>
         <h2>Delete This Log Entry?</h2>
         <p>This will permanently remove this log entry. This action cannot be undone.</p>
         <div class="modal-actions">

@@ -1,0 +1,6 @@
+@if (toast.current(); as t) {
+  <div class="toast-host" [class]="t.tone" role="status" aria-live="polite">
+    <app-icon [name]="t.tone === 'success' ? 'check-circle' : 'info'" [size]="16" />
+    <span>{{ t.text }}</span>
+  </div>
+}

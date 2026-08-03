@@ -1,5 +1,9 @@
 <app-topbar title="Inspections" />
 
+@if (isInspector()) {
+  <app-my-queue-strip [tiles]="queueTiles()" />
+}
+
 <section class="ring-stat-row">
   @for (stat of ringStats(); track stat.label) {
     <div class="ring-card">
@@ -74,7 +78,13 @@
           </tr>
         } @empty {
           <tr class="table-empty-row">
-            <td colspan="7">No inspections match your search.</td>
+            <td colspan="7">
+              <app-empty-state
+                icon="search"
+                title="No inspections match your search"
+                message="Try a different applicant name, reference number, or location."
+              />
+            </td>
           </tr>
         }
       </tbody>
@@ -87,7 +97,7 @@
 @if (selected(); as row) {
   <div class="modal-backdrop" (click)="close()">
     <div class="modal-box wide" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="close()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="close()" aria-label="Close">&#10005;</button>
       <h2>{{ row.id }} — {{ row.applicant }}</h2>
       <p class="modal-sub">{{ row.applicationId }} · {{ row.city }} · {{ row.type }}</p>
 

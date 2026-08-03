@@ -3,22 +3,170 @@
     <button type="button" class="menu-btn" (click)="uiState.toggleSidebar()" aria-label="Open menu">
       <app-icon name="menu" [size]="20" />
     </button>
-    <h1 class="page-title">{{ title() }}</h1>
+    <div class="title-col">
+      @if (crumbs().length > 0) {
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          @for (crumb of crumbs(); track crumb.label; let last = $last) {
+            @if (!last && crumb.action) {
+              <button type="button" class="crumb-link" (click)="crumb.action()">{{ crumb.label }}</button>
+            } @else {
+              <span class="crumb-current">{{ crumb.label }}</span>
+            }
+            @if (!last) {
+              <app-icon name="chevron-right" [size]="12" class="crumb-sep" />
+            }
+          }
+        </nav>
+      }
+      <h1 class="page-title">{{ title() }}</h1>
+    </div>
   </div>
 
   <div class="topbar-right">
-    <div class="search-box">
-      <app-icon name="search" [size]="17" />
-      <label class="sr-only" for="topbar-search">Search</label>
-      <input id="topbar-search" type="text" placeholder="Search here..." />
+    <div class="search-wrap">
+      <div class="search-box" [class.focused]="searchOpen()">
+        <app-icon name="search" [size]="17" />
+        <label class="sr-only" for="topbar-search">Search applications, users, tenants, payments, records, and permits</label>
+        <input
+          id="topbar-search"
+          #searchInput
+          type="text"
+          placeholder="Search here..."
+          autocomplete="off"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearchInput($event)"
+          (focus)="onSearchFocus()"
+        />
+        <kbd class="kbd-hint">Ctrl K</kbd>
+      </div>
+
+      @if (searchOpen()) {
+        <div class="menu-backdrop" (click)="closeSearch()"></div>
+        <div class="search-panel">
+          @if (searchTerm().trim().length === 0) {
+            @if (recentlyViewed().length > 0) {
+              <div class="search-panel-head">Recently viewed</div>
+              <ul class="search-result-list">
+                @for (item of recentlyViewed(); track item.id) {
+                  <li>
+                    <button type="button" class="search-result-row" (click)="selectSearchResult(item)">
+                      <span class="result-icon"><app-icon [name]="item.icon" [size]="14" /></span>
+                      <span class="result-text">
+                        <span class="result-title">{{ item.title }}</span>
+                        <span class="result-subtitle">{{ item.subtitle }}</span>
+                      </span>
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+            @if (recentSearches().length > 0) {
+              <div class="search-panel-head">Recent searches</div>
+              <ul class="recent-search-list">
+                @for (term of recentSearches(); track term) {
+                  <li>
+                    <button type="button" class="recent-search-row" (click)="runRecentSearch(term)">
+                      <app-icon name="search" [size]="13" />
+                      {{ term }}
+                    </button>
+                  </li>
+                }
+              </ul>
+            }
+            @if (recentlyViewed().length === 0 && recentSearches().length === 0) {
+              <p class="search-empty-note">
+                Search applications, users, tenants, payments, records, and permits by name or reference number.
+              </p>
+            }
+          } @else if (searchResults().length === 0) {
+            <p class="search-empty-note">No matches for "{{ searchTerm() }}".</p>
+          } @else {
+            <ul class="search-result-list">
+              @for (result of searchResults(); track result.id; let i = $index) {
+                @if (i === 0 || searchResults()[i - 1].category !== result.category) {
+                  <li class="search-group-label">{{ result.category }}</li>
+                }
+                <li>
+                  <button type="button" class="search-result-row" (click)="selectSearchResult(result)">
+                    <span class="result-icon"><app-icon [name]="result.icon" [size]="14" /></span>
+                    <span class="result-text">
+                      <span class="result-title">{{ result.title }}</span>
+                      <span class="result-subtitle">{{ result.subtitle }}</span>
+                    </span>
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+        </div>
+      }
     </div>
 
-    <button type="button" class="bell-btn" aria-label="Notifications">
-      <app-icon name="bell" [size]="19" />
-      @if (notificationCount() > 0) {
-        <span class="badge">{{ notificationCount() }}</span>
+    <div class="notif-wrap">
+      <button
+        type="button"
+        class="bell-btn"
+        aria-label="Notifications"
+        [attr.aria-expanded]="notifOpen()"
+        (click)="toggleNotif()"
+      >
+        <app-icon name="bell" [size]="19" />
+        @if (notifications.unreadCount() > 0) {
+          <span class="badge">{{ notifications.unreadCount() }}</span>
+        }
+      </button>
+
+      @if (notifOpen()) {
+        <div class="menu-backdrop" (click)="closeNotif()"></div>
+        <div class="notif-panel">
+          <div class="notif-panel-head">
+            <span>Notifications</span>
+            <button type="button" class="mark-all" (click)="markAllRead()">Mark all as read</button>
+          </div>
+
+          @if (recentNotifications().length === 0) {
+            <p class="notif-empty">You're all caught up — nothing new right now.</p>
+          } @else {
+            <ul class="notif-list">
+              @for (n of recentNotifications(); track n.id) {
+                <li>
+                  <button
+                    type="button"
+                    class="notif-row"
+                    [class.unread]="!n.read"
+                    [class.priority-critical]="n.priority === 'critical'"
+                    [class.priority-high]="n.priority === 'high'"
+                    (click)="openNotification(n.id, n.relatedRoute)"
+                  >
+                    <span class="notif-icon">
+                      <app-icon [name]="notifications.iconFor(n.type)" [size]="15" />
+                    </span>
+                    <span class="notif-body">
+                      <span class="notif-msg">{{ n.message }}</span>
+                      <span class="notif-time">
+                        @if (n.priority !== 'normal') {
+                          <span class="priority-tag" [class]="'priority-' + n.priority">{{
+                            notifications.priorityLabel(n.priority)
+                          }}</span>
+                        }
+                        {{ n.timestamp }}
+                      </span>
+                    </span>
+                    @if (!n.read) {
+                      <span class="unread-dot" aria-hidden="true"></span>
+                    }
+                  </button>
+                </li>
+              }
+            </ul>
+          }
+
+          <a class="view-all" [routerLink]="portalBase() + '/notifications'" (click)="closeNotif()">
+            View all notifications
+          </a>
+        </div>
       }
-    </button>
+    </div>
 
     <div class="user-menu-wrap">
       <button type="button" class="user-chip" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()">
@@ -33,25 +181,25 @@
           </span>
           <span class="user-org">{{ orgLabel() }}</span>
         </span>
-        <app-icon name="chevron-down" [size]="14" />
+        <app-icon name="chevron-down" [size]="14" class="chip-caret" />
       </button>
 
       @if (menuOpen()) {
         <div class="menu-backdrop" (click)="closeMenu()"></div>
         <div class="user-menu">
-          <a routerLink="/profile" (click)="closeMenu()">
+          <a [routerLink]="portalBase() + '/profile'" (click)="closeMenu()">
             <app-icon name="user" [size]="15" />
             My Profile
           </a>
-          <a routerLink="/my-access" (click)="closeMenu()">
+          <a [routerLink]="portalBase() + '/my-access'" (click)="closeMenu()">
             <app-icon name="shield" [size]="15" />
             My Access
           </a>
-          <a routerLink="/profile" (click)="closeMenu()">
+          <a [routerLink]="portalBase() + '/profile'" (click)="closeMenu()">
             <app-icon name="info" [size]="15" />
             Account Information
           </a>
-          <a routerLink="/profile" fragment="notifications" (click)="closeMenu()">
+          <a [routerLink]="portalBase() + '/notifications'" (click)="closeMenu()">
             <app-icon name="bell" [size]="15" />
             Notifications
           </a>

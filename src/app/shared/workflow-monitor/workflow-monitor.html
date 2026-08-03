@@ -30,6 +30,27 @@
   </div>
 </div>
 
+<section class="stage-summary" aria-label="Applications currently at each stage">
+  @for (stat of stageStats; track stat.key) {
+    <button
+      type="button"
+      class="stage-stat"
+      [class.active]="activeFilter() === stat.key"
+      [class.bottleneck]="isBottleneck(stat)"
+      (click)="selectFilter(stat.key)"
+    >
+      <span class="stage-stat-top">
+        <span class="stage-stat-label">{{ stat.label }}</span>
+        @if (isBottleneck(stat)) {
+          <span class="bottleneck-flag" title="Average dwell time exceeds the target for this stage">Bottleneck</span>
+        }
+      </span>
+      <span class="stage-stat-count">{{ stat.count }}</span>
+      <span class="stage-stat-meta">{{ stat.avgDwellDays }}d avg &middot; target {{ stat.targetDays }}d &middot; oldest {{ stat.oldestDays }}d</span>
+    </button>
+  }
+</section>
+
 <section class="card canvas-card">
   <app-flow-chart
     [title]="activeFlow().title"

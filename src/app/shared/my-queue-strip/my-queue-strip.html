@@ -1,0 +1,11 @@
+<section class="queue-strip">
+  <span class="queue-heading">{{ heading() }}</span>
+  <div class="queue-tiles">
+    @for (tile of tiles(); track tile.label) {
+      <div class="queue-tile" [class]="tile.tone ?? 'default'">
+        <span class="queue-value">{{ tile.value }}</span>
+        <span class="queue-label">{{ tile.label }}</span>
+      </div>
+    }
+  </div>
+</section>

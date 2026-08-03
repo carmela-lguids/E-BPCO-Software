@@ -1,4 +1,4 @@
-<app-topbar title="Evaluations" />
+<app-topbar title="Evaluations" [crumbs]="breadcrumbs()" />
 
 @if (view() === 'list') {
   <h2 class="page-heading">List Of Evaluations</h2>
@@ -31,7 +31,7 @@
   </div>
 
   <section class="ring-stat-row">
-    @for (stat of ringStats; track stat.label) {
+    @for (stat of ringStats(); track stat.label) {
       <div class="ring-card">
         <app-donut-chart
           [segments]="ringSegments(stat)"
@@ -78,9 +78,13 @@
           <app-icon name="filter" [size]="15" />
           Filters
         </button>
-        <button type="button" class="btn-outline">
+        <button type="button" class="btn-outline" (click)="exportRows()">
           <app-icon name="download" [size]="15" />
-          Export
+          @if (selectedRowIds().size > 0) {
+            Export ({{ selectedRowIds().size }})
+          } @else {
+            Export
+          }
         </button>
       </div>
     </div>
@@ -89,7 +93,14 @@
       <table>
         <thead>
           <tr>
-            <th><input type="checkbox" /></th>
+            <th>
+              <input
+                type="checkbox"
+                aria-label="Select all evaluations on this page"
+                [checked]="allPagedSelected()"
+                (change)="toggleSelectAllPaged()"
+              />
+            </th>
             <th>APPLICATION ID</th>
             <th>APPLICANT NAME</th>
             <th>MISSING DOCUMENTS</th>
@@ -103,7 +114,14 @@
         <tbody>
           @for (row of pagedRows(); track row.id) {
             <tr>
-              <td><input type="checkbox" /></td>
+              <td>
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="'Select ' + row.id"
+                  [checked]="isRowSelected(row.id)"
+                  (change)="toggleSelectRow(row.id)"
+                />
+              </td>
               <td class="id-cell">{{ row.id }}</td>
               <td>
                 <div class="applicant-cell">
@@ -131,7 +149,13 @@
             </tr>
           } @empty {
             <tr class="table-empty-row">
-              <td colspan="9">No applications match your search.</td>
+              <td colspan="9">
+                <app-empty-state
+                  icon="check-circle"
+                  title="Nothing here right now"
+                  message="No applications are at this stage, or none match your search."
+                />
+              </td>
             </tr>
           }
         </tbody>
@@ -145,7 +169,7 @@
 @if (reviewRow(); as row) {
   <div class="modal-backdrop" (click)="closeReview()">
     <div class="modal-box wide" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="closeReview()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="closeReview()" aria-label="Close">&#10005;</button>
       <h2>Review — {{ row.applicant }}</h2>
 
       <dl class="kv-list">
@@ -186,7 +210,7 @@
           type="button"
           class="modal-btn confirm"
           *roleGate="['obo', 'initial-eval', 'zoning', 'fire-safety']"
-          (click)="closeReview()"
+          (click)="approveReview()"
         >
           Approve
         </button>
@@ -194,7 +218,7 @@
           type="button"
           class="modal-btn cancel"
           *roleGate="['obo', 'initial-eval', 'zoning', 'fire-safety']"
-          (click)="closeReview()"
+          (click)="returnReview()"
         >
           Return for Revision
         </button>

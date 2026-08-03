@@ -1,42 +1,40 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
 import { Pagination } from '../../shared/pagination/pagination';
 import { RoleGate } from '../../core/role-gate.directive';
-
-type RecordType = 'Permit' | 'Application' | 'Document';
-type RecordStatus = 'Active' | 'Archived';
-
-export interface RecordArchiveRow {
-  id: string;
-  type: RecordType;
-  applicant: string;
-  city: string;
-  archivedDate: string;
-  archivedBy: string;
-  status: RecordStatus;
-}
-
-const BASE_ROWS: RecordArchiveRow[] = [
-  { id: '#WA-2010', type: 'Permit', applicant: 'Carmen Diaz', city: 'Taguig City', archivedDate: '3 Jun 2026', archivedBy: 'Jack Nunnally', status: 'Archived' },
-  { id: '#WA-2011', type: 'Application', applicant: 'Victor Bautista', city: 'Quezon City', archivedDate: '—', archivedBy: '—', status: 'Active' },
-  { id: '#WA-2012', type: 'Document', applicant: 'Rosa Mendoza', city: 'Pasig City', archivedDate: '18 May 2026', archivedBy: 'Jack Nunnally', status: 'Archived' },
-  { id: '#WA-2013', type: 'Permit', applicant: 'Grace Tan', city: 'Pasay City', archivedDate: '—', archivedBy: '—', status: 'Active' },
-  { id: '#WA-2014', type: 'Application', applicant: 'Paolo Ramos', city: 'Makati City', archivedDate: '2 Apr 2026', archivedBy: 'Jack Nunnally', status: 'Archived' },
-  { id: '#WA-2015', type: 'Document', applicant: 'Liza Dela Cruz', city: 'Paranaque City', archivedDate: '—', archivedBy: '—', status: 'Active' },
-  { id: '#WA-2016', type: 'Permit', applicant: 'Ramon Torres', city: 'Bulacan City', archivedDate: '11 Mar 2026', archivedBy: 'Jack Nunnally', status: 'Archived' },
-];
+import { Session } from '../../core/session';
+import { MyQueueStrip, QueueTile } from '../../shared/my-queue-strip/my-queue-strip';
+import { EmptyState } from '../../shared/empty-state/empty-state';
+import { RecordArchiveRow, RecordType, RETENTION_POLICY, RECORD_BASE_ROWS } from './records-seed';
 
 @Component({
   selector: 'app-tenant-records',
-  imports: [Topbar, Icon, Avatar, Pagination, FormsModule, RoleGate],
+  imports: [Topbar, Icon, Avatar, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState],
   templateUrl: './tenant-records.html',
   styleUrl: './tenant-records.scss',
 })
 export class TenantRecords {
-  protected readonly rows = signal<RecordArchiveRow[]>(BASE_ROWS);
+  private readonly session = inject(Session);
+
+  protected readonly isRecordsOfficer = computed(() => this.session.currentRole() === 'records');
+
+  protected readonly queueTiles = computed<QueueTile[]>(() => {
+    const rows = this.rows();
+    const active = rows.filter((r) => r.status === 'Active').length;
+    const archived = rows.filter((r) => r.status === 'Archived').length;
+    const disposal = rows.filter((r) => r.eligibleForDisposal).length;
+    const tiles: QueueTile[] = [
+      { label: 'Active', value: String(active) },
+      { label: 'Archived', value: String(archived), tone: 'good' },
+    ];
+    if (disposal > 0) tiles.push({ label: 'Eligible for Disposal', value: String(disposal), tone: 'warn' });
+    return tiles;
+  });
+
+  protected readonly rows = signal<RecordArchiveRow[]>(RECORD_BASE_ROWS);
   protected readonly typeFilter = signal<'All' | RecordType>('All');
   protected readonly searchTerm = signal('');
   protected readonly page = signal(1);
@@ -92,13 +90,28 @@ export class TenantRecords {
 
   archive(row: RecordArchiveRow): void {
     this.rows.update((rows) =>
-      rows.map((r) => (r.id === row.id ? { ...r, status: 'Archived', archivedDate: 'Just now', archivedBy: 'You' } : r)),
+      rows.map((r) =>
+        r.id === row.id
+          ? {
+              ...r,
+              status: 'Archived',
+              archivedDate: 'Just now',
+              archivedBy: 'You',
+              retentionDeadline: `Pending — ${RETENTION_POLICY[r.type]}`,
+              eligibleForDisposal: false,
+            }
+          : r,
+      ),
     );
   }
 
   restore(row: RecordArchiveRow): void {
     this.rows.update((rows) =>
-      rows.map((r) => (r.id === row.id ? { ...r, status: 'Active', archivedDate: '—', archivedBy: '—' } : r)),
+      rows.map((r) =>
+        r.id === row.id
+          ? { ...r, status: 'Active', archivedDate: '—', archivedBy: '—', retentionDeadline: '—', eligibleForDisposal: false }
+          : r,
+      ),
     );
   }
 }

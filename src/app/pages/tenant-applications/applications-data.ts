@@ -1,6 +1,28 @@
 export type AppStatus = 'Approved' | 'Pending' | 'Rejected';
 export type EvalKey = 'initial' | 'zoning' | 'fire' | 'obo' | 'final';
 
+// Matches the Workflow Monitor's own stage keys (shared/workflow-monitor/
+// stage-summary-data.ts) so the per-application progress strip and the
+// aggregate bottleneck view are describing the same pipeline.
+export type AppStage =
+  | 'applicant'
+  | 'zoning'
+  | 'fire-safety'
+  | 'obo-review'
+  | 'building-official'
+  | 'payment'
+  | 'releasing';
+
+export const STAGE_ORDER: { key: AppStage; label: string }[] = [
+  { key: 'applicant', label: 'Applicant' },
+  { key: 'zoning', label: 'Zoning' },
+  { key: 'fire-safety', label: 'Fire Safety' },
+  { key: 'obo-review', label: 'OBO Review' },
+  { key: 'building-official', label: 'Building Official' },
+  { key: 'payment', label: 'Payment' },
+  { key: 'releasing', label: 'Releasing' },
+];
+
 export interface AppRow {
   id: string;
   applicant: string;
@@ -9,6 +31,7 @@ export interface AppRow {
   dateSubmitted: string;
   officer: string;
   status: AppStatus;
+  currentStage: AppStage;
 }
 
 export interface DocumentItem {
@@ -16,6 +39,10 @@ export interface DocumentItem {
   filename: string;
   uploadedDate: string;
   status: 'Approved' | 'Rejected' | 'Missing' | 'Pending';
+  /** Set when this file is a resubmission, so the version trail is visible
+   * instead of silently replacing the original with no history. */
+  version?: number;
+  previousUploadedDate?: string;
 }
 
 export interface CommentItem {
@@ -72,22 +99,41 @@ export interface EvalDetailConfig {
   primaryActionLabel: string;
 }
 
+// Three rows (#WA-2026, #WA-2023, #WA-2020) ship with no officer assigned —
+// the mock seed for the Unassigned queue in the Application Assignment tab
+// (Volume III §01-20). The other seven keep an assigned officer, split
+// across a small roster instead of one name everywhere, so evaluator
+// workload counts differ.
 export const APP_ROWS: AppRow[] = [
-  { id: '#WA-2026', applicant: 'Raul Villa', city: 'Taguig City', type: 'Residential', dateSubmitted: '12 Apr 2024', officer: 'Engr. Doe', status: 'Approved' },
-  { id: '#WA-2025', applicant: 'Fea Sims', city: 'Quezon City', type: 'Commercial', dateSubmitted: '24 Apr 2024', officer: 'Engr. Doe', status: 'Pending' },
-  { id: '#WA-2024', applicant: 'David Roderick', city: 'Pasig City', type: 'Renovation', dateSubmitted: '25 Apr 2024', officer: 'Engr. Doe', status: 'Approved' },
-  { id: '#WA-2023', applicant: 'James Zavel', city: 'Pasay City', type: 'Renovation', dateSubmitted: '14 Dec 2024', officer: 'Engr. Doe', status: 'Approved' },
-  { id: '#WA-2022', applicant: 'Denese Martin', city: 'Makati City', type: 'Renovation', dateSubmitted: '14 Jan 2024', officer: 'Engr. Doe', status: 'Rejected' },
-  { id: '#WA-2021', applicant: 'Jack Nunnally', city: 'Paranaque City', type: 'Renovation', dateSubmitted: '2 Dec 2024', officer: 'Engr. Doe', status: 'Pending' },
-  { id: '#WA-2020', applicant: 'James Zavel', city: 'Bulacan City', type: 'Residential', dateSubmitted: '14 Dec 2024', officer: 'Engr. Doe', status: 'Approved' },
-  { id: '#WA-2019', applicant: 'Anthony Williams', city: 'Mandaluyong City', type: 'Commercial', dateSubmitted: '1 Jul 2024', officer: 'Engr. Doe', status: 'Rejected' },
-  { id: '#WA-2018', applicant: 'Axie Barnes', city: 'Marikina City', type: 'Commercial', dateSubmitted: '28 Aug 2024', officer: 'Engr. Doe', status: 'Approved' },
-  { id: '#WA-2017', applicant: 'Glen Morning', city: 'Caloocan City', type: 'Commercial', dateSubmitted: '30 Aug 2024', officer: 'Engr. Doe', status: 'Pending' },
+  { id: '#WA-2026', applicant: 'Raul Villa', city: 'Taguig City', type: 'Residential', dateSubmitted: '12 Apr 2024', officer: '', status: 'Pending', currentStage: 'applicant' },
+  { id: '#WA-2025', applicant: 'Fea Sims', city: 'Quezon City', type: 'Commercial', dateSubmitted: '24 Apr 2024', officer: 'Engr. Doe', status: 'Pending', currentStage: 'zoning' },
+  { id: '#WA-2024', applicant: 'David Roderick', city: 'Pasig City', type: 'Renovation', dateSubmitted: '25 Apr 2024', officer: 'Engr. Doe', status: 'Approved', currentStage: 'releasing' },
+  { id: '#WA-2023', applicant: 'James Zavel', city: 'Pasay City', type: 'Renovation', dateSubmitted: '14 Dec 2024', officer: '', status: 'Pending', currentStage: 'applicant' },
+  { id: '#WA-2022', applicant: 'Denese Martin', city: 'Makati City', type: 'Renovation', dateSubmitted: '14 Jan 2024', officer: 'Arch. Santos', status: 'Rejected', currentStage: 'fire-safety' },
+  { id: '#WA-2021', applicant: 'Jack Nunnally', city: 'Paranaque City', type: 'Renovation', dateSubmitted: '2 Dec 2024', officer: 'Engr. Doe', status: 'Pending', currentStage: 'obo-review' },
+  { id: '#WA-2020', applicant: 'James Zavel', city: 'Bulacan City', type: 'Residential', dateSubmitted: '14 Dec 2024', officer: '', status: 'Pending', currentStage: 'applicant' },
+  { id: '#WA-2019', applicant: 'Anthony Williams', city: 'Mandaluyong City', type: 'Commercial', dateSubmitted: '1 Jul 2024', officer: 'Arch. Santos', status: 'Rejected', currentStage: 'zoning' },
+  { id: '#WA-2018', applicant: 'Axie Barnes', city: 'Marikina City', type: 'Commercial', dateSubmitted: '28 Aug 2024', officer: 'Engr. Reyes', status: 'Approved', currentStage: 'releasing' },
+  { id: '#WA-2017', applicant: 'Glen Morning', city: 'Caloocan City', type: 'Commercial', dateSubmitted: '30 Aug 2024', officer: 'Engr. Reyes', status: 'Pending', currentStage: 'payment' },
 ];
+
+// Officers available to receive a new assignment in this tenant — kept
+// separate from whatever names appear in APP_ROWS so the roster stays
+// stable even as rows get reassigned.
+export const EVALUATOR_ROSTER: string[] = ['Engr. Doe', 'Arch. Santos', 'Engr. Reyes'];
+
+// Days sitting unassigned, keyed by application id — a small, explicit mock
+// value rather than derived from dateSubmitted (whose year is inconsistent
+// with "today" across this seed data).
+export const UNASSIGNED_DAYS: Record<string, number> = {
+  '#WA-2026': 2,
+  '#WA-2023': 6,
+  '#WA-2020': 9,
+};
 
 export const DOCUMENTS: DocumentItem[] = [
   { name: 'Site Development Plan', filename: 'Site_Dev.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Missing' },
-  { name: 'Building Plans', filename: 'Buildingplans.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved' },
+  { name: 'Building Plans', filename: 'Buildingplans.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved', version: 2, previousUploadedDate: 'Mon-Mar 22, 2021' },
   { name: 'Proof of Ownership', filename: 'Landtitle.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved' },
   { name: 'Barangay Clearance', filename: 'BarangayClearance.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved' },
   { name: 'Tax Declaration', filename: 'tax_declaration.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Rejected' },

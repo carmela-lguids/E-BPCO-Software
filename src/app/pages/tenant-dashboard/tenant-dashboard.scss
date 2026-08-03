@@ -251,7 +251,7 @@ h2 {
 
 .search-input {
   flex: 1;
-  min-width: 260px;
+  min-width: min(260px, 100%);
   display: flex;
   align-items: center;
   gap: 0.55rem;

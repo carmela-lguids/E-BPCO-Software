@@ -41,7 +41,7 @@
   border-radius: $radius-md;
   padding: 0.55rem 0.7rem;
   color: $color-ink-200;
-  min-width: 220px;
+  min-width: min(220px, 100%);
 
   input {
     border: none;

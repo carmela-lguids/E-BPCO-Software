@@ -1,6 +1,6 @@
 <div class="modal-backdrop" (click)="close()">
   <div class="modal-box wide" (click)="$event.stopPropagation()">
-    <button type="button" class="modal-close" (click)="close()">&#10005;</button>
+    <button type="button" class="modal-close" (click)="close()" aria-label="Close">&#10005;</button>
 
     @if (!submitted()) {
       <h2>Report Incorrect Account Assignment</h2>
@@ -41,7 +41,7 @@
       </ul>
 
       <div class="modal-actions">
-        <button type="button" class="modal-btn confirm" [disabled]="!canSubmit()" (click)="submit()">Submit Report</button>
+        <button type="button" class="modal-btn confirm" [disabled]="!canSubmit" (click)="submit()">Submit Report</button>
         <button type="button" class="modal-btn cancel" (click)="close()">Cancel</button>
       </div>
     } @else {

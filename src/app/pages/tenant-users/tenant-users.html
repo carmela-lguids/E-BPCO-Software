@@ -63,14 +63,20 @@
             <td>{{ row.lastLogin }}</td>
             <td>{{ row.createdBy }}</td>
             <td class="actions-cell">
-              <button type="button" class="icon-btn view" (click)="view(row)"><app-icon name="eye" [size]="14" /></button>
-              <button type="button" class="icon-btn edit" (click)="edit(row)"><app-icon name="edit" [size]="14" /></button>
-              <button type="button" class="icon-btn del" (click)="remove(row)"><app-icon name="trash" [size]="14" /></button>
+              <button type="button" class="icon-btn view" [attr.aria-label]="'View ' + row.fullName" (click)="view(row)"><app-icon name="eye" [size]="14" /></button>
+              <button type="button" class="icon-btn edit" [attr.aria-label]="'Edit ' + row.fullName" (click)="edit(row)"><app-icon name="edit" [size]="14" /></button>
+              <button type="button" class="icon-btn del" [attr.aria-label]="'Delete ' + row.fullName" (click)="remove(row)"><app-icon name="trash" [size]="14" /></button>
             </td>
           </tr>
         } @empty {
           <tr class="table-empty-row">
-            <td colspan="8">No users match your search.</td>
+            <td colspan="8">
+              <app-empty-state
+                icon="search"
+                title="No users match your search"
+                message="Try a different name, email, or department."
+              />
+            </td>
           </tr>
         }
       </tbody>
@@ -82,7 +88,7 @@
   @if (selected(); as row) {
     <div class="modal-backdrop" (click)="closeModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
         <h2>User Details</h2>
         <dl class="kv-list">
           <div><dt>Name</dt><dd>{{ row.fullName }}</dd></div>
@@ -106,7 +112,7 @@
   @if (selected()) {
     <div class="modal-backdrop" (click)="closeModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
         <h2>Edit User</h2>
         <div class="form-grid">
           <div>
@@ -141,7 +147,7 @@
   @if (selected(); as row) {
     <div class="modal-backdrop" (click)="closeModal()">
       <div class="modal-box" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
         <h2>Remove {{ row.fullName }}?</h2>
         <p>This will permanently remove this user from your tenant workspace. This action cannot be undone.</p>
         <div class="modal-actions">
@@ -156,7 +162,7 @@
 @if (addStep() === 'form') {
   <div class="modal-backdrop" (click)="cancelAdd()">
     <div class="modal-box wide" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="cancelAdd()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="cancelAdd()" aria-label="Close">&#10005;</button>
       <h2>Add User</h2>
       <div class="form-grid">
         <div>
@@ -191,7 +197,7 @@
 @if (addStep() === 'preview') {
   <div class="modal-backdrop" (click)="cancelAdd()">
     <div class="modal-box wide" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="cancelAdd()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="cancelAdd()" aria-label="Close">&#10005;</button>
       <h2>Review Before Assigning</h2>
       <app-role-assignment-preview [role]="addForm.role" />
       <div class="modal-actions">

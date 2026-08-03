@@ -1,0 +1,60 @@
+@use '../styles/tokens' as *;
+
+:host {
+  display: block;
+}
+
+.queue-strip {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  background: $color-info-bg-soft;
+  border: 1px solid #cfe0fd;
+  border-radius: $radius-lg;
+  padding: 0.9rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.queue-heading {
+  flex: none;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: $color-info-700;
+}
+
+.queue-tiles {
+  display: flex;
+  align-items: baseline;
+  gap: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.queue-tile {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.queue-value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: $color-ink-900;
+  font-variant-numeric: tabular-nums;
+}
+
+.queue-tile.warn .queue-value {
+  color: $color-warning;
+}
+
+.queue-tile.good .queue-value {
+  color: $color-success-700;
+}
+
+.queue-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $color-ink-500;
+}

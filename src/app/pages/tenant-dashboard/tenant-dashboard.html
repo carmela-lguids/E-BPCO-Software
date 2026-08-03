@@ -56,7 +56,7 @@
   <div class="card overdue-card">
     <div class="card-head">
       <h2>Overdue Review</h2>
-      <a class="view-all-link" href="javascript:void(0)">View All</a>
+      <a class="view-all-link" routerLink="/tenant/applications">View All</a>
     </div>
 
     <div class="severity-legend">
@@ -73,7 +73,7 @@
             <p>{{ item.text }}</p>
             <div class="overdue-footer">
               <span class="ago">{{ item.agoLabel }}</span>
-              <a class="review-link" [style.color]="item.color" href="javascript:void(0)">Review now</a>
+              <a class="review-link" [style.color]="item.color" routerLink="/tenant/applications">Review now</a>
             </div>
           </div>
         </div>
@@ -105,7 +105,7 @@
         <app-icon name="plus" [size]="15" />
         Application
       </button>
-      <a class="view-all" href="javascript:void(0)">View All</a>
+      <a class="view-all" routerLink="/tenant/applications">View All</a>
     </div>
   </div>
 
@@ -113,7 +113,6 @@
     <table>
       <thead>
         <tr>
-          <th><input type="checkbox" /></th>
           <th>APPLICATION ID</th>
           <th>APPLICANT NAME</th>
           <th>LOCATION</th>
@@ -127,7 +126,6 @@
       <tbody>
         @for (row of filteredApplications(); track row.id) {
           <tr>
-            <td><input type="checkbox" /></td>
             <td class="id-cell">{{ row.id }}</td>
             <td>
               <div class="applicant-cell">
@@ -156,7 +154,13 @@
           </tr>
         } @empty {
           <tr class="table-empty-row">
-            <td colspan="9">No applications match your search.</td>
+            <td colspan="8">
+              <app-empty-state
+                icon="search"
+                title="No applications match your search"
+                message="Try a different name, reference number, or location."
+              />
+            </td>
           </tr>
         }
       </tbody>
@@ -170,7 +174,7 @@
   @if (selectedAppRow(); as row) {
     <div class="modal-backdrop" (click)="closeAppRowModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeAppRowModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeAppRowModal()" aria-label="Close">&#10005;</button>
         <h2>Application Details</h2>
         <dl class="kv-list">
           <div><dt>Application ID</dt><dd>{{ row.id }}</dd></div>
@@ -193,7 +197,7 @@
   @if (selectedAppRow()) {
     <div class="modal-backdrop" (click)="closeAppRowModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeAppRowModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeAppRowModal()" aria-label="Close">&#10005;</button>
         <h2>Edit Application</h2>
         <div class="form-grid">
           <div>
@@ -234,7 +238,7 @@
   @if (selectedAppRow(); as row) {
     <div class="modal-backdrop" (click)="closeAppRowModal()">
       <div class="modal-box" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeAppRowModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeAppRowModal()" aria-label="Close">&#10005;</button>
         <h2>Delete Application {{ row.id }}?</h2>
         <p>This will permanently remove this application record. This action cannot be undone.</p>
         <div class="modal-actions">

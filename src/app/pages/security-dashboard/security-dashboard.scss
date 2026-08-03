@@ -68,11 +68,11 @@
 .status-pill.active,
 .status-pill.success {
   background: $color-success-bg;
-  color: $color-success;
+  color: $color-success-700;
 }
 .status-pill.failed {
   background: $color-danger-bg;
-  color: $color-danger;
+  color: $color-danger-700;
 }
 
 @media (max-width: 1300px) {

@@ -1,5 +1,7 @@
 import { Component, computed, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
+import { EmptyState } from '../../shared/empty-state/empty-state';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -35,7 +37,7 @@ interface ApplicationRow {
 
 @Component({
   selector: 'app-tenant-dashboard',
-  imports: [Topbar, Icon, Avatar, DonutChart, StackedBarChart, HBarChart, FormsModule],
+  imports: [Topbar, Icon, Avatar, DonutChart, StackedBarChart, HBarChart, FormsModule, RouterLink, EmptyState],
   templateUrl: './tenant-dashboard.html',
   styleUrl: './tenant-dashboard.scss',
 })

@@ -86,7 +86,7 @@
 
 .search-input {
   flex: 1;
-  min-width: 260px;
+  min-width: min(260px, 100%);
   display: flex;
   align-items: center;
   gap: 0.55rem;
@@ -121,7 +121,7 @@
 
 .status-pill.active {
   background: $color-success-bg;
-  color: $color-success;
+  color: $color-success-700;
 }
 
 .id-cell {
@@ -133,5 +133,17 @@
   align-items: center;
   gap: 0.55rem;
   font-weight: 600;
+}
+
+.disposal-flag {
+  display: inline-block;
+  margin-left: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: $color-danger;
+  background: $color-danger-bg;
+  border-radius: $radius-pill;
+  padding: 0.1rem 0.45rem;
+  white-space: nowrap;
 }
 

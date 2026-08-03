@@ -1,5 +1,9 @@
 <app-topbar title="Permit Release" />
 
+@if (isReleasingOfficer()) {
+  <app-my-queue-strip [tiles]="queueTiles()" />
+}
+
 <section class="ring-stat-row">
   @for (stat of ringStats; track stat.label) {
     <div class="ring-card">
@@ -34,6 +38,12 @@
         <app-icon name="filter" [size]="15" />
         Filters
       </button>
+      @if (selectedRowIds().size > 0) {
+        <button type="button" class="btn-primary" *roleGate="['releasing']" (click)="releaseSelected()">
+          <app-icon name="send" [size]="15" />
+          Release Selected ({{ selectedRowIds().size }})
+        </button>
+      }
       <button type="button" class="btn-primary" *roleGate="['releasing']" (click)="generate()">
         <app-icon name="sparkles" [size]="15" />
         Generate
@@ -45,7 +55,14 @@
     <table>
       <thead>
         <tr>
-          <th><input type="checkbox" /></th>
+          <th>
+            <input
+              type="checkbox"
+              aria-label="Select all ready-to-release permits on this page"
+              [checked]="allSelectableSelected()"
+              (change)="toggleSelectAllPaged()"
+            />
+          </th>
           <th>APPLICATION ID</th>
           <th>APPLICANT NAME</th>
           <th>LOCATION</th>
@@ -59,7 +76,16 @@
       <tbody>
         @for (row of pagedRows(); track row.id) {
           <tr>
-            <td><input type="checkbox" /></td>
+            <td>
+              @if (row.permitStatus === 'Ready') {
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="'Select ' + row.id"
+                  [checked]="isRowSelected(row.id)"
+                  (change)="toggleSelectRow(row.id)"
+                />
+              }
+            </td>
             <td class="id-cell">{{ row.id }}</td>
             <td>
               <div class="applicant-cell">
@@ -78,24 +104,56 @@
             </td>
             <td>
               <div class="actions-cell">
-                <button type="button" class="icon-btn generate" *roleGate="['releasing']" (click)="generate()">
+                <button type="button" class="icon-btn generate" *roleGate="['releasing']" [attr.aria-label]="'Generate PDF for ' + row.id" (click)="generate()">
                   <app-icon name="sparkles" [size]="15" />
                 </button>
                 <button
                   type="button"
                   class="icon-btn release"
                   *roleGate="['releasing']"
-                  [disabled]="row.permitStatus === 'Released'"
+                  [disabled]="row.permitStatus !== 'Ready'"
+                  [attr.aria-label]="'Release ' + row.id"
                   (click)="release(row)"
                 >
                   <app-icon name="send" [size]="15" />
                 </button>
+                <button type="button" class="icon-btn history" title="View history" [attr.aria-label]="'View history for ' + row.id" (click)="viewHistory(row)">
+                  <app-icon name="logs" [size]="15" />
+                </button>
+                @if (row.permitStatus === 'Released') {
+                  <button
+                    type="button"
+                    class="icon-btn reprint"
+                    *roleGate="['releasing', 'tenant-admin']"
+                    title="Re-print"
+                    [attr.aria-label]="'Re-print ' + row.id"
+                    (click)="reprint(row)"
+                  >
+                    <app-icon name="printer" [size]="15" />
+                  </button>
+                  <button
+                    type="button"
+                    class="icon-btn void"
+                    *roleGate="['releasing', 'tenant-admin']"
+                    title="Void permit"
+                    [attr.aria-label]="'Void permit for ' + row.id"
+                    (click)="requestVoid(row)"
+                  >
+                    <app-icon name="trash" [size]="15" />
+                  </button>
+                }
               </div>
             </td>
           </tr>
         } @empty {
           <tr class="table-empty-row">
-            <td colspan="9">No applications match your search.</td>
+            <td colspan="9">
+              <app-empty-state
+                icon="search"
+                title="No permits match your search"
+                message="Try a different applicant name, reference number, or location."
+              />
+            </td>
           </tr>
         }
       </tbody>
@@ -108,13 +166,61 @@
 @if (showGenerateModal()) {
   <div class="modal-backdrop" (click)="closeModal()">
     <div class="modal-box" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="closeModal()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="closeModal()" aria-label="Close">&#10005;</button>
       <span class="modal-icon"><app-icon name="sparkles" [size]="34" /></span>
       <h2>PDF GENERATED SUCCESSFULLY</h2>
       <button type="button" class="print-btn">
         <app-icon name="printer" [size]="17" />
         Print PDF
       </button>
+    </div>
+  </div>
+}
+
+@if (historyRow(); as hrow) {
+  <div class="modal-backdrop" (click)="closeHistory()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <button type="button" class="modal-close" (click)="closeHistory()" aria-label="Close">&#10005;</button>
+      <h2>{{ hrow.id }} — Permit History</h2>
+      @if (hrow.history.length > 0) {
+        <ul class="history-list">
+          @for (h of hrow.history; track h.date + h.action) {
+            <li>
+              <span class="history-action">{{ h.action }}</span>
+              <span class="history-meta">{{ h.date }} &middot; {{ h.by }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p>No permit actions recorded yet.</p>
+      }
+    </div>
+  </div>
+}
+
+@if (voidTarget(); as vrow) {
+  <div class="modal-backdrop" (click)="cancelVoid()">
+    <div class="modal-box" (click)="$event.stopPropagation()">
+      <h2>Void this permit?</h2>
+      <p>
+        {{ vrow.id }} will be marked <strong>Voided</strong> and removed from the active permit record for
+        {{ vrow.applicant }}. This is logged in the permit's history and can't be undone from here.
+      </p>
+      <label class="void-confirm-label">
+        Type <strong>{{ vrow.id }}</strong> to confirm
+        <input type="text" [(ngModel)]="voidConfirmText" [placeholder]="vrow.id" />
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="modal-btn cancel" (click)="cancelVoid()">Cancel</button>
+        <button
+          type="button"
+          class="modal-btn confirm"
+          [disabled]="voidConfirmText().trim() !== vrow.id"
+          (click)="confirmVoid()"
+        >
+          Void Permit
+        </button>
+      </div>
     </div>
   </div>
 }

@@ -35,9 +35,13 @@
           <app-icon name="filter" [size]="15" />
           Filters
         </button>
-        <button type="button" class="btn-outline">
+        <button type="button" class="btn-outline" (click)="exportRows()">
           <app-icon name="download" [size]="15" />
-          Export
+          @if (selectedRowIds().size > 0) {
+            Export ({{ selectedRowIds().size }})
+          } @else {
+            Export
+          }
         </button>
         <button type="button" class="btn-primary" *roleGate="['super-admin']" (click)="openCreate()">
           <app-icon name="plus" [size]="15" />
@@ -50,7 +54,14 @@
       <table>
         <thead>
           <tr>
-            <th><input type="checkbox" /></th>
+            <th>
+              <input
+                type="checkbox"
+                aria-label="Select all tenants on this page"
+                [checked]="allPagedSelected()"
+                (change)="toggleSelectAllPaged()"
+              />
+            </th>
             <th>Tenant ID</th>
             <th>TENANT NAME</th>
             <th>CONTACT PERSON</th>
@@ -64,7 +75,14 @@
         <tbody>
           @for (row of pagedTenantRows(); track row.id) {
             <tr>
-              <td><input type="checkbox" /></td>
+              <td>
+                <input
+                  type="checkbox"
+                  [attr.aria-label]="'Select ' + row.id"
+                  [checked]="isRowSelected(row.id)"
+                  (change)="toggleSelectRow(row.id)"
+                />
+              </td>
               <td class="id-cell">{{ row.id }}</td>
               <td>
                 <div class="applicant-cell">
@@ -86,13 +104,13 @@
               </td>
               <td>
                 <div class="actions-cell">
-                  <button type="button" class="icon-btn view" (click)="viewTenant(row)">
+                  <button type="button" class="icon-btn view" [attr.aria-label]="'View ' + row.code" (click)="viewTenant(row)">
                     <app-icon name="eye" [size]="14" />
                   </button>
-                  <button type="button" class="icon-btn edit" *roleGate="['super-admin']" (click)="editTenant(row)">
+                  <button type="button" class="icon-btn edit" *roleGate="['super-admin']" [attr.aria-label]="'Edit ' + row.code" (click)="editTenant(row)">
                     <app-icon name="edit" [size]="14" />
                   </button>
-                  <button type="button" class="icon-btn del" *roleGate="['super-admin']" (click)="deleteTenant(row)">
+                  <button type="button" class="icon-btn del" *roleGate="['super-admin']" [attr.aria-label]="'Delete ' + row.code" (click)="deleteTenant(row)">
                     <app-icon name="trash" [size]="14" />
                   </button>
                 </div>
@@ -100,7 +118,13 @@
             </tr>
           } @empty {
             <tr class="table-empty-row">
-              <td colspan="9">No tenants match your search.</td>
+              <td colspan="9">
+                <app-empty-state
+                  icon="search"
+                  title="No tenants match your search"
+                  message="Try a different tenant name, contact, or subdomain."
+                />
+              </td>
             </tr>
           }
         </tbody>
@@ -250,10 +274,6 @@
           <div class="activity-list-card">
             <div class="card-head">
               <h2>Recent Activity</h2>
-              <a class="view-all-link" href="javascript:void(0)">
-                View All
-                <app-icon name="chevron-right" [size]="14" />
-              </a>
             </div>
 
             @for (item of recentActivity; track item.name + item.agoLabel) {
@@ -300,26 +320,69 @@
   <div class="create-header">
     <div>
       <h1>Create Tenant</h1>
-      <p>Register a new Tenant in the System</p>
+      <p>{{ createStep() === 'review' ? 'Review the details below before creating this tenant.' : 'Register a new Tenant in the System' }}</p>
     </div>
     <div class="header-actions">
-      <button type="button" class="btn-outline" (click)="backToList()">Back to List</button>
-      <button type="button" class="btn-primary" (click)="createTenant()">
-        <app-icon name="plus" [size]="15" />
-        Create New Tenant
-      </button>
+      @if (createStep() === 'review') {
+        <button type="button" class="btn-outline" (click)="backToEdit()">Back to Edit</button>
+        <button type="button" class="btn-primary" (click)="createTenant()">
+          <app-icon name="check-circle" [size]="15" />
+          Confirm &amp; Create Tenant
+        </button>
+      } @else {
+        <button type="button" class="btn-outline" (click)="backToList()">Back to List</button>
+        <button type="button" class="btn-primary" (click)="reviewCreate()">
+          <app-icon name="plus" [size]="15" />
+          Review &amp; Create
+        </button>
+      }
     </div>
   </div>
 
-  <div class="create-grid">
+  @if (createStep() === 'form' && createError()) {
+    <p class="create-error">{{ createError() }}</p>
+  }
+
+  @if (createStep() === 'review') {
+    <div class="card review-card">
+      <h2>Confirm Tenant Details</h2>
+      <dl class="kv-list">
+        <div><dt>Tenant Name</dt><dd>{{ newTenant.tenantName }}</dd></div>
+        <div><dt>Type</dt><dd>{{ newTenant.type }}</dd></div>
+        <div><dt>Contact Person</dt><dd>{{ newTenant.contactName }}</dd></div>
+        <div><dt>Contact Number</dt><dd>{{ newTenant.contactPhone }}</dd></div>
+        <div><dt>Region</dt><dd>{{ newTenant.region }}</dd></div>
+        <div><dt>Province</dt><dd>{{ newTenant.province }}</dd></div>
+        <div><dt>City/Municipality</dt><dd>{{ newTenant.cityMunicipality }}</dd></div>
+        <div><dt>Barangay</dt><dd>{{ newTenant.barangay || '—' }}</dd></div>
+        <div><dt>User Name</dt><dd>{{ newTenant.userName }}</dd></div>
+        <div><dt>Subdomain</dt><dd>{{ subdomainPreview() }}</dd></div>
+        <div>
+          <dt>Modules Enabled</dt>
+          <dd>
+            @if (!newTenant.modules.initialEvaluation && !newTenant.modules.zoningEvaluation && !newTenant.modules.fireSafetyEvaluation && !newTenant.modules.locationalClearance) {
+              None selected
+            } @else {
+              @if (newTenant.modules.initialEvaluation) { Initial Evaluation }
+              @if (newTenant.modules.zoningEvaluation) { , Zoning Evaluation }
+              @if (newTenant.modules.fireSafetyEvaluation) { , Fire Safety Evaluation }
+              @if (newTenant.modules.locationalClearance) { , Locational Clearance }
+            }
+          </dd>
+        </div>
+      </dl>
+    </div>
+  }
+
+  <div class="create-grid" [class.hidden]="createStep() === 'review'">
     <div class="create-col">
       <div class="card">
         <h2>Basic Information</h2>
-        <label class="field-label">Tenant Name</label>
-        <input class="text-input" type="text" placeholder="Enter Tenant Name" [(ngModel)]="newTenant.tenantName" />
+        <label class="field-label">Tenant Name<span class="req" aria-hidden="true"></span></label>
+        <input class="text-input" type="text" required placeholder="Enter Tenant Name" [(ngModel)]="newTenant.tenantName" />
 
-        <label class="field-label">Type</label>
-        <select class="select-input" [(ngModel)]="newTenant.type">
+        <label class="field-label">Type<span class="req" aria-hidden="true"></span></label>
+        <select class="select-input" required [(ngModel)]="newTenant.type">
           <option value="">Select Type</option>
           <option value="city">City</option>
           <option value="municipality">Municipality</option>
@@ -329,13 +392,14 @@
 
       <div class="card">
         <h2>Contact Person</h2>
-        <label class="field-label">Full Name</label>
-        <input class="text-input" type="text" placeholder="Enter Full Name" [(ngModel)]="newTenant.contactName" />
+        <label class="field-label">Full Name<span class="req" aria-hidden="true"></span></label>
+        <input class="text-input" type="text" required placeholder="Enter Full Name" [(ngModel)]="newTenant.contactName" />
 
-        <label class="field-label">Contact Number</label>
+        <label class="field-label">Contact Number<span class="req" aria-hidden="true"></span></label>
         <input
           class="text-input"
           type="text"
+          required
           placeholder="Enter Contact Number"
           [(ngModel)]="newTenant.contactPhone"
         />
@@ -367,22 +431,22 @@
     <div class="create-col">
       <div class="card">
         <h2>Address Information</h2>
-        <label class="field-label">Region</label>
-        <select class="select-input" [(ngModel)]="newTenant.region">
+        <label class="field-label">Region<span class="req" aria-hidden="true"></span></label>
+        <select class="select-input" required [(ngModel)]="newTenant.region">
           <option value="">Select Region</option>
           <option value="ncr">NCR</option>
           <option value="region-4a">Region IV-A</option>
         </select>
 
-        <label class="field-label">Province</label>
-        <select class="select-input" [(ngModel)]="newTenant.province">
+        <label class="field-label">Province<span class="req" aria-hidden="true"></span></label>
+        <select class="select-input" required [(ngModel)]="newTenant.province">
           <option value="">Select Province</option>
           <option value="metro-manila">Metro Manila</option>
           <option value="cavite">Cavite</option>
         </select>
 
-        <label class="field-label">City/Municipality</label>
-        <select class="select-input" [(ngModel)]="newTenant.cityMunicipality">
+        <label class="field-label">City/Municipality<span class="req" aria-hidden="true"></span></label>
+        <select class="select-input" required [(ngModel)]="newTenant.cityMunicipality">
           <option value="">Select City/Municipality</option>
           <option value="taguig">Taguig</option>
           <option value="quezon">Quezon City</option>
@@ -397,14 +461,15 @@
 
       <div class="card">
         <h2>Login Credentials</h2>
-        <label class="field-label">User Name</label>
-        <input class="text-input" type="text" placeholder="Enter User Name" [(ngModel)]="newTenant.userName" />
+        <label class="field-label">User Name<span class="req" aria-hidden="true"></span></label>
+        <input class="text-input" type="text" required placeholder="Enter User Name" [(ngModel)]="newTenant.userName" />
 
-        <label class="field-label">Password</label>
+        <label class="field-label">Password<span class="req" aria-hidden="true"></span></label>
         <div class="input-wrap">
           <app-icon name="lock" [size]="16" class="input-icon" />
           <input
             [type]="showPassword() ? 'text' : 'password'"
+            required
             placeholder="••••••••"
             [(ngModel)]="newTenant.password"
           />
@@ -413,11 +478,12 @@
           </button>
         </div>
 
-        <label class="field-label">Confirm Password</label>
+        <label class="field-label">Confirm Password<span class="req" aria-hidden="true"></span></label>
         <div class="input-wrap">
           <app-icon name="lock" [size]="16" class="input-icon" />
           <input
             [type]="showConfirmPassword() ? 'text' : 'password'"
+            required
             placeholder="••••••••"
             [(ngModel)]="newTenant.confirmPassword"
           />
@@ -447,7 +513,7 @@
   @if (selectedTenant(); as t) {
     <div class="modal-backdrop" (click)="closeTenantModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeTenantModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeTenantModal()" aria-label="Close">&#10005;</button>
         <h2>Tenant Details</h2>
         <dl class="kv-list">
           <div><dt>Tenant ID</dt><dd>{{ t.id }}</dd></div>
@@ -472,7 +538,7 @@
   @if (selectedTenant()) {
     <div class="modal-backdrop" (click)="closeTenantModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeTenantModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeTenantModal()" aria-label="Close">&#10005;</button>
         <h2>Edit Tenant</h2>
         <div class="form-grid">
           <div>
@@ -512,7 +578,7 @@
   @if (selectedTenant(); as t) {
     <div class="modal-backdrop" (click)="closeTenantModal()">
       <div class="modal-box" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeTenantModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeTenantModal()" aria-label="Close">&#10005;</button>
         <h2>Delete {{ t.code }}?</h2>
         <p>This will permanently remove this tenant and its workspace. This action cannot be undone.</p>
         <div class="modal-actions">

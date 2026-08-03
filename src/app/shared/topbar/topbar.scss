@@ -35,6 +35,11 @@
   }
 }
 
+.title-col {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .page-title {
   margin: 0;
   font-size: 1.9rem;
@@ -46,10 +51,52 @@
   text-overflow: ellipsis;
 }
 
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-bottom: 0.2rem;
+  font-size: 0.8rem;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.crumb-link {
+  border: none;
+  background: none;
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: $color-ink-200;
+  cursor: pointer;
+
+  &:hover {
+    color: $color-brand-600;
+    text-decoration: underline;
+  }
+}
+
+.crumb-current {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $color-ink-500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.crumb-sep {
+  flex: none;
+  color: $color-ink-100;
+}
+
 .topbar-right {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.search-wrap {
+  position: relative;
 }
 
 .search-box {
@@ -63,7 +110,8 @@
   width: 260px;
   transition: box-shadow $ease-base;
 
-  &:focus-within {
+  &:focus-within,
+  &.focused {
     box-shadow: 0 0 0 2px $color-brand-focus-ring;
   }
 
@@ -74,11 +122,128 @@
     flex: 1;
     font-size: 0.88rem;
     color: $color-ink-700;
+    min-width: 0;
 
     &::placeholder {
       color: $color-ink-100;
     }
   }
+}
+
+.kbd-hint {
+  flex: none;
+  font-family: ui-monospace, "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: $color-ink-100;
+  background: $color-surface;
+  border: 1px solid $color-border-strong;
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+}
+
+.search-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  z-index: 91;
+  width: 380px;
+  max-width: calc(100vw - 2rem);
+  max-height: 420px;
+  overflow-y: auto;
+  background: $color-surface;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card-hover;
+  padding: 0.4rem;
+}
+
+.search-panel-head {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: $color-ink-100;
+  padding: 0.5rem 0.6rem 0.3rem;
+}
+
+.search-empty-note {
+  margin: 0;
+  padding: 1.1rem 0.7rem;
+  font-size: 0.83rem;
+  color: $color-ink-200;
+  line-height: 1.5;
+}
+
+.recent-search-list,
+.search-result-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search-group-label {
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: $color-ink-100;
+  padding: 0.55rem 0.6rem 0.25rem;
+}
+
+.recent-search-row,
+.search-result-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  border: none;
+  background: none;
+  padding: 0.5rem 0.6rem;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.85rem;
+  color: $color-ink-700;
+
+  &:hover {
+    background: $color-bg-subtle;
+  }
+}
+
+.result-icon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: $color-info-bg-soft;
+  color: $color-info;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.result-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.result-title {
+  font-weight: 700;
+  color: $color-ink-900;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-subtitle {
+  font-size: 0.74rem;
+  color: $color-ink-200;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .bell-btn {
@@ -118,6 +283,169 @@
     justify-content: center;
     padding: 0 3px;
     border: 2px solid $color-surface;
+  }
+}
+
+.notif-wrap {
+  position: relative;
+}
+
+.notif-panel {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 91;
+  width: 340px;
+  max-width: calc(100vw - 2rem);
+  background: $color-surface;
+  border: 1px solid $color-border-strong;
+  border-radius: $radius-md;
+  box-shadow: $shadow-card-hover;
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0.9rem;
+  border-bottom: 1px solid $color-border;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: $color-ink-900;
+
+  .mark-all {
+    border: none;
+    background: none;
+    color: $color-info;
+    font-size: 0.76rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.notif-empty {
+  margin: 0;
+  padding: 1.4rem 0.9rem;
+  font-size: 0.85rem;
+  color: $color-ink-200;
+  text-align: center;
+}
+
+.notif-list {
+  list-style: none;
+  margin: 0;
+  padding: 0.3rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.notif-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  width: 100%;
+  border: none;
+  border-left: 3px solid transparent;
+  background: none;
+  padding: 0.6rem 0.5rem;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  text-align: left;
+
+  &:hover {
+    background: $color-bg-subtle;
+  }
+
+  &.unread .notif-msg {
+    font-weight: 700;
+    color: $color-ink-900;
+  }
+
+  &.priority-critical {
+    border-left-color: $color-danger;
+  }
+
+  &.priority-high {
+    border-left-color: $color-warning;
+  }
+}
+
+.priority-tag {
+  font-weight: 700;
+  border-radius: $radius-pill;
+  padding: 0.05rem 0.4rem;
+  margin-right: 0.35rem;
+
+  &.priority-critical {
+    background: $color-danger-bg;
+    color: $color-danger-700;
+  }
+
+  &.priority-high {
+    background: $color-warning-bg;
+    color: $color-warning;
+  }
+}
+
+.notif-icon {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: $color-info-bg-soft;
+  color: $color-info;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notif-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.notif-msg {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $color-ink-700;
+  line-height: 1.35;
+}
+
+.notif-time {
+  font-size: 0.72rem;
+  color: $color-ink-100;
+}
+
+.unread-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: $color-brand-600;
+  margin-top: 0.3rem;
+}
+
+.view-all {
+  display: block;
+  text-align: center;
+  padding: 0.65rem;
+  border-top: 1px solid $color-border;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: $color-info;
+  text-decoration: none;
+
+  &:hover {
+    background: $color-bg-subtle;
   }
 }
 
@@ -211,6 +539,7 @@
   right: 0;
   z-index: 91;
   width: 220px;
+  max-width: calc(100vw - 2rem);
   background: $color-surface;
   border: 1px solid $color-border-strong;
   border-radius: $radius-md;
@@ -275,7 +604,7 @@
     display: none;
   }
 
-  .user-chip app-icon:last-child {
+  .chip-caret {
     display: none;
   }
 }

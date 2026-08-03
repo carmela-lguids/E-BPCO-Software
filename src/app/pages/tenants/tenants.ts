@@ -1,4 +1,4 @@
-import { Component, ElementRef, computed, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, computed, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
@@ -6,6 +6,8 @@ import { Avatar } from '../../shared/avatar/avatar';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
 import { RoleGate } from '../../core/role-gate.directive';
+import { Toast } from '../../core/toast';
+import { EmptyState } from '../../shared/empty-state/empty-state';
 
 type SubTab = 'analytics' | 'modules' | 'recent-activity';
 type ViewMode = 'list' | 'create';
@@ -116,12 +118,14 @@ const GROWTH_POINTS: GrowthPoint[] = [
 
 @Component({
   selector: 'app-tenants',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate, EmptyState],
   templateUrl: './tenants.html',
   styleUrl: './tenants.scss',
 })
 
 export class Tenants {
+  private readonly toast = inject(Toast);
+
   protected readonly view = signal<ViewMode>('list');
   protected readonly activeSubTab = signal<SubTab>('analytics');
 
@@ -164,6 +168,48 @@ export class Tenants {
 
   protected onSearchChange(): void {
     this.page.set(1);
+  }
+
+  // --- Row selection + bulk/toolbar export ---
+  protected readonly selectedRowIds = signal<Set<string>>(new Set());
+
+  protected readonly allPagedSelected = computed(() => {
+    const paged = this.pagedTenantRows();
+    if (paged.length === 0) return false;
+    const selected = this.selectedRowIds();
+    return paged.every((r) => selected.has(r.id));
+  });
+
+  toggleSelectAllPaged(): void {
+    const paged = this.pagedTenantRows();
+    const allSelected = this.allPagedSelected();
+    this.selectedRowIds.update((set) => {
+      const next = new Set(set);
+      for (const r of paged) {
+        if (allSelected) next.delete(r.id);
+        else next.add(r.id);
+      }
+      return next;
+    });
+  }
+
+  toggleSelectRow(id: string): void {
+    this.selectedRowIds.update((set) => {
+      const next = new Set(set);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  isRowSelected(id: string): boolean {
+    return this.selectedRowIds().has(id);
+  }
+
+  exportRows(): void {
+    const count = this.selectedRowIds().size || this.filteredTenantRows().length;
+    this.toast.show(`${count} tenant${count === 1 ? '' : 's'} exported.`);
+    this.selectedRowIds.set(new Set());
   }
 
   protected readonly moduleUsage: ModuleUsage[] = [
@@ -314,16 +360,48 @@ export class Tenants {
   protected readonly showPassword = signal(false);
   protected readonly showConfirmPassword = signal(false);
 
+  protected readonly createStep = signal<'form' | 'review'>('form');
+  protected readonly createError = signal('');
+
+  protected subdomainPreview(): string {
+    const base = this.newTenant.slug.trim() || this.newTenant.tenantName.trim();
+    return `${base.toLowerCase().replace(/\s+/g, '')}.yourapp.gov.ph`;
+  }
+
   selectSubTab(tab: SubTab): void {
     this.activeSubTab.set(tab);
   }
 
   openCreate(): void {
     this.view.set('create');
+    this.createStep.set('form');
+    this.createError.set('');
   }
 
   backToList(): void {
     this.view.set('list');
+  }
+
+  reviewCreate(): void {
+    const t = this.newTenant;
+    const required = [
+      t.tenantName, t.type, t.contactName, t.contactPhone,
+      t.region, t.province, t.cityMunicipality, t.userName, t.password, t.confirmPassword,
+    ];
+    if (required.some((v) => !v.trim())) {
+      this.createError.set('Fill in every required field (marked with *) before continuing.');
+      return;
+    }
+    if (t.password !== t.confirmPassword) {
+      this.createError.set('Password and Confirm Password do not match.');
+      return;
+    }
+    this.createError.set('');
+    this.createStep.set('review');
+  }
+
+  backToEdit(): void {
+    this.createStep.set('form');
   }
 
   createTenant(): void {

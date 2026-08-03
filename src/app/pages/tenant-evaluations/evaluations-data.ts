@@ -22,57 +22,57 @@ export interface EvalRow {
   officer: string;
   status: RowStatus;
   stage: Stage;
+  evalType: EvalTypeKey;
 }
 
-export const EVAL_TYPE_CARDS: EvalTypeCard[] = [
-  {
-    key: 'initial',
+const EVAL_TYPE_META: Record<
+  EvalTypeKey,
+  { title: string; description: string; icon: string; accent: string; tint: string; solid?: boolean; officer: string }
+> = {
+  initial: {
     title: 'Initial Evaluation',
     description: 'Review and process building permit applications.',
-    count: 750,
     icon: 'file-check',
     accent: '#d97706',
     tint: '#fdf1e3',
+    officer: 'Engr. Doe',
   },
-  {
-    key: 'zoning',
+  zoning: {
     title: 'Zoning Evaluation',
     description: 'A local authority review for compliance with zoning and building regulations.',
-    count: 750,
     icon: 'map',
     accent: '#2563eb',
     tint: '#e8f1ff',
+    officer: 'Denese Martin',
   },
-  {
-    key: 'fire',
+  fire: {
     title: 'Fire Safety Evaluation',
     description: "An assessment of a building's compliance with fire safety standards.",
-    count: 750,
     icon: 'shield',
     accent: '#dc2626',
     tint: '#fdecec',
+    officer: 'Raul Villa',
   },
-  {
-    key: 'obo',
+  obo: {
     title: 'OBO Evaluation',
     description: 'An OBO review for fire and building code compliance.',
-    count: 750,
     icon: 'building',
     accent: '#374151',
     tint: '#eef0f4',
+    officer: 'Engr. Maria Santos',
   },
-  {
-    key: 'final',
+  final: {
     title: 'Final Evaluation',
     description: 'A final sign-off confirming the application is ready for permit release.',
-    count: 750,
     icon: 'check-circle',
     accent: '#16a34a',
     tint: '#16a34a',
     solid: true,
+    officer: 'Engr. Maria Santos',
   },
-];
+};
 
+const EVAL_TYPE_ORDER: EvalTypeKey[] = ['initial', 'zoning', 'fire', 'obo', 'final'];
 const STAGES: Stage[] = ['pending-review', 'under-review', 'returned', 'passed'];
 
 const BASE: Array<{
@@ -104,22 +104,44 @@ const STAGE_STATUS: Record<Stage, RowStatus> = {
   passed: 'Approved',
 };
 
-export const EVAL_ROWS: EvalRow[] = BASE.map((r, i) => {
-  const stage = STAGES[i % STAGES.length];
-  return {
-    ...r,
-    officer: 'Engr. Doe',
-    stage,
-    status: STAGE_STATUS[stage],
-  };
-});
+// Each of the five evaluation-type cards used to render the exact same
+// EVAL_ROWS regardless of which card was opened — the type only changed the
+// heading. EVAL_ROWS is now built per evalType (offsetting the stage cycle
+// per type so the tabs don't all land on identical counts either), so
+// switching cards actually changes what's in the table.
+export const EVAL_ROWS: EvalRow[] = EVAL_TYPE_ORDER.flatMap((evalType, typeIndex) =>
+  BASE.map((r, i) => {
+    const stage = STAGES[(i + typeIndex) % STAGES.length];
+    return {
+      ...r,
+      officer: EVAL_TYPE_META[evalType].officer,
+      stage,
+      status: STAGE_STATUS[stage],
+      evalType,
+    };
+  }),
+);
 
-export const EVAL_RING_STATS = [
-  { label: 'Total Applications', value: '1,749', color: '#2563eb', light: '#dbeafe', pct: 85 },
-  { label: 'Return for Revision', value: '376', color: '#991b1b', light: '#fdeceb', pct: 30 },
-  { label: 'Pending Review', value: '524', color: '#f59e0b', light: '#fef3c7', pct: 45 },
-  { label: 'Approved', value: '849', color: '#16a34a', light: '#dcfce7', pct: 75 },
-];
+export const EVAL_TYPE_CARDS: EvalTypeCard[] = EVAL_TYPE_ORDER.map((key) => ({
+  key,
+  ...EVAL_TYPE_META[key],
+  count: EVAL_ROWS.filter((r) => r.evalType === key).length,
+}));
+
+export function ringStatsFor(evalType: EvalTypeKey): { label: string; value: string; color: string; light: string; pct: number }[] {
+  const rows = EVAL_ROWS.filter((r) => r.evalType === evalType);
+  const total = rows.length;
+  const pending = rows.filter((r) => r.stage === 'pending-review' || r.stage === 'under-review').length;
+  const returned = rows.filter((r) => r.stage === 'returned').length;
+  const approved = rows.filter((r) => r.stage === 'passed').length;
+  const pct = (n: number) => (total === 0 ? 0 : Math.round((n / total) * 100));
+  return [
+    { label: 'Total Applications', value: String(total), color: '#2563eb', light: '#dbeafe', pct: 100 },
+    { label: 'Return for Revision', value: String(returned), color: '#991b1b', light: '#fdeceb', pct: pct(returned) },
+    { label: 'Pending Review', value: String(pending), color: '#f59e0b', light: '#fef3c7', pct: pct(pending) },
+    { label: 'Approved', value: String(approved), color: '#16a34a', light: '#dcfce7', pct: pct(approved) },
+  ];
+}
 
 export const STAGE_TABS: { key: Stage; label: string; icon: string }[] = [
   { key: 'pending-review', label: 'Pending Review', icon: 'alert-circle' },

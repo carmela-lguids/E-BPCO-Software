@@ -1,3 +1,5 @@
+@use '../styles/tokens' as *;
+
 @keyframes section-in {
   from {
     opacity: 0;
@@ -25,7 +27,7 @@
     margin: 0;
     font-size: 1.15rem;
     font-weight: 800;
-    color: #1f2430;
+    color: $color-ink-900;
   }
 }
 
@@ -40,20 +42,20 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border-radius: 0.5rem;
+  border-radius: $radius-md;
   padding: 0.55rem 1rem;
   font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
-  background: #2563eb;
-  border: 1px solid #2563eb;
+  background: $color-info;
+  border: 1px solid $color-info;
   color: #fff;
   transition:
     background 0.2s ease,
     transform 0.15s ease;
 
   &:hover {
-    background: #1d4ed8;
+    background: $color-info-700;
   }
 
   &:active {
@@ -69,14 +71,14 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  border-radius: 0.5rem;
+  border-radius: $radius-md;
   padding: 0.5rem 0.9rem;
   font-size: 0.83rem;
   font-weight: 700;
   cursor: pointer;
-  background: #eaf1ff;
+  background: $color-info-bg-soft;
   border: 1px solid #cfe0fd;
-  color: #2563eb;
+  color: $color-info;
   transition:
     background 0.2s ease,
     transform 0.15s ease;
@@ -105,9 +107,9 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   right: 0;
-  background: #fff;
-  border: 1px solid #eeeef2;
-  border-radius: 0.6rem;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
   box-shadow: 0 12px 28px rgba(20, 20, 40, 0.12);
   padding: 0.75rem 0.9rem;
   min-width: 190px;
@@ -119,7 +121,7 @@
   display: block;
   font-size: 0.72rem;
   font-weight: 700;
-  color: #9297a3;
+  color: $color-ink-050;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   margin-bottom: 0.5rem;
@@ -132,27 +134,105 @@
   padding: 0.4rem 0.2rem;
   font-size: 0.86rem;
   font-weight: 500;
-  color: #2b2f3a;
+  color: $color-ink-700;
   cursor: pointer;
   border-radius: 0.35rem;
   transition: background 0.15s ease;
 
   &:hover {
-    background: #f5f7fb;
+    background: $color-bg-subtle;
   }
 
   input {
-    accent-color: #22a55e;
+    accent-color: $color-success;
     width: 15px;
     height: 15px;
   }
 }
 
+// Live stage-load strip — one stat per flow filter (minus "Overall"), doubling
+// as filter shortcuts. Amber border/label marks a stage whose average dwell
+// time has exceeded its target, per Volume III §01-30.
+.stage-summary {
+  @include fluid-grid(150px, 0.75rem);
+  margin-bottom: 1.25rem;
+}
+
+.stage-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  text-align: left;
+  background: $color-surface;
+  border: 1px solid $color-border;
+  border-radius: $radius-md;
+  padding: 0.75rem 0.9rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: $shadow-card-hover;
+  }
+
+  &.active {
+    border-color: $color-info;
+    box-shadow: 0 0 0 1px $color-info inset;
+  }
+
+  &.bottleneck {
+    border-color: $color-warning;
+
+    .stage-stat-count {
+      color: $color-warning;
+    }
+  }
+}
+
+.stage-stat-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.stage-stat-label {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: $color-ink-500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.bottleneck-flag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: $color-warning;
+  background: $color-warning-bg;
+  border-radius: $radius-pill;
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+}
+
+.stage-stat-count {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: $color-ink-900;
+  font-variant-numeric: tabular-nums;
+}
+
+.stage-stat-meta {
+  font-size: 0.72rem;
+  color: $color-ink-100;
+}
+
 .card {
-  background: #fff;
-  border-radius: 0.9rem;
+  background: $color-surface;
+  border-radius: $radius-xl;
   padding: 1.75rem 1.6rem;
-  border: 1px solid #eeeef2;
+  border: 1px solid $color-border;
   animation: section-in 0.4s ease both;
 }
 

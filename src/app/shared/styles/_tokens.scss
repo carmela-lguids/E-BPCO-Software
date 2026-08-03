@@ -33,16 +33,18 @@ $color-bg-muted: #f4f4f7;
 
 // Semantic (support only — never dominant over brand red)
 $color-success: #16a34a;
+$color-success-700: #15803d; // text-safe green — 4.6:1 on $color-success-bg vs. 3:1 for $color-success itself
 $color-success-strong: #059669;
 $color-success-bg: #dcfce7;
 $color-success-bg-soft: #e7fbef;
 $color-warning: #b45309;
 $color-warning-bg: #fef3c7;
 $color-danger: #dc2626;
+$color-danger-700: #b91c1c; // text-safe red — 5.3:1 on $color-danger-bg vs. 4:1 for $color-danger itself
 $color-danger-bg: #fee2e2;
 $color-danger-bg-soft: #fdeceb;
 $color-info: #2563eb;
-$color-info-700: #1d4ed8;
+$color-info-700: #1d4ed8; // also the text-safe blue — 5.5:1 on $color-info-bg vs. 4.2:1 for $color-info itself
 $color-info-bg: #dbeafe;
 $color-info-bg-soft: #e8f1ff;
 

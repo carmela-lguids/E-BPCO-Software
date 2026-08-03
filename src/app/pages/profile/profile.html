@@ -39,13 +39,13 @@
       @if (editingContact()) {
         <div class="edit-row">
           <input type="text" [(ngModel)]="contactDraft" />
-          <button type="button" class="icon-btn-sm confirm" (click)="saveContact()"><app-icon name="check-circle" [size]="15" /></button>
-          <button type="button" class="icon-btn-sm cancel" (click)="cancelEditContact()"><app-icon name="trash" [size]="15" /></button>
+          <button type="button" class="icon-btn-sm confirm" aria-label="Save contact number" (click)="saveContact()"><app-icon name="check-circle" [size]="15" /></button>
+          <button type="button" class="icon-btn-sm cancel" aria-label="Cancel editing contact number" (click)="cancelEditContact()"><app-icon name="trash" [size]="15" /></button>
         </div>
       } @else {
         <div class="edit-row">
           <span>{{ account().contactNumber }}</span>
-          <button type="button" class="icon-btn-sm" (click)="startEditContact()"><app-icon name="edit" [size]="14" /></button>
+          <button type="button" class="icon-btn-sm" aria-label="Edit contact number" (click)="startEditContact()"><app-icon name="edit" [size]="14" /></button>
         </div>
       }
     </div>
@@ -99,6 +99,54 @@
     <input type="checkbox" [(ngModel)]="notifySms" />
     SMS notifications for urgent items
   </label>
+</section>
+
+<section class="card" id="login-sessions">
+  <h2>Login &amp; Sessions</h2>
+
+  <h3 class="sub-heading">Active Sessions</h3>
+  <ul class="session-list">
+    @for (s of activeSessions(); track s.device + s.location) {
+      <li>
+        <span class="session-text">
+          <span class="session-device">
+            {{ s.device }}
+            @if (s.current) {
+              <span class="current-flag">This device</span>
+            }
+          </span>
+          <span class="session-meta">{{ s.location }} &middot; {{ s.lastActive }}</span>
+        </span>
+        @if (!s.current) {
+          <button type="button" class="btn-outline small" (click)="signOutSession(s)">Sign Out</button>
+        }
+      </li>
+    }
+  </ul>
+
+  <h3 class="sub-heading">Login History</h3>
+  <div class="table-wrap">
+    <table class="login-history-table">
+      <thead>
+        <tr>
+          <th>Date &amp; Time</th>
+          <th>Device</th>
+          <th>Result</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (entry of loginHistory; track entry.timestamp) {
+          <tr>
+            <td>{{ entry.timestamp }}</td>
+            <td class="muted">{{ entry.device }}</td>
+            <td>
+              <span class="status-pill" [class]="entry.result.toLowerCase()">{{ entry.result }}</span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </section>
 
 @if (reportOpen()) {

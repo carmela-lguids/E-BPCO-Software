@@ -39,10 +39,15 @@ export class ReportIncorrectAssignment {
     ];
   });
 
-  protected readonly canSubmit = computed(() => this.description.trim().length > 0);
+  // A plain getter, not computed() — description/expectedRole/etc. are plain
+  // fields updated via [(ngModel)], not signals, so a computed() here would
+  // never see them change and would stay stuck at its first-ever result.
+  protected get canSubmit(): boolean {
+    return this.description.trim().length > 0;
+  }
 
   submit(): void {
-    if (!this.canSubmit()) return;
+    if (!this.canSubmit) return;
     const acct = this.account();
     this.session.reportIncorrectAssignment({
       currentRole: acct.roleLabel,

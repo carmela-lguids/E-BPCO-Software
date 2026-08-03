@@ -1,4 +1,4 @@
-import { FlowEdge, FlowEdgeColor, FlowNode } from '../../shared/flow-chart/flow-chart';
+import { FlowEdge, FlowEdgeColor, FlowNode } from '../flow-chart/flow-chart';
 
 export const ROW_GAP = 90;
 const GAP = ROW_GAP;

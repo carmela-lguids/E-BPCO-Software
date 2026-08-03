@@ -1,6 +1,10 @@
-<app-topbar title="Applications" />
+<app-topbar title="Applications" [crumbs]="breadcrumbs()" />
 
 @if (view() === 'list') {
+  @if (evaluatorEvalType()) {
+    <app-my-queue-strip [tiles]="queueTiles()" />
+  }
+
   <section class="ring-stat-row">
     @for (stat of ringStats; track stat.label) {
       <div class="ring-card">
@@ -19,106 +23,294 @@
     }
   </section>
 
-  <section class="card table-card">
-    <div class="table-toolbar">
-      <div class="search-input">
-        <app-icon name="search" [size]="16" />
-        <input
-          type="text"
-          placeholder="Search Here By Application ID, Applicant Name, or Location"
-          [(ngModel)]="searchTerm"
-          (ngModelChange)="onSearchChange()"
-        />
-      </div>
-      <div class="toolbar-actions">
-        <button type="button" class="btn-outline">
-          <app-icon name="filter" [size]="15" />
-          Filters
-        </button>
-        <button type="button" class="btn-outline">
-          <app-icon name="download" [size]="15" />
-          Export
-        </button>
-        <button type="button" class="btn-primary" *roleGate="['tenant-admin']">
-          <app-icon name="plus" [size]="15" />
-          Application
-        </button>
-      </div>
-    </div>
+  <div class="list-tabs" *roleGate="['tenant-admin']">
+    <button type="button" class="list-tab" [class.active]="listTab() === 'all'" (click)="setListTab('all')">
+      All Applications
+    </button>
+    <button
+      type="button"
+      class="list-tab"
+      [class.active]="listTab() === 'unassigned'"
+      (click)="setListTab('unassigned')"
+    >
+      Unassigned
+      @if (unassignedRows().length > 0) {
+        <span class="tab-count">{{ unassignedRows().length }}</span>
+      }
+    </button>
+  </div>
 
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th><input type="checkbox" /></th>
-            <th>APPLICATION ID</th>
-            <th>APPLICANT NAME</th>
-            <th>LOCATION</th>
-            <th>TYPE</th>
-            <th>DATE SUBMITTED</th>
-            <th>ASSIGNED OFFICER</th>
-            <th>STATUS</th>
-            <th>ACTION</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of pagedRows(); track row.id) {
+  @if (listTab() === 'all') {
+    <section class="card table-card">
+      <div class="table-toolbar">
+        <div class="search-input">
+          <app-icon name="search" [size]="16" />
+          <input
+            type="text"
+            placeholder="Search Here By Application ID, Applicant Name, or Location"
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="onSearchChange()"
+          />
+        </div>
+        <div class="toolbar-actions">
+          <button type="button" class="btn-outline">
+            <app-icon name="filter" [size]="15" />
+            Filters
+          </button>
+          <button type="button" class="btn-outline" (click)="exportRows()">
+            <app-icon name="download" [size]="15" />
+            @if (selectedRowIds().size > 0) {
+              Export ({{ selectedRowIds().size }})
+            } @else {
+              Export
+            }
+          </button>
+          <button type="button" class="btn-primary" *roleGate="['tenant-admin']">
+            <app-icon name="plus" [size]="15" />
+            Application
+          </button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
             <tr>
-              <td><input type="checkbox" /></td>
-              <td class="id-cell">{{ row.id }}</td>
-              <td>
-                <div class="applicant-cell">
-                  <app-avatar [name]="row.applicant" [size]="30" />
-                  {{ row.applicant }}
-                </div>
-              </td>
-              <td>{{ row.city }}</td>
-              <td>{{ row.type }}</td>
-              <td>{{ row.dateSubmitted }}</td>
-              <td>{{ row.officer }}</td>
-              <td>
-                <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
-              </td>
-              <td>
-                <div class="actions-cell">
-                  <button type="button" class="icon-btn view" (click)="openDetail(row)">
-                    <app-icon name="eye" [size]="15" />
-                  </button>
-                  <button
-                    type="button"
-                    class="icon-btn edit"
-                    *roleGate="['tenant-admin', 'obo', 'initial-eval', 'zoning', 'fire-safety']"
-                    (click)="editRow(row)"
-                  >
-                    <app-icon name="edit" [size]="15" />
-                  </button>
-                  <button type="button" class="icon-btn del" *roleGate="['tenant-admin']" (click)="deleteRow(row)">
-                    <app-icon name="dots-vertical" [size]="15" />
-                  </button>
-                </div>
-              </td>
+              <th>
+                <input
+                  type="checkbox"
+                  aria-label="Select all applications on this page"
+                  [checked]="allPagedSelected()"
+                  (change)="toggleSelectAllPaged()"
+                />
+              </th>
+              <th>APPLICATION ID</th>
+              <th>APPLICANT NAME</th>
+              <th>LOCATION</th>
+              <th>TYPE</th>
+              <th>DATE SUBMITTED</th>
+              <th>ASSIGNED OFFICER</th>
+              <th>STATUS</th>
+              <th>ACTION</th>
             </tr>
-          } @empty {
-            <tr class="table-empty-row">
-              <td colspan="9">No applications match your search.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (row of pagedRows(); track row.id) {
+              <tr>
+                <td>
+                  <input
+                    type="checkbox"
+                    [attr.aria-label]="'Select ' + row.id"
+                    [checked]="isRowSelected(row.id)"
+                    (change)="toggleSelectRow(row.id)"
+                  />
+                </td>
+                <td class="id-cell">{{ row.id }}</td>
+                <td>
+                  <div class="applicant-cell">
+                    <app-avatar [name]="row.applicant" [size]="30" />
+                    {{ row.applicant }}
+                  </div>
+                </td>
+                <td>{{ row.city }}</td>
+                <td>{{ row.type }}</td>
+                <td>{{ row.dateSubmitted }}</td>
+                <td>
+                  @if (row.officer) {
+                    {{ row.officer }}
+                  } @else {
+                    <span class="unassigned-pill">Unassigned</span>
+                  }
+                </td>
+                <td>
+                  <span class="status-pill" [class]="row.status.toLowerCase()">{{ row.status }}</span>
+                </td>
+                <td>
+                  <div class="actions-cell">
+                    <button type="button" class="icon-btn view" [attr.aria-label]="'View ' + row.id" (click)="openDetail(row)">
+                      <app-icon name="eye" [size]="15" />
+                    </button>
+                    <button
+                      type="button"
+                      class="icon-btn edit"
+                      *roleGate="['tenant-admin', 'obo', 'initial-eval', 'zoning', 'fire-safety']"
+                      [attr.aria-label]="'Edit ' + row.id"
+                      (click)="editRow(row)"
+                    >
+                      <app-icon name="edit" [size]="15" />
+                    </button>
+                    <button type="button" class="icon-btn del" *roleGate="['tenant-admin']" [attr.aria-label]="'Delete ' + row.id" (click)="deleteRow(row)">
+                      <app-icon name="dots-vertical" [size]="15" />
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr class="table-empty-row">
+                <td colspan="9">
+                  <app-empty-state
+                    icon="search"
+                    title="No applications match your search"
+                    message="Try a different name, reference number, or location."
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
 
-    <app-pagination [totalItems]="filteredRows().length" [pageSize]="pageSize" [(page)]="page" />
-  </section>
+      <app-pagination [totalItems]="filteredRows().length" [pageSize]="pageSize" [(page)]="page" />
+    </section>
+  } @else {
+    <section class="card table-card" *roleGate="['tenant-admin']">
+      <div class="table-toolbar">
+        <p class="unassigned-sub">Applications with no officer assigned yet, oldest first.</p>
+        @if (selectedUnassignedIds().size > 0) {
+          <div class="toolbar-actions">
+            <button type="button" class="btn-primary" (click)="openAssignSelected()">
+              Assign Selected ({{ selectedUnassignedIds().size }})
+            </button>
+          </div>
+        }
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>APPLICATION ID</th>
+              <th>APPLICANT NAME</th>
+              <th>TYPE</th>
+              <th>DAYS UNASSIGNED</th>
+              <th>SUGGESTED EVALUATOR</th>
+              <th>ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (row of unassignedRows(); track row.id) {
+              <tr>
+                <td>
+                  <input
+                    type="checkbox"
+                    [checked]="isUnassignedSelected(row.id)"
+                    (change)="toggleUnassignedSelect(row.id)"
+                  />
+                </td>
+                <td class="id-cell">{{ row.id }}</td>
+                <td>
+                  <div class="applicant-cell">
+                    <app-avatar [name]="row.applicant" [size]="30" />
+                    {{ row.applicant }}
+                  </div>
+                </td>
+                <td>{{ row.type }}</td>
+                <td>{{ daysUnassigned(row) }}d</td>
+                <td>{{ suggestedEvaluator() }}</td>
+                <td>
+                  <button type="button" class="btn-outline btn-sm" (click)="openAssignSingle(row)">
+                    Assign
+                  </button>
+                </td>
+              </tr>
+            } @empty {
+              <tr class="table-empty-row">
+                <td colspan="7">
+                  <app-empty-state
+                    icon="check-circle"
+                    title="You're all caught up"
+                    message="Nothing unassigned right now — every application has an officer."
+                  />
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
+  }
+
+  @if (assignTargetRows().length > 0) {
+    <div class="drawer-backdrop" (click)="closeAssignDrawer()"></div>
+    <aside
+      class="assign-drawer"
+      tabindex="-1"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Assign Evaluator"
+      focusTrap
+      (escapePressed)="closeAssignDrawer()"
+    >
+      <div class="drawer-head">
+        <h3>Assign Evaluator</h3>
+        <button type="button" class="icon-btn" (click)="closeAssignDrawer()" aria-label="Close">
+          <app-icon name="chevron-right" [size]="16" />
+        </button>
+      </div>
+
+      @if (assignTargetRows().length === 1) {
+        <p class="drawer-sub">
+          {{ assignTargetRows()[0].applicant }} — {{ assignTargetRows()[0].id }} ({{ assignTargetRows()[0].type }})
+        </p>
+      } @else {
+        <p class="drawer-sub">{{ assignTargetRows().length }} applications selected</p>
+      }
+
+      <span class="drawer-label">Choose an evaluator</span>
+      <ul class="evaluator-list">
+        @for (name of evaluatorRoster; track name) {
+          <li>
+            <button
+              type="button"
+              class="evaluator-row"
+              [class.active]="assignChoice() === name"
+              (click)="chooseAssignee(name)"
+            >
+              <app-avatar [name]="name" [size]="30" />
+              <span class="evaluator-text">
+                <span class="evaluator-name">{{ name }}</span>
+                <span class="evaluator-load">{{ workloadFor(name) }} application(s) assigned</span>
+              </span>
+              @if (name === suggestedEvaluator()) {
+                <span class="suggested-flag">Least loaded</span>
+              }
+            </button>
+          </li>
+        }
+      </ul>
+
+      <div class="drawer-actions">
+        <button type="button" class="btn-outline" (click)="closeAssignDrawer()">Cancel</button>
+        <button type="button" class="btn-primary" [disabled]="!assignChoice()" (click)="confirmAssign()">
+          Confirm Assignment
+        </button>
+      </div>
+    </aside>
+  }
 } @else if (view() === 'detail' && selectedDetail(); as detail) {
   <div class="detail-head">
     <h1>Application Details</h1>
     <div class="header-actions">
-      <button type="button" class="btn-outline">Action</button>
       <button type="button" class="btn-primary" (click)="openEvaluations()">Evaluate</button>
       <button type="button" class="btn-primary" (click)="backToList()">Back to List</button>
-      <button type="button" class="icon-btn more"><app-icon name="dots-horizontal" [size]="16" /></button>
     </div>
   </div>
+
+  <ol class="progress-tracker" aria-label="Application progress">
+    @for (stage of progressStages(); track stage.key) {
+      <li class="progress-stage" [class]="stage.state">
+        <span class="stage-dot">
+          @if (stage.state === 'done') {
+            <app-icon name="check-circle" [size]="13" />
+          } @else if (stage.state === 'rejected') {
+            <app-icon name="alert-triangle" [size]="13" />
+          }
+        </span>
+        <span class="stage-name">{{ stage.label }}</span>
+      </li>
+    }
+  </ol>
 
   <div class="detail-grid">
     <div class="applicant-card">
@@ -130,6 +322,9 @@
       <div class="applicant-info">
         <h2>{{ detail.row.id }} - {{ detail.row.applicant }}</h2>
         <span class="status-pill" [class]="detail.row.status.toLowerCase()">{{ detail.row.status }}</span>
+        <p class="waiting-on" [class.resolved]="detail.row.status !== 'Pending'">
+          <strong>Waiting on:</strong> {{ waitingOn() }}
+        </p>
 
         <dl class="info-list">
           <div><dt>City :</dt><dd>{{ detail.row.city }}</dd></div>
@@ -246,7 +441,6 @@
               <table>
                 <thead>
                   <tr>
-                    <th></th>
                     <th>Category Event</th>
                     <th>Uploaded Dates</th>
                     <th>Status</th>
@@ -256,13 +450,17 @@
                 <tbody>
                   @for (d of documents; track d.name) {
                     <tr>
-                      <td><input type="checkbox" /></td>
                       <td>
                         <div class="doc-cell">
                           <span class="doc-icon"><app-icon name="file-check" [size]="18" /></span>
                           <div>
                             <div class="doc-name">{{ d.name }}</div>
                             <div class="doc-file">{{ d.filename }}</div>
+                            @if (d.version && d.version > 1) {
+                              <div class="doc-version">
+                                Replaces v{{ d.version - 1 }}, uploaded {{ d.previousUploadedDate }}
+                              </div>
+                            }
                           </div>
                         </div>
                       </td>
@@ -335,12 +533,11 @@
   <div class="detail-head">
     <h1>Application Details</h1>
     <div class="header-actions">
-      <button type="button" class="btn-outline">
+      <button type="button" class="btn-outline" (click)="exportApplicantInfo(detail)">
         <app-icon name="download" [size]="15" />
         Export
       </button>
       <button type="button" class="btn-primary" (click)="backFromInfo()">Back</button>
-      <button type="button" class="icon-btn more"><app-icon name="dots-horizontal" [size]="16" /></button>
     </div>
   </div>
 
@@ -483,9 +680,7 @@
   <div class="detail-head">
     <h1>{{ detail.row.applicant }} Evaluation's</h1>
     <div class="header-actions">
-      <button type="button" class="btn-primary">Action</button>
       <button type="button" class="btn-primary" (click)="backFromEvaluations()">Back</button>
-      <button type="button" class="icon-btn more"><app-icon name="dots-horizontal" [size]="16" /></button>
     </div>
   </div>
 
@@ -532,7 +727,6 @@
       <h1>{{ cfg.title }}</h1>
       <div class="header-actions">
         <button type="button" class="btn-primary" (click)="backFromEvalDetail()">Back</button>
-        <button type="button" class="icon-btn more"><app-icon name="dots-horizontal" [size]="16" /></button>
       </div>
     </div>
 
@@ -634,11 +828,13 @@
         <label class="msg-label">Message</label>
         <textarea placeholder="Max 150 words" rows="4"></textarea>
 
-        <button type="button" class="msg-send-btn">Send Message to Applicant</button>
-        <button type="button" class="forward-btn">{{ cfg.primaryActionLabel }}</button>
-        <div class="two-col-btns">
-          <button type="button" class="revision-btn">Return for Revision</button>
-          <button type="button" class="reject-btn">Reject</button>
+        <div class="eval-action-panel">
+          <button type="button" class="msg-send-btn">Send Message to Applicant</button>
+          <button type="button" class="forward-btn">{{ cfg.primaryActionLabel }}</button>
+          <div class="two-col-btns">
+            <button type="button" class="revision-btn">Return for Revision</button>
+            <button type="button" class="reject-btn">Reject</button>
+          </div>
         </div>
       </div>
 
@@ -749,7 +945,7 @@
 @if (previewItem(); as doc) {
   <div class="modal-backdrop" (click)="closeDocPreview()">
     <div class="modal-box doc-preview-box" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="closeDocPreview()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="closeDocPreview()" aria-label="Close">&#10005;</button>
 
       <h2>{{ doc.label }}</h2>
       <p class="doc-preview-filename">{{ doc.filename }}</p>
@@ -801,7 +997,7 @@
 @if (previewDocument(); as doc) {
   <div class="modal-backdrop" (click)="closeDocumentPreview()">
     <div class="modal-box doc-preview-box" (click)="$event.stopPropagation()">
-      <button type="button" class="modal-close" (click)="closeDocumentPreview()">&#10005;</button>
+      <button type="button" class="modal-close" (click)="closeDocumentPreview()" aria-label="Close">&#10005;</button>
 
       <h2>{{ doc.name }}</h2>
       <p class="doc-preview-filename">{{ doc.filename }}</p>
@@ -850,7 +1046,7 @@
   @if (modalRow()) {
     <div class="modal-backdrop" (click)="closeRowModal()">
       <div class="modal-box wide" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeRowModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeRowModal()" aria-label="Close">&#10005;</button>
         <h2>Edit Application</h2>
         <div class="form-grid">
           <div>
@@ -891,7 +1087,7 @@
   @if (modalRow(); as row) {
     <div class="modal-backdrop" (click)="closeRowModal()">
       <div class="modal-box" (click)="$event.stopPropagation()">
-        <button type="button" class="modal-close" (click)="closeRowModal()">&#10005;</button>
+        <button type="button" class="modal-close" (click)="closeRowModal()" aria-label="Close">&#10005;</button>
         <h2>Delete Application {{ row.id }}?</h2>
         <p>This will permanently remove this application record. This action cannot be undone.</p>
         <div class="modal-actions">

@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
@@ -6,6 +6,9 @@ import { Avatar } from '../../shared/avatar/avatar';
 import { DonutChart, DonutSegment } from '../../shared/donut-chart/donut-chart';
 import { Pagination } from '../../shared/pagination/pagination';
 import { RoleGate } from '../../core/role-gate.directive';
+import { Session } from '../../core/session';
+import { MyQueueStrip, QueueTile } from '../../shared/my-queue-strip/my-queue-strip';
+import { EmptyState } from '../../shared/empty-state/empty-state';
 
 type InspectionStatus = 'Scheduled' | 'In Progress' | 'Passed' | 'Needs Correction';
 
@@ -72,11 +75,27 @@ function buildRows(): InspectionRow[] {
 
 @Component({
   selector: 'app-tenant-inspections',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState],
   templateUrl: './tenant-inspections.html',
   styleUrl: './tenant-inspections.scss',
 })
 export class TenantInspections {
+  private readonly session = inject(Session);
+
+  protected readonly isInspector = computed(() => this.session.currentRole() === 'inspector');
+
+  protected readonly queueTiles = computed<QueueTile[]>(() => {
+    const rows = this.rows();
+    const scheduled = rows.filter((r) => r.status === 'Scheduled').length;
+    const needsCorrection = rows.filter((r) => r.status === 'Needs Correction').length;
+    const passed = rows.filter((r) => r.status === 'Passed').length;
+    return [
+      { label: 'Scheduled', value: String(scheduled), tone: 'warn' },
+      { label: 'Needs Re-inspection', value: String(needsCorrection), tone: 'warn' },
+      { label: 'Passed', value: String(passed), tone: 'good' },
+    ];
+  });
+
   protected readonly rows = signal<InspectionRow[]>(buildRows());
 
   protected readonly ringStats = computed<RingStat[]>(() => {
