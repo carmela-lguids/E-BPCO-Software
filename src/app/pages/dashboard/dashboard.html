@@ -55,7 +55,7 @@
       <div class="cc-alert-row">
         <app-icon name="alert-circle" [size]="15" />
         <span><strong>{{ slaOverdueCount }}</strong> overdue · <strong>{{ slaDueTodayCount }}</strong> due today nationally</span>
-        <a href="#sla-monitoring" class="cc-alert-link" (click)="scrollToSlaMonitoring($event)">View SLA Monitoring ↓</a>
+        <a href="#sla-monitoring" class="cc-alert-link" (click)="scrollToSection('sla-monitoring', $event)">View SLA Monitoring ↓</a>
       </div>
     </div>
   }
@@ -301,7 +301,7 @@
   </div>
 
   <div class="cc-grid-3">
-    <div class="card cc-workload-card">
+    <div class="card cc-workload-card" id="recent-incidents">
       <div class="cc-sla-head">
         <h3>Recent Incidents</h3>
       </div>
@@ -333,9 +333,59 @@
         }
       </div>
     </div>
-    <div class="cc-placeholder-card">
-      <app-empty-state icon="users" title="Active Users" message="Who's online right now, across the platform." />
-      <span class="cc-phase-tag">Phase 8</span>
+    <div class="card cc-workload-card">
+      <div class="cc-sla-head">
+        <h3>Active Users</h3>
+      </div>
+      <p class="cc-sla-caption">
+        Simulated presence, not connected to a real session service — {{ activeUsersList.length }} active now.
+      </p>
+      <div class="cc-staff-list">
+        @for (row of activeUsersList; track row.account.id) {
+          <div class="cc-staff-row">
+            <span class="cc-staff-avatar-wrap">
+              <app-avatar [name]="row.account.fullName" [size]="34" />
+              <span class="cc-staff-dot" [class]="row.availabilityStatus"></span>
+            </span>
+            <div class="cc-staff-info">
+              <span class="cc-staff-name">{{ row.account.fullName }}</span>
+              <span class="cc-staff-role">{{ row.account.roleLabel }} · {{ row.account.tenant }}</span>
+              @if (row.currentModule) {
+                <span class="cc-staff-activity">In: {{ row.currentModule }}</span>
+              }
+            </div>
+            <div class="cc-staff-meta">
+              <span class="cc-staff-status-label" [class]="row.availabilityStatus">{{
+                availabilityLabel(row.availabilityStatus)
+              }}</span>
+              <span class="cc-staff-activity">{{ row.account.lastLogin }}</span>
+            </div>
+          </div>
+        } @empty {
+          <app-empty-state icon="users" title="No active users" message="No one is currently signed in." />
+        }
+      </div>
+    </div>
+
+    <div class="card cc-quick-actions-card">
+      <div class="cc-sla-head">
+        <h3>Quick Actions</h3>
+      </div>
+      <div class="cc-quick-actions-list">
+        @for (action of quickActions; track action.label) {
+          @if (action.route) {
+            <a [routerLink]="action.route" class="cc-quick-action">
+              <app-icon [name]="action.icon" [size]="16" />
+              {{ action.label }}
+            </a>
+          } @else {
+            <a href="#" class="cc-quick-action" (click)="scrollToSection(action.scrollTargetId!, $event)">
+              <app-icon [name]="action.icon" [size]="16" />
+              {{ action.label }}
+            </a>
+          }
+        }
+      </div>
     </div>
   </div>
 </section>

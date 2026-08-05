@@ -15,7 +15,7 @@ import { RoleGate } from '../../core/role-gate.directive';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { STAGE_STATS, StageStat, isBottleneck } from '../../shared/workflow-monitor/stage-summary-data';
 import { DEPARTMENT_WORKLOAD, DepartmentWorkloadRow } from '../../shared/workflow-monitor/department-workload-data';
-import { staffSummaryByLgu } from '../../core/staff-availability-data';
+import { staffSummaryByLgu, activeUsers, AvailabilityStatus } from '../../core/staff-availability-data';
 import { Notifications } from '../../core/notifications';
 import { LGU_PERFORMANCE, LguPerformanceRow, complianceTier, complianceLabel } from '../../core/lgu-performance-data';
 import {
@@ -61,6 +61,17 @@ interface TenantApplication {
 }
 
 export type DateRangeKey = 'today' | 'week' | 'month' | 'year' | 'custom';
+
+// Phase 8 — Quick Actions. `route` and `scrollTargetId` are mutually
+// exclusive per entry; every route named here already exists in
+// app.routes.ts and every scrollTargetId already exists as an id on this
+// same page (Phase 3, Phase 6) — no dead buttons.
+interface QuickAction {
+  icon: string;
+  label: string;
+  route?: string;
+  scrollTargetId?: string;
+}
 
 @Component({
   selector: 'app-dashboard',
@@ -236,13 +247,15 @@ export class Dashboard {
   protected readonly slaDueTodayCount: number = 63;
   protected readonly slaNearDeadlineCount: number = 118;
 
-  // A bare href="#sla-monitoring" resolves against <base href="/"> (see
+  // A bare href="#some-id" resolves against <base href="/"> (see
   // index.html), not the current path — the browser sends it to "/" and the
   // router's empty-path route redirects to /login. Intercept the click and
   // scroll manually instead of relying on native fragment resolution.
-  protected scrollToSlaMonitoring(event: Event): void {
+  // Shared by every in-page "jump to section" link on this dashboard
+  // (SLA Monitoring, and Quick Actions' "Review Critical Incidents").
+  protected scrollToSection(id: string, event: Event): void {
     event.preventDefault();
-    document.getElementById('sla-monitoring')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   protected complianceFor(stat: StageStat): number {
@@ -389,6 +402,29 @@ export class Dashboard {
   closeLguModal(): void {
     this.selectedLguRow.set(null);
   }
+
+  // --- Phase 8 — Active Users ---
+  // A filtered view of the same Phase 5 staff roster (available/busy only)
+  // across every LGU with mock records — not a second dataset.
+  protected readonly activeUsersList = activeUsers();
+
+  protected availabilityLabel(status: AvailabilityStatus): string {
+    if (status === 'on-leave') return 'On Leave';
+    return status.charAt(0).toUpperCase() + status.slice(1);
+  }
+
+  // --- Phase 8 — Quick Actions ---
+  // Every action routes to a page that already exists in app.routes.ts, or
+  // scrolls to a section already built on this same dashboard (Phase 3/6) —
+  // no dead buttons.
+  protected readonly quickActions: QuickAction[] = [
+    { icon: 'plus', label: 'Create Tenant', route: '/tenants' },
+    { icon: 'users', label: 'Manage Users', route: '/user-roles' },
+    { icon: 'trend-up', label: 'View Reports', route: '/reports' },
+    { icon: 'logs', label: 'Open System Logs', route: '/system-logs' },
+    { icon: 'workflow', label: 'Open Workflow', route: '/workflow' },
+    { icon: 'alert-triangle', label: 'Review Critical Incidents', scrollTargetId: 'recent-incidents' },
+  ];
 
   // One stacked bar per permit type — bar length is that permit's total
   // queue volume, and the fill is its own Pending/Approved/Rejected split.

@@ -12,7 +12,7 @@ import { HBarChart, HBarRow } from '../../shared/h-bar-chart/h-bar-chart';
 import { buildPermitQueueRows } from '../../shared/permit-queue/permit-queue';
 import { STAGE_STATS, StageStat, isBottleneck } from '../../shared/workflow-monitor/stage-summary-data';
 import { DEPARTMENT_WORKLOAD, DepartmentWorkloadRow } from '../../shared/workflow-monitor/department-workload-data';
-import { AvailabilityStatus, staffForTenant } from '../../core/staff-availability-data';
+import { AvailabilityStatus, staffForTenant, activeUsersForTenant } from '../../core/staff-availability-data';
 import { Notifications } from '../../core/notifications';
 import {
   SYSTEM_HEALTH_CHECKS,
@@ -65,6 +65,17 @@ interface ApplicationRow {
 }
 
 export type DateRangeKey = 'today' | 'week' | 'month' | 'year' | 'custom';
+
+// Phase 8 — Quick Actions. `route` and `scrollTargetId` are mutually
+// exclusive per entry; every route named here already exists in
+// app.routes.ts and every scrollTargetId already exists as an id on this
+// same page (Phase 3, Phase 4) — no dead buttons.
+interface QuickAction {
+  icon: string;
+  label: string;
+  route?: string;
+  scrollTargetId?: string;
+}
 
 @Component({
   selector: 'app-tenant-dashboard',
@@ -386,6 +397,24 @@ export class TenantDashboard {
   protected lguComplianceLabel(pct: number): string {
     return complianceLabel(pct);
   }
+
+  // --- Phase 8 — Active Users ---
+  // A filtered view of the same Phase 5 staff roster (available/busy only),
+  // scoped to this LGU via the same Session.activeTenant() used throughout
+  // this page — not a second dataset.
+  protected readonly activeUsersList = computed(() => activeUsersForTenant(this.session.activeTenant()));
+
+  // --- Phase 8 — Quick Actions ---
+  // Every action routes to a page that already exists in app.routes.ts —
+  // no dead buttons.
+  protected readonly quickActions: QuickAction[] = [
+    { icon: 'user-check', label: 'Assign Applications', route: '/tenant/applications' },
+    { icon: 'users', label: 'Manage Staff', route: '/tenant/users' },
+    { icon: 'wallet', label: 'View Payments', route: '/tenant/payments' },
+    { icon: 'file-check', label: 'View Permit Release', route: '/tenant/permit-release' },
+    { icon: 'trend-up', label: 'View Reports', route: '/tenant/reports' },
+    { icon: 'alert-triangle', label: 'Review Bottlenecks', route: '/tenant/workflow' },
+  ];
 
   protected readonly applications = signal<ApplicationRow[]>([
     {

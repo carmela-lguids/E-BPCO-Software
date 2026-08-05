@@ -1,0 +1,310 @@
+@use '../../shared/styles/data-table';
+@use '../../shared/styles/modal';
+@use '../../shared/styles/tabs';
+@use '../../shared/styles/command-center';
+@use '../../shared/styles/tokens' as *;
+
+@keyframes section-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:host {
+  display: block;
+}
+
+.card {
+  background: $color-surface;
+  border-radius: $radius-xl;
+  padding: 1.5rem 1.6rem;
+  border: 1px solid $color-border;
+  margin-bottom: 1.5rem;
+  animation: section-in 0.4s ease both;
+}
+
+.wq-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.wq-header-text {
+  min-width: 0;
+}
+
+.wq-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: $color-ink-200;
+}
+
+.wq-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.wq-legend-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: $color-ink-200;
+  margin-right: 0.15rem;
+}
+
+.wq-placeholder-card {
+  border: 1px dashed $color-border-strong;
+}
+
+.wq-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.1rem;
+}
+
+.search-input {
+  flex: 1;
+  min-width: min(280px, 100%);
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  background: $color-bg-muted;
+  border-radius: $radius-md;
+  padding: 0.65rem 0.9rem;
+  color: $color-ink-200;
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    flex: 1;
+    font-size: 0.86rem;
+    color: $color-ink-700;
+
+    &::placeholder {
+      color: $color-ink-100;
+    }
+  }
+}
+
+.wq-filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: $color-ink-200;
+  }
+
+  select {
+    border: 1px solid $color-border-strong;
+    background: $color-surface;
+    border-radius: $radius-md;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: $color-ink-700;
+    min-width: 170px;
+  }
+}
+
+.wq-tab-panel {
+  min-height: 220px;
+}
+
+// --- Phase 2 — My Assigned Tasks row highlights ---
+.wq-new-badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.08rem 0.4rem;
+  border-radius: $radius-pill;
+  background: $color-brand-tint-a;
+  color: $color-brand-700;
+}
+
+.wq-applicant {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wq-applicant.wq-unread {
+  font-weight: 800;
+  color: $color-ink-900;
+}
+
+.wq-unread-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: $color-brand-600;
+  flex: none;
+}
+
+.wq-needs-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $color-warning;
+  margin-top: 0.2rem;
+}
+
+.wq-row-new {
+  background: $color-brand-tint-b;
+}
+
+// --- View Timeline modal ---
+.wq-timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.wq-timeline li {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.wq-timeline-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: $color-brand-600;
+  margin-top: 0.35rem;
+  flex: none;
+}
+
+.wq-timeline-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+
+  strong {
+    font-size: 0.85rem;
+    color: $color-ink-900;
+  }
+
+  span {
+    font-size: 0.76rem;
+    color: $color-ink-300;
+  }
+}
+
+// --- Phase 3 — Overdue Reviews quick filters ---
+// Mirrors the existing .chip pattern (notifications.scss/help-support.scss)
+// rather than a shared partial, since that pair itself duplicates the
+// style locally per-page — same established convention, not a new one.
+.wq-quick-filters {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.wq-quick-chip {
+  border: 1px solid $color-border-strong;
+  background: $color-surface;
+  border-radius: $radius-pill;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: $color-ink-500;
+  cursor: pointer;
+  transition:
+    background $ease-fast,
+    color $ease-fast,
+    border-color $ease-fast;
+
+  &:hover {
+    background: $color-bg-subtle;
+  }
+
+  &.active {
+    background: $color-info-bg;
+    border-color: #cfe0fd;
+    color: $color-info-700;
+  }
+}
+
+// --- Phase 4 — Due Today urgency indicator ---
+@keyframes wq-urgency-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(1.3);
+  }
+}
+
+.wq-urgency {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wq-urgency-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: $color-danger-700;
+  flex: none;
+  animation: wq-urgency-pulse 1.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wq-urgency-dot {
+    animation: none;
+  }
+}
+
+@media (max-width: $bp-tablet) {
+  .tab-nav {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: $bp-phone) {
+  .wq-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wq-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .wq-filter-field select {
+    width: 100%;
+  }
+}

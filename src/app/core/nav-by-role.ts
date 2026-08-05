@@ -50,6 +50,7 @@ export const NAV_BY_ROLE: Record<RoleKey, NavItem[]> = {
 
   'tenant-admin': [
     { label: 'Dashboard', icon: 'home', path: '/tenant/dashboard' },
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
     { label: 'Users', icon: 'user-check', path: '/tenant/users' },
@@ -63,34 +64,41 @@ export const NAV_BY_ROLE: Record<RoleKey, NavItem[]> = {
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   obo: [
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   'initial-eval': [
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   zoning: [
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   'fire-safety': [
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Applications', icon: 'user', path: '/tenant/applications' },
     { label: 'Evaluations', icon: 'calendar', path: '/tenant/evaluations' },
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   inspector: [
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Inspections', icon: 'clipboard-check', path: '/tenant/inspections' },
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   cashier: [
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Payments', icon: 'wallet', path: '/tenant/payments' },
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],
   releasing: [
+    { label: 'Work Queue', icon: 'sparkles', path: '/tenant/work-queue' },
     { label: 'Permit Release', icon: 'file-check', path: '/tenant/permit-release' },
     { label: 'Help & Support', icon: 'info', path: '/tenant/help' },
   ],

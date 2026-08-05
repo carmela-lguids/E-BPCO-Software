@@ -126,6 +126,11 @@ export const routes: Routes = [
           import('./pages/tenant-dashboard/tenant-dashboard').then((m) => m.TenantDashboard),
       },
       {
+        path: 'work-queue',
+        loadComponent: () =>
+          import('./pages/tenant-work-queue/tenant-work-queue').then((m) => m.TenantWorkQueue),
+      },
+      {
         path: 'applications',
         loadComponent: () =>
           import('./pages/tenant-applications/tenant-applications').then(

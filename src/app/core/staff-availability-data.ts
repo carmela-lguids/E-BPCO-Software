@@ -14,6 +14,9 @@ interface AvailabilityMeta {
   accountId: string;
   availabilityStatus: AvailabilityStatus;
   activeTaskCount: number;
+  /** Phase 8 — Active Users. Only meaningful while available/busy; a
+   *  person who's offline or on leave isn't "in" any module right now. */
+  currentModule?: string;
 }
 
 // One entry per active, hands-on-work account across the three tenants
@@ -21,31 +24,51 @@ interface AvailabilityMeta {
 // three TENANT_STATUS tracks). Suspended/Inactive/Pending accounts are
 // left out: presence doesn't apply to an account that can't sign in.
 const AVAILABILITY_META: AvailabilityMeta[] = [
-  { accountId: 'mock-acct-07', availabilityStatus: 'available', activeTaskCount: 3 }, // Liza Dela Cruz — Tenant Administrator
-  { accountId: 'mock-acct-08', availabilityStatus: 'busy', activeTaskCount: 5 }, // Daniel Cruz — Tenant Administrator
-  { accountId: 'mock-acct-09', availabilityStatus: 'available', activeTaskCount: 4 }, // Engr. Maria Santos — OBO
-  { accountId: 'mock-acct-10', availabilityStatus: 'busy', activeTaskCount: 6 }, // Jonny Doe — Initial Evaluation
-  { accountId: 'mock-acct-11', availabilityStatus: 'available', activeTaskCount: 2 }, // Denese Martin — Zoning
+  { accountId: 'mock-acct-07', availabilityStatus: 'available', activeTaskCount: 3, currentModule: 'Dashboard' }, // Liza Dela Cruz — Tenant Administrator
+  { accountId: 'mock-acct-08', availabilityStatus: 'busy', activeTaskCount: 5, currentModule: 'User Management' }, // Daniel Cruz — Tenant Administrator
+  { accountId: 'mock-acct-09', availabilityStatus: 'available', activeTaskCount: 4, currentModule: 'Applications — OBO Review' }, // Engr. Maria Santos — OBO
+  { accountId: 'mock-acct-10', availabilityStatus: 'busy', activeTaskCount: 6, currentModule: 'Applications — Initial Evaluation' }, // Jonny Doe — Initial Evaluation
+  { accountId: 'mock-acct-11', availabilityStatus: 'available', activeTaskCount: 2, currentModule: 'Applications — Zoning Review' }, // Denese Martin — Zoning
   { accountId: 'mock-acct-12', availabilityStatus: 'on-leave', activeTaskCount: 0 }, // Raul Villa — Fire Safety
-  { accountId: 'mock-acct-13', availabilityStatus: 'available', activeTaskCount: 3 }, // Fea Sims — Inspector
+  { accountId: 'mock-acct-13', availabilityStatus: 'available', activeTaskCount: 3, currentModule: 'Inspections' }, // Fea Sims — Inspector
   { accountId: 'mock-acct-14', availabilityStatus: 'offline', activeTaskCount: 0 }, // David Roderick — Cashier
-  { accountId: 'mock-acct-15', availabilityStatus: 'busy', activeTaskCount: 4 }, // James Zavel — Releasing
-  { accountId: 'mock-acct-16', availabilityStatus: 'available', activeTaskCount: 2 }, // Jack Nunnally — Records
-  { accountId: 'mock-acct-17', availabilityStatus: 'available', activeTaskCount: 2 }, // Ana Garcia — Manila, Zoning
-  { accountId: 'mock-acct-18', availabilityStatus: 'busy', activeTaskCount: 3 }, // Mark Lopez — Cebu, Cashier
+  { accountId: 'mock-acct-15', availabilityStatus: 'busy', activeTaskCount: 4, currentModule: 'Permit Release' }, // James Zavel — Releasing
+  { accountId: 'mock-acct-16', availabilityStatus: 'available', activeTaskCount: 2, currentModule: 'Records' }, // Jack Nunnally — Records
+  { accountId: 'mock-acct-17', availabilityStatus: 'available', activeTaskCount: 2, currentModule: 'Applications — Zoning Review' }, // Ana Garcia — Manila, Zoning
+  { accountId: 'mock-acct-18', availabilityStatus: 'busy', activeTaskCount: 3, currentModule: 'Payments' }, // Mark Lopez — Cebu, Cashier
 ];
 
 export interface StaffAvailabilityRow {
   account: MockAccount;
   availabilityStatus: AvailabilityStatus;
   activeTaskCount: number;
+  currentModule?: string;
 }
 
 export const STAFF_AVAILABILITY: StaffAvailabilityRow[] = AVAILABILITY_META.flatMap((meta) => {
   const acct = findAccount(meta.accountId);
   if (!acct) return [];
-  return [{ account: acct, availabilityStatus: meta.availabilityStatus, activeTaskCount: meta.activeTaskCount }];
+  return [
+    {
+      account: acct,
+      availabilityStatus: meta.availabilityStatus,
+      activeTaskCount: meta.activeTaskCount,
+      currentModule: meta.currentModule,
+    },
+  ];
 });
+
+// --- Phase 8 — Active Users ---
+// A filtered view of the same roster above (available/busy only) — not a
+// second dataset. "Active" here means "has an open session right now" per
+// the availabilityStatus this file already simulates.
+export function activeUsers(): StaffAvailabilityRow[] {
+  return STAFF_AVAILABILITY.filter((r) => r.availabilityStatus === 'available' || r.availabilityStatus === 'busy');
+}
+
+export function activeUsersForTenant(tenant: string | null): StaffAvailabilityRow[] {
+  return activeUsers().filter((r) => r.account.tenant === tenant);
+}
 
 /** Tenant Administrator view — staff belonging to one LGU only. */
 export function staffForTenant(tenant: string | null): StaffAvailabilityRow[] {

@@ -222,6 +222,13 @@
     background: $color-danger-bg;
     color: $color-danger-700;
   }
+  // Command Center's own SLA widgets only ever show near/over-due items, so
+  // this variant was never needed there — Work Queue's "My Assigned Tasks"
+  // shows the full queue, where most tasks legitimately have runway left.
+  &.on-track {
+    background: $color-success-bg;
+    color: $color-success-700;
+  }
 }
 
 .cc-sla-card {
@@ -786,6 +793,40 @@
   font-size: 0.74rem;
   font-weight: 600;
   color: $color-ink-300;
+}
+
+/* Quick Actions (Phase 8) */
+.cc-quick-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.cc-quick-action {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: $radius-md;
+  background: $color-bg-subtle;
+  border: 1px solid $color-border;
+  color: $color-ink-700;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background $ease-fast,
+    border-color $ease-fast;
+
+  app-icon {
+    color: $color-brand-600;
+    flex: none;
+  }
+
+  &:hover {
+    background: $color-brand-tint-a;
+    border-color: $color-brand-border;
+  }
 }
 
 @media (max-width: $bp-phone) {
