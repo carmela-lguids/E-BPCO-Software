@@ -3,6 +3,10 @@
 <div class="wq-header">
   <div class="wq-header-text">
     <p class="wq-sub">{{ pageSub() }}</p>
+    <p class="wq-sla-disclaimer">
+      SLA / Processing Target countdowns reflect configurable prototype operational targets, not legally mandated
+      deadlines.
+    </p>
   </div>
   <div class="wq-legend" aria-label="Priority legend">
     <span class="wq-legend-label">Priority:</span>
@@ -12,56 +16,161 @@
   </div>
 </div>
 
-<div class="card wq-placeholder-card">
-  <app-empty-state
-    icon="clipboard-check"
-    title="Queue Summary"
-    message="Assigned, overdue, due-today, returned, and high-priority counts will populate here starting Phase 10."
-  />
-</div>
+<div class="card wq-summary-card">
+  <div class="wq-summary-head">
+    <h2 class="wq-summary-title">{{ isSupervisor() ? 'LGU Queue Overview' : 'My Work Queue' }}</h2>
+    <p class="wq-summary-caption">
+      Totals across your {{ isSupervisor() ? "LGU's" : 'full' }} queue — not affected by the search, filters, or sort
+      below.
+    </p>
+  </div>
 
-<div class="wq-toolbar">
-  <div class="search-input">
-    <app-icon name="search" [size]="16" />
-    <input type="text" placeholder="Search by application ID or applicant name" [(ngModel)]="searchTerm" />
-  </div>
-  <div class="wq-filter-field">
-    <label for="wq-stage-filter">Stage</label>
-    <select id="wq-stage-filter" [(ngModel)]="stageFilter">
-      <option value="all">All Stages</option>
-      @for (stage of stageOptions; track stage.key) {
-        <option [value]="stage.key">{{ stage.label }}</option>
-      }
-    </select>
-  </div>
-  <div class="wq-filter-field">
-    <label for="wq-priority-filter">Priority</label>
-    <select id="wq-priority-filter" [(ngModel)]="priorityFilter">
-      <option value="all">All Priorities</option>
-      <option value="critical">Critical</option>
-      <option value="high">High</option>
-      <option value="normal">Normal</option>
-    </select>
-  </div>
-</div>
+  @if (isSupervisor()) {
+    <div class="wq-summary-stats">
+      <a class="wq-summary-stat" routerLink="/tenant/applications">
+        <span class="wq-summary-value">{{ summaryUnassignedCount }}</span>
+        <span class="wq-summary-label">Unassigned</span>
+      </a>
+      <button type="button" class="wq-summary-stat" (click)="setTab('overdue')">
+        <span class="wq-summary-value">{{ overdueTasks().length }}</span>
+        <span class="wq-summary-label">Overdue</span>
+      </button>
+      <button type="button" class="wq-summary-stat" (click)="setTab('due-today')">
+        <span class="wq-summary-value">{{ dueTodayTasks().length }}</span>
+        <span class="wq-summary-label">Due Today</span>
+      </button>
+      <button type="button" class="wq-summary-stat" (click)="setTab('high-priority')">
+        <span class="wq-summary-value">{{ highPriorityTasks().length }}</span>
+        <span class="wq-summary-label">High Priority</span>
+      </button>
+    </div>
 
-<nav class="tab-nav" role="tablist" aria-label="Work queue views">
-  @for (tab of queueTabs; track tab.key) {
-    <button
-      type="button"
-      class="tab-btn"
-      role="tab"
-      [id]="'wq-tab-' + tab.key"
-      [class.active]="activeTab() === tab.key"
-      [attr.aria-selected]="activeTab() === tab.key"
-      [attr.aria-controls]="'wq-panel-' + tab.key"
-      (click)="setTab(tab.key)"
-    >
-      <app-icon [name]="tab.icon" [size]="15" />
-      {{ tab.label }}
-    </button>
+    <div class="wq-summary-depts">
+      <span class="wq-summary-depts-label">Department workload</span>
+      <ul class="wq-summary-dept-list">
+        @for (dept of summaryDepartmentWorkload(); track dept.department) {
+          <li>
+            <span class="wq-summary-dept-name">{{ dept.department }}</span>
+            <span class="wq-summary-dept-count">{{ dept.count }}</span>
+          </li>
+        }
+      </ul>
+    </div>
+  } @else {
+    <div class="wq-summary-stats">
+      <button type="button" class="wq-summary-stat" (click)="setTab('my-tasks')">
+        <span class="wq-summary-value">{{ myTasks().length }}</span>
+        <span class="wq-summary-label">Assigned Applications</span>
+      </button>
+      <button type="button" class="wq-summary-stat" (click)="setTab('overdue')">
+        <span class="wq-summary-value">{{ overdueTasks().length }}</span>
+        <span class="wq-summary-label">Overdue</span>
+      </button>
+      <button type="button" class="wq-summary-stat" (click)="setTab('due-today')">
+        <span class="wq-summary-value">{{ dueTodayTasks().length }}</span>
+        <span class="wq-summary-label">Due Today</span>
+      </button>
+      <button type="button" class="wq-summary-stat" (click)="setTab('returned')">
+        <span class="wq-summary-value">{{ returnedTasks().length }}</span>
+        <span class="wq-summary-label">Returned</span>
+      </button>
+      <button type="button" class="wq-summary-stat" (click)="setTab('high-priority')">
+        <span class="wq-summary-value">{{ highPriorityTasks().length }}</span>
+        <span class="wq-summary-label">High Priority</span>
+      </button>
+    </div>
   }
-</nav>
+</div>
+
+<div class="wq-sticky-controls">
+  <div class="wq-toolbar">
+    <div class="search-input">
+      <app-icon name="search" [size]="16" />
+      <input
+        type="text"
+        placeholder="Search by application no., applicant, permit type, or location"
+        [(ngModel)]="searchTerm"
+      />
+    </div>
+    <div class="wq-filter-field">
+      <label for="wq-stage-filter">Stage</label>
+      <select id="wq-stage-filter" [(ngModel)]="stageFilter">
+        <option value="all">All Stages</option>
+        @for (stage of stageOptions; track stage.key) {
+          <option [value]="stage.key">{{ stage.label }}</option>
+        }
+      </select>
+    </div>
+    <div class="wq-filter-field">
+      <label for="wq-priority-filter">Priority</label>
+      <select id="wq-priority-filter" [(ngModel)]="priorityFilter">
+        <option value="all">All Priorities</option>
+        <option value="critical">Critical</option>
+        <option value="high">High</option>
+        <option value="normal">Normal</option>
+      </select>
+    </div>
+    <div class="wq-filter-field">
+      <label for="wq-sort-key">Sort by</label>
+      <div class="wq-sort-control">
+        <select id="wq-sort-key" [(ngModel)]="sortKey">
+          @for (opt of sortOptions; track opt.key) {
+            <option [value]="opt.key">{{ opt.label }}</option>
+          }
+        </select>
+        <button
+          type="button"
+          class="wq-sort-dir-btn"
+          [attr.aria-label]="
+            sortDirection() === 'asc'
+              ? 'Sorted ascending. Click to sort descending.'
+              : 'Sorted descending. Click to sort ascending.'
+          "
+          (click)="toggleSortDirection()"
+        >
+          <app-icon [name]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'" [size]="15" />
+        </button>
+        @if (activeSortTooltip(); as tip) {
+          <span class="wq-sort-tooltip-icon" [title]="tip" [attr.aria-label]="tip" tabindex="0">
+            <app-icon name="info" [size]="14" />
+          </span>
+        }
+      </div>
+    </div>
+    @if (hasActiveFilters()) {
+      <button type="button" class="wq-clear-filters-btn" (click)="clearFilters()">
+        <app-icon name="trash" [size]="13" />
+        Clear Filters
+      </button>
+    }
+  </div>
+
+  <div class="wq-quick-views">
+    <span class="wq-legend-label">Quick views:</span>
+    @for (view of quickViews; track view.key) {
+      <button type="button" class="wq-quick-chip" (click)="applyQuickView(view)">{{ view.label }}</button>
+    }
+    <span class="wq-quick-views-note">Session shortcuts — not saved between visits.</span>
+  </div>
+
+  <nav class="tab-nav" role="tablist" aria-label="Work queue views">
+    @for (tab of queueTabs; track tab.key) {
+      <button
+        type="button"
+        class="tab-btn"
+        role="tab"
+        [id]="'wq-tab-' + tab.key"
+        [class.active]="activeTab() === tab.key"
+        [attr.aria-selected]="activeTab() === tab.key"
+        [attr.aria-controls]="'wq-panel-' + tab.key"
+        (click)="setTab(tab.key)"
+      >
+        <app-icon [name]="tab.icon" [size]="15" />
+        {{ tab.label }}
+      </button>
+    }
+  </nav>
+</div>
 
 <div class="card wq-tab-panel">
   @if (
@@ -69,7 +178,8 @@
     activeTab() === 'overdue' ||
     activeTab() === 'due-today' ||
     activeTab() === 'high-priority' ||
-    activeTab() === 'returned'
+    activeTab() === 'returned' ||
+    activeTab() === 'recently-assigned'
   ) {
     <div [id]="'wq-panel-' + activeTab()" role="tabpanel" [attr.aria-labelledby]="'wq-tab-' + activeTab()">
       @if (activeTab() === 'overdue') {
@@ -101,6 +211,20 @@
           </button>
         </div>
       }
+      @if (selectedIds().size > 0) {
+        <div class="wq-bulk-toolbar">
+          <span class="wq-bulk-count">
+            {{ selectedIds().size }} application{{ selectedIds().size === 1 ? '' : 's' }} selected
+          </span>
+          <div class="wq-bulk-actions">
+            <button type="button" class="btn-primary btn-sm" (click)="exportSelected()">
+              <app-icon name="download" [size]="15" />
+              Export
+            </button>
+            <button type="button" class="btn-outline btn-sm" (click)="clearSelection()">Clear Selection</button>
+          </div>
+        </div>
+      }
       <div class="table-wrap">
         <table
           [attr.aria-label]="
@@ -112,27 +236,37 @@
                   ? 'High priority queue'
                   : activeTab() === 'returned'
                     ? 'Returned applications'
-                    : 'My assigned tasks'
+                    : activeTab() === 'recently-assigned'
+                      ? 'Recently assigned applications'
+                      : 'My assigned tasks'
           "
         >
           <thead>
             <tr>
+              <th scope="col">
+                <input
+                  type="checkbox"
+                  aria-label="Select all applications in this view"
+                  [checked]="allVisibleSelected()"
+                  (change)="toggleSelectAllVisible()"
+                />
+              </th>
               <th scope="col">Application No.</th>
               <th scope="col">Applicant</th>
-              <th scope="col">Permit Type</th>
-              <th scope="col">Location</th>
+              <th scope="col" class="wq-col-secondary">Permit Type</th>
+              <th scope="col" class="wq-col-secondary">Location</th>
               <th scope="col">Current Stage</th>
               @if (showOfficerColumn()) {
-                <th scope="col">Officer</th>
+                <th scope="col" class="wq-col-secondary">Officer</th>
               }
               @if (showDepartmentColumn()) {
-                <th scope="col">Department</th>
+                <th scope="col" class="wq-col-secondary">Department</th>
               }
               @if (showAssignedColumn()) {
-                <th scope="col">Assigned</th>
+                <th scope="col" class="wq-col-secondary">Assigned</th>
               }
               @if (showSlaColumn()) {
-                <th scope="col">SLA Countdown</th>
+                <th scope="col">SLA / Processing Target</th>
               }
               @if (showSeverityColumn()) {
                 <th scope="col">Severity</th>
@@ -159,10 +293,29 @@
           </thead>
           <tbody>
             @for (task of filteredTasks(); track task.id) {
-              <tr [class.wq-row-new]="task.isNew">
+              <tr
+                [class.wq-row-new]="
+                  task.isNew || (activeTab() === 'recently-assigned' && task.assignmentType === 'reassigned')
+                "
+                [class.wq-row-selected]="isRowSelected(task.id)"
+              >
+                <td>
+                  <input
+                    type="checkbox"
+                    [attr.aria-label]="'Select ' + task.id"
+                    [checked]="isRowSelected(task.id)"
+                    (change)="toggleSelectRow(task.id)"
+                  />
+                </td>
                 <td class="id-cell">
                   {{ task.id }}
-                  @if (task.isNew) {
+                  @if (activeTab() === 'recently-assigned') {
+                    @if (recentAssignmentBadge(task); as badge) {
+                      <span class="wq-new-badge" [class.wq-reassigned-badge]="badge === 'reassigned'" [class.wq-new-badge-muted]="badge === 'new-yesterday'">{{
+                        recentAssignmentLabel(badge)
+                      }}</span>
+                    }
+                  } @else if (task.isNew) {
                     <span class="wq-new-badge">New</span>
                   }
                 </td>
@@ -172,6 +325,9 @@
                       <span class="wq-unread-dot" aria-hidden="true"></span>
                     }
                     {{ task.applicant }}
+                    @if (task.isUnread) {
+                      <span class="sr-only">(Unread)</span>
+                    }
                   </span>
                   @if (task.slaStatus !== 'on-track') {
                     <div class="wq-needs-action">
@@ -179,18 +335,24 @@
                       Waiting on you
                     </div>
                   }
+                  @if (task.assignmentType === 'reassigned' && task.previousEvaluator) {
+                    <div class="wq-reassign-note">
+                      <app-icon name="user-check" [size]="11" />
+                      Reassigned from {{ task.previousEvaluator }}
+                    </div>
+                  }
                 </td>
-                <td>{{ task.permitType }}</td>
-                <td>{{ task.location }}</td>
+                <td class="wq-col-secondary">{{ task.permitType }}</td>
+                <td class="wq-col-secondary">{{ task.location }}</td>
                 <td>{{ stageLabel[task.currentStage] }}</td>
                 @if (showOfficerColumn()) {
-                  <td>{{ task.assignedOfficer }}</td>
+                  <td class="wq-col-secondary">{{ task.assignedOfficer }}</td>
                 }
                 @if (showDepartmentColumn()) {
-                  <td>{{ task.department }}</td>
+                  <td class="wq-col-secondary">{{ task.department }}</td>
                 }
                 @if (showAssignedColumn()) {
-                  <td>{{ task.assignedDate }}</td>
+                  <td class="wq-col-secondary">{{ task.assignedDate }}</td>
                 }
                 @if (showSlaColumn()) {
                   <td><span class="cc-sla-chip" [class]="task.slaStatus">{{ slaChipLabel(task) }}</span></td>
@@ -208,9 +370,12 @@
                       @if (dueTodayUrgency(task.dueTodayMinutesRemaining) === 'critical') {
                         <span class="wq-urgency-dot" aria-hidden="true"></span>
                       }
-                      <span class="status-pill" [class]="dueTodayUrgencyTier(dueTodayUrgency(task.dueTodayMinutesRemaining))">{{
-                        dueTodayCountdownLabel(task.dueTodayMinutesRemaining)
-                      }}</span>
+                      <span class="status-pill" [class]="dueTodayUrgencyTier(dueTodayUrgency(task.dueTodayMinutesRemaining))">
+                        @if (dueTodayUrgencyLabel(dueTodayUrgency(task.dueTodayMinutesRemaining)); as urgencyLabel) {
+                          {{ urgencyLabel }} ·
+                        }
+                        {{ dueTodayCountdownLabel(task.dueTodayMinutesRemaining) }}
+                      </span>
                     </span>
                   </td>
                 }
@@ -265,32 +430,47 @@
             } @empty {
               <tr>
                 <td [attr.colspan]="emptyColspan()">
-                  @if (activeTab() === 'overdue') {
-                    <app-empty-state
-                      icon="alert-triangle"
-                      title="No overdue tasks"
-                      message="Nothing is overdue right now — try a different filter, or check back later."
-                    />
+                  @if (baseTasks().length > 0) {
+                    <!-- Phase 11 — this tab genuinely has items; search/Stage/
+                         Priority/severity together just exclude all of them.
+                         Distinct from the tab-specific "truly empty" messages
+                         below, per the brief's explicit "no queue items exist"
+                         vs "no results match your filters" distinction. -->
+                    <app-empty-state icon="search" title="No results match your filters" message="Try a different search or filter.">
+                      <button type="button" class="btn-outline btn-sm" (click)="clearFilters()">Clear Filters</button>
+                    </app-empty-state>
+                  } @else if (activeTab() === 'overdue') {
+                    <app-empty-state icon="check-circle" title="You're all caught up." message="No overdue reviews." />
                   } @else if (activeTab() === 'due-today') {
                     <app-empty-state
-                      icon="calendar"
-                      title="Nothing due today"
-                      message="Nothing on your queue needs action today — try a different search or filter."
+                      icon="check-circle"
+                      title="No applications are due today."
+                      message="Nothing on your queue needs same-day action."
                     />
                   } @else if (activeTab() === 'high-priority') {
                     <app-empty-state
-                      icon="alert-circle"
-                      title="No high priority tasks"
-                      message="Nothing has been escalated to critical priority right now."
+                      icon="check-circle"
+                      title="No high-priority items right now"
+                      message="Nothing has been escalated to critical priority."
                     />
                   } @else if (activeTab() === 'returned') {
                     <app-empty-state
-                      icon="edit"
-                      title="No returned applications"
+                      icon="check-circle"
+                      title="No returned applications require your attention."
                       message="Nothing has been sent back to an applicant right now."
                     />
+                  } @else if (activeTab() === 'recently-assigned') {
+                    <app-empty-state
+                      icon="user-check"
+                      title="No new assignments yet."
+                      message="New applications assigned to you will appear here."
+                    />
                   } @else {
-                    <app-empty-state icon="clipboard-check" title="No tasks match" message="Try a different search or filter." />
+                    <app-empty-state
+                      icon="clipboard-check"
+                      title="No tasks assigned to you"
+                      message="You don't have any applications in your queue right now."
+                    />
                   }
                 </td>
               </tr>
@@ -316,18 +496,43 @@
 
 @if (timelineTask(); as task) {
   <div class="modal-backdrop" (click)="closeTimeline()">
-    <div class="modal-box" (click)="$event.stopPropagation()">
+    <div
+      class="modal-box"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-labelledby]="'wq-timeline-heading'"
+      focusTrap
+      (escapePressed)="closeTimeline()"
+      (click)="$event.stopPropagation()"
+    >
       <button type="button" class="modal-close" (click)="closeTimeline()" aria-label="Close">&#10005;</button>
-      <h2>{{ task.id }} — Timeline</h2>
+      <h2 id="wq-timeline-heading">{{ task.id }} — Timeline</h2>
       <p class="wq-sub">{{ task.applicant }} · {{ task.permitType }}, {{ task.location }}</p>
       <ul class="wq-timeline">
-        <li>
-          <span class="wq-timeline-dot"></span>
-          <div class="wq-timeline-text">
-            <strong>Assigned to {{ task.assignedOfficer }}</strong>
-            <span>{{ task.assignedDate }} · {{ task.department }}</span>
-          </div>
-        </li>
+        @if (task.assignmentType === 'reassigned' && task.previousEvaluator) {
+          <li>
+            <span class="wq-timeline-dot"></span>
+            <div class="wq-timeline-text">
+              <strong>Previously assigned to {{ task.previousEvaluator }}</strong>
+              <span>Reassigned · {{ task.department }}</span>
+            </div>
+          </li>
+          <li>
+            <span class="wq-timeline-dot"></span>
+            <div class="wq-timeline-text">
+              <strong>Assigned to you: {{ task.assignedOfficer }}</strong>
+              <span>{{ task.reassignedDate || task.assignedDate }} · {{ task.department }}</span>
+            </div>
+          </li>
+        } @else {
+          <li>
+            <span class="wq-timeline-dot"></span>
+            <div class="wq-timeline-text">
+              <strong>Assigned to {{ task.assignedOfficer }}</strong>
+              <span>{{ task.assignedDate }} · {{ task.department }}</span>
+            </div>
+          </li>
+        }
         <li>
           <span class="wq-timeline-dot"></span>
           <div class="wq-timeline-text">

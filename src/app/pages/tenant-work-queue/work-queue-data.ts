@@ -1,4 +1,4 @@
-import { AppStatus } from '../tenant-applications/applications-data';
+import { AppStatus, APP_ROWS } from '../tenant-applications/applications-data';
 import { RoleKey } from '../../core/roles';
 
 // Phase 2 — My Assigned Tasks. There is no existing per-officer assignment
@@ -13,6 +13,16 @@ import { RoleKey } from '../../core/roles';
 // this session (Jonny Doe, Denese Martin, Raul Villa, Engr. Maria Santos,
 // Fea Sims, David Roderick, James Zavel) or the evaluator roster
 // (Engr. Doe, Arch. Santos, Engr. Reyes).
+// Phase 12 — Tenant Isolation Audit finding: every WorkQueueTask below
+// belongs to this one LGU (every assignedOfficer is an Esperanza account —
+// see the roster note below). WorkQueueTask itself carries no tenant/LGU
+// field. That's fine as long as callers gate by tenant before calling
+// tasksForRole() — a role key alone isn't unique across LGUs (e.g. Ana
+// Garcia in Manila and Mark Lopez in Cebu hold 'zoning'/'cashier' too), so
+// without that gate a non-Esperanza account would see Esperanza's tasks
+// relabeled as their own. See tenant-work-queue.ts's myTasks().
+export const WORK_QUEUE_TENANT = 'Esperanza';
+
 export type QueuePriority = 'critical' | 'high' | 'normal';
 export type QueueSlaStatus = 'on-track' | 'due-soon' | 'due-today' | 'overdue';
 
@@ -72,6 +82,12 @@ export interface WorkQueueTask {
   dateReturned?: string;
   applicantResponseStatus?: ApplicantResponseStatus;
   returnedCount?: number;
+  /** Phase 7 — Recently Assigned. Absent (defaults to a plain new
+   *  assignment) for the rest of the roster; 'reassigned' only travels
+   *  with the two fields below, which are only meaningful as a group. */
+  assignmentType?: AssignmentType;
+  previousEvaluator?: string;
+  reassignedDate?: string;
 }
 
 export type EscalationReason =
@@ -82,6 +98,8 @@ export type EscalationReason =
   | 'Urgent processing';
 
 export type ApplicantResponseStatus = 'awaiting-response' | 'resubmitted' | 'no-response';
+
+export type AssignmentType = 'new' | 'reassigned';
 
 export const WORK_QUEUE_TASKS: WorkQueueTask[] = [
   // --- Initial Evaluation Officer (Jonny Doe, Office of the Building Official) ---
@@ -99,7 +117,7 @@ export const WORK_QUEUE_TASKS: WorkQueueTask[] = [
   { id: '#WA-3015', applicant: 'Rodrigo Aquino', permitType: 'Residential', location: 'Makati City', currentStage: 'zoning', assignedRole: 'zoning', assignedOfficer: 'Denese Martin', department: 'Zoning and Land Use Office', assignedDate: '2 days ago', slaDueDate: '09 Aug 2026', daysRemaining: 5, slaStatus: 'on-track', priority: 'normal', status: 'Pending', isNew: false, isUnread: false, isReturned: true, returnReason: 'Non-compliant lot boundary', returnedBy: 'Denese Martin', dateReturned: '4 days ago', applicantResponseStatus: 'resubmitted', returnedCount: 1 },
 
   // --- Fire Safety Officer (Raul Villa, Bureau of Fire Protection Liaison) ---
-  { id: '#WA-3021', applicant: 'Nenita Flores', permitType: 'Commercial', location: 'Pasig City', currentStage: 'fire-safety', assignedRole: 'fire-safety', assignedOfficer: 'Raul Villa', department: 'Bureau of Fire Protection Liaison', assignedDate: 'Today', slaDueDate: '06 Aug 2026', daysRemaining: 2, slaStatus: 'on-track', priority: 'normal', status: 'Pending', isNew: true, isUnread: true },
+  { id: '#WA-3021', applicant: 'Nenita Flores', permitType: 'Commercial', location: 'Pasig City', currentStage: 'fire-safety', assignedRole: 'fire-safety', assignedOfficer: 'Raul Villa', department: 'Bureau of Fire Protection Liaison', assignedDate: 'Today', slaDueDate: '06 Aug 2026', daysRemaining: 2, slaStatus: 'on-track', priority: 'normal', status: 'Pending', isNew: true, isUnread: true, assignmentType: 'reassigned', previousEvaluator: 'Roberto Ferrer', reassignedDate: 'Today' },
   { id: '#WA-3022', applicant: 'Wilfredo Garcia', permitType: 'Institutional', location: 'Bulacan City', currentStage: 'fire-safety', assignedRole: 'fire-safety', assignedOfficer: 'Raul Villa', department: 'Bureau of Fire Protection Liaison', assignedDate: '5 days ago', slaDueDate: '03 Aug 2026', daysRemaining: -1, slaStatus: 'overdue', priority: 'critical', status: 'Pending', isNew: false, isUnread: false, escalationReason: 'Critical infrastructure' },
   { id: '#WA-3023', applicant: 'Perla Mendez', permitType: 'Residential', location: 'Taguig City', currentStage: 'fire-safety', assignedRole: 'fire-safety', assignedOfficer: 'Raul Villa', department: 'Bureau of Fire Protection Liaison', assignedDate: 'Yesterday', slaDueDate: '04 Aug 2026', daysRemaining: 0, slaStatus: 'due-today', priority: 'high', status: 'Pending', isNew: false, isUnread: true, dueTodayMinutesRemaining: 25 },
   { id: '#WA-3024', applicant: 'Domingo Tolentino', permitType: 'Renovation', location: 'Quezon City', currentStage: 'fire-safety', assignedRole: 'fire-safety', assignedOfficer: 'Raul Villa', department: 'Bureau of Fire Protection Liaison', assignedDate: '3 days ago', slaDueDate: '07 Aug 2026', daysRemaining: 3, slaStatus: 'on-track', priority: 'normal', status: 'Pending', isNew: false, isUnread: false, isReturned: true, returnReason: 'Missing fire exit plan', returnedBy: 'Raul Villa', dateReturned: '1 day ago', applicantResponseStatus: 'awaiting-response', returnedCount: 2 },
@@ -122,7 +140,7 @@ export const WORK_QUEUE_TASKS: WorkQueueTask[] = [
   // --- Cashier (David Roderick, Treasury / Cashiering) ---
   { id: '#WA-3051', applicant: 'Honorato Villafuerte', permitType: 'Residential', location: 'Taguig City', currentStage: 'payment', assignedRole: 'cashier', assignedOfficer: 'David Roderick', department: 'Treasury / Cashiering', assignedDate: 'Today', slaDueDate: '05 Aug 2026', daysRemaining: 1, slaStatus: 'due-soon', priority: 'normal', status: 'Pending', isNew: true, isUnread: true },
   { id: '#WA-3052', applicant: 'Concepcion Rivera', permitType: 'Commercial', location: 'Quezon City', currentStage: 'payment', assignedRole: 'cashier', assignedOfficer: 'David Roderick', department: 'Treasury / Cashiering', assignedDate: '4 days ago', slaDueDate: '02 Aug 2026', daysRemaining: -2, slaStatus: 'overdue', priority: 'high', status: 'Pending', isNew: false, isUnread: false },
-  { id: '#WA-3053', applicant: 'Anselmo Guevarra', permitType: 'Renovation', location: 'Bulacan City', currentStage: 'payment', assignedRole: 'cashier', assignedOfficer: 'David Roderick', department: 'Treasury / Cashiering', assignedDate: 'Yesterday', slaDueDate: '04 Aug 2026', daysRemaining: 0, slaStatus: 'due-today', priority: 'high', status: 'Pending', isNew: false, isUnread: true, dueTodayMinutesRemaining: 380 },
+  { id: '#WA-3053', applicant: 'Anselmo Guevarra', permitType: 'Renovation', location: 'Bulacan City', currentStage: 'payment', assignedRole: 'cashier', assignedOfficer: 'David Roderick', department: 'Treasury / Cashiering', assignedDate: 'Yesterday', slaDueDate: '04 Aug 2026', daysRemaining: 0, slaStatus: 'due-today', priority: 'high', status: 'Pending', isNew: false, isUnread: true, dueTodayMinutesRemaining: 380, assignmentType: 'reassigned', previousEvaluator: 'Teresita Navarro', reassignedDate: 'Yesterday' },
   { id: '#WA-3054', applicant: 'Milagros Espino', permitType: 'Institutional', location: 'Makati City', currentStage: 'payment', assignedRole: 'cashier', assignedOfficer: 'David Roderick', department: 'Treasury / Cashiering', assignedDate: '2 days ago', slaDueDate: '06 Aug 2026', daysRemaining: 2, slaStatus: 'on-track', priority: 'normal', status: 'Pending', isNew: false, isUnread: false, isReturned: true, returnReason: 'Incorrect assessment amount', returnedBy: 'David Roderick', dateReturned: '5 days ago', applicantResponseStatus: 'resubmitted', returnedCount: 3 },
   { id: '#WA-3055', applicant: 'Restituto Pineda', permitType: 'Industrial', location: 'Pasay City', currentStage: 'payment', assignedRole: 'cashier', assignedOfficer: 'David Roderick', department: 'Treasury / Cashiering', assignedDate: '1 day ago', slaDueDate: '07 Aug 2026', daysRemaining: 3, slaStatus: 'on-track', priority: 'normal', status: 'Pending', isNew: false, isUnread: false },
 
@@ -204,6 +222,15 @@ export function dueTodayUrgencyTier(urgency: DueTodayUrgency): 'rejected' | 'pen
   return 'info';
 }
 
+// Phase 12 — accessibility audit: the Time Remaining pill previously
+// communicated urgency by color (+ a pulsing dot) alone, with the text
+// being just a countdown. This makes the tier explicit in words too.
+export function dueTodayUrgencyLabel(urgency: DueTodayUrgency): string {
+  if (urgency === 'critical') return 'Urgent';
+  if (urgency === 'warning') return 'Soon';
+  return '';
+}
+
 // --- Phase 6 — Returned Applications ---
 export function applicantResponseLabel(status: ApplicantResponseStatus): string {
   if (status === 'resubmitted') return 'Resubmitted';
@@ -217,4 +244,181 @@ export function applicantResponseTier(status: ApplicantResponseStatus): 'approve
   if (status === 'resubmitted') return 'approved';
   if (status === 'no-response') return 'rejected';
   return 'pending';
+}
+
+// --- Phase 7 — Recently Assigned ---
+// Derives a day-offset from the existing assignedDate display string
+// ('Today' / 'Yesterday' / 'N days ago') rather than adding a parallel
+// numeric field — assignedDate is the one place that recency already
+// lives, this just makes it sortable/comparable. Unrecognized formats
+// sort to the very end rather than crashing or floating to the top.
+export function assignedDaysAgo(task: WorkQueueTask): number {
+  const d = task.assignedDate;
+  if (d === 'Today') return 0;
+  if (d === 'Yesterday') return 1;
+  const match = /^(\d+)\s+days?\s+ago$/.exec(d);
+  return match ? Number(match[1]) : Number.MAX_SAFE_INTEGER;
+}
+
+// "Recently assigned" = assigned today or yesterday — a plain frontend
+// operational window, not a configured SLA rule.
+export function isRecentlyAssigned(task: WorkQueueTask): boolean {
+  return assignedDaysAgo(task) <= 1;
+}
+
+export type RecentAssignmentBadge = 'new-today' | 'new-yesterday' | 'reassigned';
+
+export function recentAssignmentBadge(task: WorkQueueTask): RecentAssignmentBadge | null {
+  if (task.assignmentType === 'reassigned') return 'reassigned';
+  const daysAgo = assignedDaysAgo(task);
+  if (daysAgo === 0) return 'new-today';
+  if (daysAgo === 1) return 'new-yesterday';
+  return null;
+}
+
+export function recentAssignmentLabel(badge: RecentAssignmentBadge): string {
+  if (badge === 'reassigned') return 'Reassigned';
+  if (badge === 'new-today') return 'New Today';
+  return 'New Yesterday';
+}
+
+// Lower rank = more urgent/higher priority, so ascending sort surfaces it first.
+function priorityRank(priority: QueuePriority): number {
+  if (priority === 'critical') return 0;
+  if (priority === 'high') return 1;
+  return 2;
+}
+
+// --- Phase 8 — Smart Sorting ---
+// Global sort across every queue tab. This supersedes Phase 7's
+// Recently-Assigned-only sort (newest/oldest/priority) — that was a
+// narrower version of exactly this mechanism, and running two separate
+// sort controls side by side would have been confusing rather than
+// additive, so "Assignment Date" here is that same sort generalized
+// across the whole queue instead of duplicated.
+export type SortKey = 'urgency' | 'sla' | 'priority' | 'assigned-date' | 'applicant' | 'permit-type' | 'stage';
+export type SortDirection = 'asc' | 'desc';
+
+export interface SortOptionDef {
+  key: SortKey;
+  label: string;
+  tooltip: string;
+}
+
+export const SORT_OPTIONS: SortOptionDef[] = [
+  { key: 'urgency', label: 'Urgency', tooltip: 'Prioritizes overdue, due-today, and high-priority work.' },
+  {
+    key: 'sla',
+    label: 'SLA / Processing Target',
+    tooltip: 'Orders by SLA / processing target deadline — soonest or most overdue first.',
+  },
+  { key: 'priority', label: 'Priority', tooltip: 'Orders by assigned priority level.' },
+  { key: 'assigned-date', label: 'Assignment Date', tooltip: 'Orders by when the application was assigned to you.' },
+  { key: 'applicant', label: 'Applicant Name', tooltip: 'Orders alphabetically by applicant name.' },
+  { key: 'permit-type', label: 'Permit Type', tooltip: 'Groups applications by permit type.' },
+  { key: 'stage', label: 'Current Stage', tooltip: 'Orders by where the application is in the review workflow.' },
+];
+
+// Conceptual ordering only — a frontend operational heuristic to help an
+// evaluator answer "what should I work on first" from data the queue
+// already has, not an official DILG/government priority algorithm or
+// SLA rule. Tiers, low (most urgent) to high:
+//   0 Overdue + Critical Priority     4 High/Critical Priority (else)
+//   1 Overdue (other priority)        5 Returned, applicant resubmitted
+//   2 Due Today + High/Critical       6 Recently Assigned (today/yesterday)
+//   3 Due Today (other priority)      7 Normal assigned tasks
+// "Due Today + High/Critical" is read broadly (critical counts as at
+// least as urgent as high) since the brief's own list only names "Due
+// Today + High Priority" without saying where a due-today critical task
+// should rank — treating it as at least that urgent is the safer default.
+function urgencyRank(task: WorkQueueTask): number {
+  if (task.slaStatus === 'overdue' && task.priority === 'critical') return 0;
+  if (task.slaStatus === 'overdue') return 1;
+  if (task.slaStatus === 'due-today' && (task.priority === 'high' || task.priority === 'critical')) return 2;
+  if (task.slaStatus === 'due-today') return 3;
+  if (task.priority === 'critical' || task.priority === 'high') return 4;
+  if (task.isReturned && task.applicantResponseStatus === 'resubmitted') return 5;
+  if (assignedDaysAgo(task) <= 1) return 6;
+  return 7;
+}
+
+// The natural process order a permit application moves through — reused
+// for "Current Stage" sorting instead of alphabetical, since workflow
+// order is the more meaningful reading of "sort by stage."
+const STAGE_ORDER: WorkQueueStage[] = [
+  'applicant',
+  'zoning',
+  'fire-safety',
+  'obo-review',
+  'inspection',
+  'payment',
+  'releasing',
+];
+
+function stageRank(task: WorkQueueTask): number {
+  const i = STAGE_ORDER.indexOf(task.currentStage);
+  return i === -1 ? STAGE_ORDER.length : i;
+}
+
+function compareAscending(a: WorkQueueTask, b: WorkQueueTask, key: SortKey): number {
+  switch (key) {
+    case 'urgency':
+      return urgencyRank(a) - urgencyRank(b);
+    case 'sla':
+      return a.daysRemaining - b.daysRemaining;
+    case 'priority':
+      return priorityRank(a.priority) - priorityRank(b.priority);
+    case 'assigned-date':
+      return assignedDaysAgo(a) - assignedDaysAgo(b);
+    case 'applicant':
+      return a.applicant.localeCompare(b.applicant);
+    case 'permit-type':
+      return a.permitType.localeCompare(b.permitType);
+    case 'stage':
+      return stageRank(a) - stageRank(b);
+  }
+}
+
+// A fresh, sorted copy — never mutates the array passed in, so this is
+// safe to call on a signal's underlying array without corrupting it.
+// Direction is applied by flipping comparator argument order rather than
+// reversing the sorted array afterward, so ties keep their original
+// relative order in both directions (a genuinely stable sort either way).
+export function sortTasks(tasks: WorkQueueTask[], key: SortKey, direction: SortDirection): WorkQueueTask[] {
+  const sorted = [...tasks];
+  sorted.sort((a, b) => (direction === 'asc' ? compareAscending(a, b, key) : compareAscending(b, a, key)));
+  return sorted;
+}
+
+// --- Phase 10 — Queue Insights / Summary ---
+// Workload awareness, not a performance dashboard: every number here is a
+// plain count already derivable from data that exists elsewhere in this
+// feature (or, for "Unassigned," from tenant-applications.ts, the one
+// place that concept actually lives — WorkQueueTask has no unassigned
+// state at all, every task already carries an assignedOfficer). Nothing
+// here ranks, times, or scores an individual officer.
+
+// "Unassigned" isn't tracked anywhere in work-queue-data.ts itself — every
+// WorkQueueTask is, by construction, already assigned to someone. The one
+// place an application can genuinely be unassigned is APP_ROWS
+// (applications-data.ts already exposes this exact same officer === ''
+// check via its own Unassigned tab) — reusing that real, existing count
+// rather than inventing a fake one for this feature's own dataset.
+export function unassignedApplicationsCount(): number {
+  return APP_ROWS.filter((r) => !r.officer).length;
+}
+
+export interface DepartmentWorkloadStat {
+  department: string;
+  count: number;
+}
+
+// A plain per-department breakdown of the given task pool — grouping the
+// same `department` field every row already carries, not a new dimension.
+export function departmentWorkload(tasks: WorkQueueTask[]): DepartmentWorkloadStat[] {
+  const counts = new Map<string, number>();
+  for (const t of tasks) {
+    counts.set(t.department, (counts.get(t.department) ?? 0) + 1);
+  }
+  return Array.from(counts, ([department, count]) => ({ department, count })).sort((a, b) => b.count - a.count);
 }

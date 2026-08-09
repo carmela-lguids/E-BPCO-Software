@@ -47,6 +47,14 @@
   color: $color-ink-200;
 }
 
+// --- Phase 12 — SLA terminology consistency ---
+.wq-sla-disclaimer {
+  margin: 0.2rem 0 0;
+  font-size: 0.74rem;
+  color: $color-ink-100;
+  font-style: italic;
+}
+
 .wq-legend {
   display: flex;
   align-items: center;
@@ -63,8 +71,110 @@
   margin-right: 0.15rem;
 }
 
-.wq-placeholder-card {
-  border: 1px dashed $color-border-strong;
+// --- Phase 10 — Queue Insights / Summary ---
+// Deliberately compact: plain numbers + a label, no chart, no card-within-
+// a-card — the queue below stays the main focus, this is context only.
+.wq-summary-card {
+  padding-bottom: 1.1rem;
+}
+
+.wq-summary-head {
+  margin-bottom: 0.9rem;
+}
+
+.wq-summary-title {
+  margin: 0 0 0.15rem;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: $color-ink-900;
+}
+
+.wq-summary-caption {
+  margin: 0;
+  font-size: 0.78rem;
+  color: $color-ink-200;
+}
+
+.wq-summary-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+}
+
+.wq-summary-stat {
+  all: unset;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  cursor: pointer;
+  border-radius: $radius-sm;
+
+  &:hover .wq-summary-value {
+    color: $color-brand-600;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-brand-600;
+    outline-offset: 3px;
+  }
+}
+
+.wq-summary-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $color-ink-900;
+  line-height: 1.2;
+  transition: color $ease-fast;
+}
+
+.wq-summary-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $color-ink-300;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.wq-summary-depts {
+  margin-top: 1.1rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid $color-border;
+}
+
+.wq-summary-depts-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: $color-ink-200;
+}
+
+.wq-summary-dept-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+  }
+}
+
+.wq-summary-dept-name {
+  color: $color-ink-600;
+  font-weight: 600;
+}
+
+.wq-summary-dept-count {
+  color: $color-ink-300;
+  font-weight: 700;
 }
 
 .wq-toolbar {
@@ -125,6 +235,117 @@
   }
 }
 
+// --- Phase 11 — Sticky controls ---
+// Tabs + search/filters/sort stay reachable while scrolling a long queue;
+// the summary card above is deliberately NOT included (brief: don't stack
+// multiple sticky bars / don't shrink the usable list area). Sticks to the
+// top of .admin-content, the same scroll container thead th already
+// sticks against (_data-table.scss) — the topbar itself isn't sticky, so
+// this reaches all the way to the viewport top once scrolled past it.
+.wq-sticky-controls {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: $color-surface;
+  padding-top: 0.25rem;
+  margin: 0 -0.1rem 1.1rem;
+
+  .wq-toolbar {
+    margin-bottom: 0.9rem;
+  }
+
+  .tab-nav {
+    margin-bottom: 0;
+  }
+}
+
+.wq-clear-filters-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  background: none;
+  color: $color-ink-300;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.4rem 0.2rem;
+
+  &:hover {
+    color: $color-danger-700;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color-brand-600;
+    outline-offset: 2px;
+    border-radius: $radius-sm;
+  }
+}
+
+// --- Phase 11 — Quick Views ---
+// Deliberately labeled as session-only shortcuts, not "saved" anything —
+// there's no persistence layer behind these, simulated or otherwise.
+.wq-quick-views {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.9rem;
+}
+
+.wq-quick-views-note {
+  font-size: 0.7rem;
+  color: $color-ink-100;
+  font-style: italic;
+}
+
+// --- Phase 8 — Smart Sorting ---
+.wq-sort-control {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.wq-sort-dir-btn {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border: 1px solid $color-border-strong;
+  background: $color-surface;
+  border-radius: $radius-md;
+  color: $color-ink-500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    color $ease-fast,
+    border-color $ease-fast;
+
+  &:hover {
+    color: $color-brand-600;
+    border-color: $color-brand-600;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px $color-brand-focus-ring;
+  }
+}
+
+.wq-sort-tooltip-icon {
+  flex: none;
+  display: inline-flex;
+  color: $color-ink-100;
+  cursor: help;
+
+  &:focus-visible {
+    outline: 2px solid $color-brand-600;
+    outline-offset: 2px;
+    border-radius: 50%;
+  }
+}
+
 .wq-tab-panel {
   min-height: 220px;
 }
@@ -174,6 +395,66 @@
 
 .wq-row-new {
   background: $color-brand-tint-b;
+}
+
+// --- Phase 9 — Bulk Actions ---
+.wq-row-selected {
+  background: $color-info-bg-soft;
+}
+
+.btn-sm {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.78rem;
+}
+
+.wq-bulk-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  padding: 0.65rem 0.9rem;
+  margin-bottom: 1rem;
+  background: $color-info-bg-soft;
+  border: 1px solid #cfe0fd;
+  border-radius: $radius-md;
+}
+
+.wq-bulk-count {
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: $color-ink-700;
+}
+
+.wq-bulk-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+// --- Phase 7 — Recently Assigned ---
+// Subtle, non-alarming modifiers on the same .wq-new-badge shape — "New
+// Yesterday" reads as lower-urgency than "New Today" (muted grey vs the
+// brand accent), and "Reassigned" gets its own info-blue tone so it's
+// visually distinct from "new" without borrowing danger/warning colors.
+.wq-new-badge-muted {
+  background: $color-bg-muted;
+  color: $color-ink-300;
+}
+
+.wq-reassigned-badge {
+  background: $color-info-bg;
+  color: $color-info-700;
+}
+
+.wq-reassign-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $color-info-700;
+  margin-top: 0.2rem;
 }
 
 // --- View Timeline modal ---
@@ -251,6 +532,23 @@
     border-color: #cfe0fd;
     color: $color-info-700;
   }
+
+  &:focus-visible {
+    outline: 2px solid $color-brand-600;
+    outline-offset: 2px;
+  }
+}
+
+// --- Phase 11 — Keyboard focus visibility ---
+// .icon-btn/.btn-primary/.btn-outline are shared classes (_data-table.scss)
+// with no :focus-visible state anywhere in the app. Angular's default view
+// encapsulation scopes these rules to elements rendered by THIS component
+// only — it does not change how these classes look on any other page.
+.icon-btn:focus-visible,
+.btn-primary:focus-visible,
+.btn-outline:focus-visible {
+  outline: 2px solid $color-brand-600;
+  outline-offset: 2px;
 }
 
 // --- Phase 4 — Due Today urgency indicator ---
@@ -306,5 +604,24 @@
 
   .wq-filter-field select {
     width: 100%;
+  }
+
+  // The toolbar stacks vertically above (each filter becomes a full-width
+  // row) and would otherwise pin 300+px of controls permanently on-screen
+  // on the smallest viewports — "do not consume excessive vertical screen
+  // space" wins over stickiness here; it scrolls away normally instead.
+  .wq-sticky-controls {
+    position: static;
+  }
+
+  // Phase 11 responsive priority: on the smallest screens, keep
+  // Application No., Applicant, Current Stage/SLA/Priority/Status, and
+  // Actions — the columns every tab shows unconditionally — and let these
+  // universally-secondary ones (present on every tab) drop rather than
+  // forcing horizontal scroll to reach the primary ones. Tab-specific
+  // bonus columns (Severity, Time Remaining, Reason, Return detail) are
+  // left for the dedicated Phase 12 responsive audit.
+  .wq-col-secondary {
+    display: none;
   }
 }
