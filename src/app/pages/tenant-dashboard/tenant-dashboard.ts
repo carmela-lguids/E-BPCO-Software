@@ -12,7 +12,7 @@ import { HBarChart, HBarRow } from '../../shared/h-bar-chart/h-bar-chart';
 import { buildPermitQueueRows } from '../../shared/permit-queue/permit-queue';
 import { STAGE_STATS, StageStat, isBottleneck } from '../../shared/workflow-monitor/stage-summary-data';
 import { DEPARTMENT_WORKLOAD, DepartmentWorkloadRow } from '../../shared/workflow-monitor/department-workload-data';
-import { AvailabilityStatus, staffForTenant, activeUsersForTenant } from '../../core/staff-availability-data';
+import { AvailabilityStatus, staffForTenant, activityRosterForTenant } from '../../core/staff-availability-data';
 import { Notifications } from '../../core/notifications';
 import {
   SYSTEM_HEALTH_CHECKS,
@@ -21,7 +21,14 @@ import {
   statusTier,
   statusLabel,
 } from '../../core/system-health-data';
-import { LGU_PERFORMANCE, nationalAverage, complianceTier, complianceLabel } from '../../core/lgu-performance-data';
+import {
+  LGU_PERFORMANCE,
+  nationalAverage,
+  complianceTier,
+  complianceLabel,
+  performanceStatusLabel,
+  performanceTierPillClass,
+} from '../../core/lgu-performance-data';
 
 // Phase 2 KPI card shape — see dashboard.ts (Super Admin) for the matching
 // definition; kept duplicated per this codebase's existing per-page
@@ -73,6 +80,7 @@ export type DateRangeKey = 'today' | 'week' | 'month' | 'year' | 'custom';
 interface QuickAction {
   icon: string;
   label: string;
+  description: string;
   route?: string;
   scrollTargetId?: string;
 }
@@ -347,8 +355,37 @@ export class TenantDashboard {
   protected readonly myStaff = computed(() => staffForTenant(this.session.activeTenant()));
 
   protected availabilityLabel(status: AvailabilityStatus): string {
-    if (status === 'on-leave') return 'On Leave';
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    switch (status) {
+      case 'on-leave':
+        return 'On Leave';
+      case 'recently-active':
+        return 'Recently Active';
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+  }
+
+  // Phase 8 — status communicated via icon + text label, not color alone.
+  protected activityStatusIcon(status: AvailabilityStatus): string {
+    switch (status) {
+      case 'available':
+        return 'check-circle';
+      case 'busy':
+        return 'dots-horizontal';
+      case 'recently-active':
+        return 'clock';
+      case 'on-leave':
+        return 'calendar';
+      default:
+        return 'logout';
+    }
+  }
+
+  // "Last active: Online now" is redundant — "Active now" reads cleaner.
+  // Only used by the Active Users list, not Staff Availability (Phase 5),
+  // which keeps its existing wording untouched.
+  protected activityRecencyLabel(lastLogin: string): string {
+    return lastLogin === 'Online now' ? 'Active now' : `Last active ${lastLogin}`;
   }
 
   // --- Phase 6 — Recent Incidents + System Health ---
@@ -398,22 +435,31 @@ export class TenantDashboard {
     return complianceLabel(pct);
   }
 
-  // --- Phase 8 — Active Users ---
-  // A filtered view of the same Phase 5 staff roster (available/busy only),
-  // scoped to this LGU via the same Session.activeTenant() used throughout
-  // this page — not a second dataset.
-  protected readonly activeUsersList = computed(() => activeUsersForTenant(this.session.activeTenant()));
+  protected lguPerformanceLabel(score: number): string {
+    return performanceStatusLabel(score);
+  }
+
+  protected lguPerformanceTierClass(score: number): 'approved' | 'info' | 'pending' | 'rejected' {
+    return performanceTierPillClass(score);
+  }
+
+  // --- Phase 8 — Active Users — Prototype Activity ---
+  // A broadened view of the same Phase 5 staff roster (available/busy/
+  // recently-active), scoped to this LGU only via the same
+  // Session.activeTenant() used throughout this page — never another
+  // LGU's staff, and not a second dataset.
+  protected readonly activeUsersList = computed(() => activityRosterForTenant(this.session.activeTenant()));
 
   // --- Phase 8 — Quick Actions ---
   // Every action routes to a page that already exists in app.routes.ts —
   // no dead buttons.
   protected readonly quickActions: QuickAction[] = [
-    { icon: 'user-check', label: 'Assign Applications', route: '/tenant/applications' },
-    { icon: 'users', label: 'Manage Staff', route: '/tenant/users' },
-    { icon: 'wallet', label: 'View Payments', route: '/tenant/payments' },
-    { icon: 'file-check', label: 'View Permit Release', route: '/tenant/permit-release' },
-    { icon: 'trend-up', label: 'View Reports', route: '/tenant/reports' },
-    { icon: 'alert-triangle', label: 'Review Bottlenecks', route: '/tenant/workflow' },
+    { icon: 'user-check', label: 'Assign Applications', description: 'Route new applications to staff', route: '/tenant/applications' },
+    { icon: 'users', label: 'Manage Staff', description: 'Accounts and department roles', route: '/tenant/users' },
+    { icon: 'wallet', label: 'View Payments', description: 'Payment verification queue', route: '/tenant/payments' },
+    { icon: 'file-check', label: 'View Permit Release', description: 'Permits ready for release', route: '/tenant/permit-release' },
+    { icon: 'trend-up', label: 'View Reports', description: 'This LGU’s reporting', route: '/tenant/reports' },
+    { icon: 'alert-triangle', label: 'Review Bottlenecks', description: 'Workflow stages over target', route: '/tenant/workflow' },
   ];
 
   protected readonly applications = signal<ApplicationRow[]>([

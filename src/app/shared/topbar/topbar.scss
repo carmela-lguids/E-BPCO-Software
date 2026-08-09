@@ -3,18 +3,19 @@
 .topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
+  gap: 1.75rem;
+  row-gap: 1.25rem;
+  flex-wrap: nowrap;
+  margin-bottom: 1.75rem;
 }
 
-.title-row {
+.topbar-left {
   display: flex;
   align-items: center;
   gap: 0.75rem;
   min-width: 0;
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  max-width: 420px;
 }
 
 .menu-btn {
@@ -89,14 +90,33 @@
   color: $color-ink-100;
 }
 
+.topbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 2 1 320px;
+  min-width: 0;
+}
+
 .topbar-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
+  flex: 0 0 auto;
+}
+
+.topbar-divider {
+  width: 1px;
+  height: 28px;
+  background: $color-border-strong;
+  flex: none;
 }
 
 .search-wrap {
   position: relative;
+  width: 100%;
+  max-width: 640px;
+  min-width: 160px;
 }
 
 .search-box {
@@ -105,9 +125,9 @@
   gap: 0.55rem;
   background: #eeeef1;
   border-radius: $radius-md;
-  padding: 0.6rem 0.9rem;
+  padding: 0.65rem 1rem;
   color: $color-ink-200;
-  width: 260px;
+  width: 100%;
   transition: box-shadow $ease-base;
 
   &:focus-within,
@@ -456,13 +476,14 @@
 .user-chip {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.85rem;
   border: none;
   background: none;
-  padding: 0.25rem 0.4rem;
+  padding: 0.45rem 0.85rem 0.45rem 0.55rem;
   border-radius: $radius-md;
   cursor: pointer;
   transition: background $ease-fast;
+  min-width: 0;
 
   &:hover,
   &[aria-expanded='true'] {
@@ -507,24 +528,33 @@
   flex-direction: column;
   line-height: 1.25;
   align-items: flex-start;
-}
+  gap: 0.2rem;
+  min-width: 0;
+  max-width: 210px;
 
-.user-name-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  app-role-badge {
+    margin-top: 0.15rem;
+  }
 }
 
 .user-name {
   font-size: 0.88rem;
   font-weight: 700;
   color: $color-ink-900;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-org {
   font-size: 0.74rem;
   color: $color-ink-200;
   font-weight: 500;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .menu-backdrop {
@@ -579,9 +609,28 @@
   }
 }
 
-@media (max-width: 720px) {
-  .search-box {
-    display: none;
+@media (max-width: $bp-tablet) {
+  .topbar {
+    flex-wrap: wrap;
+  }
+
+  .topbar-left {
+    flex: 1 1 auto;
+    max-width: none;
+  }
+
+  .topbar-center {
+    order: 3;
+    flex: 1 1 100%;
+  }
+
+  .search-wrap {
+    max-width: none;
+    min-width: 0;
+  }
+
+  .topbar-right {
+    margin-left: auto;
   }
 }
 
@@ -597,6 +646,14 @@
   .user-org {
     display: none;
   }
+
+  .topbar-divider {
+    display: none;
+  }
+
+  .topbar-right {
+    gap: 0.85rem;
+  }
 }
 
 @media (max-width: $bp-phone-sm) {
@@ -605,6 +662,10 @@
   }
 
   .chip-caret {
+    display: none;
+  }
+
+  .kbd-hint {
     display: none;
   }
 }

@@ -201,11 +201,19 @@ const ICONS: Record<string, Shape[]> = {
     { tag: 'path', d: 'M3.5 8 10 14.5l4-4 6.5 7' },
     { tag: 'path', d: 'M16.5 17.5H20.5V13.5' },
   ],
+  'trend-flat': [
+    { tag: 'path', d: 'M3.5 12H18.5' },
+    { tag: 'path', d: 'M15 8.5 18.5 12 15 15.5' },
+  ],
   calendar: [
     { tag: 'rect', x: 3.5, y: 5, width: 17, height: 15.5, rx: 1.6 },
     { tag: 'line', x1: 3.5, y1: 9.5, x2: 20.5, y2: 9.5 },
     { tag: 'line', x1: 8, y1: 3, x2: 8, y2: 6.5 },
     { tag: 'line', x1: 16, y1: 3, x2: 16, y2: 6.5 },
+  ],
+  clock: [
+    { tag: 'circle', cx: 12, cy: 12, r: 8.5 },
+    { tag: 'path', d: 'M12 7.5V12l3.2 2' },
   ],
   logout: [
     { tag: 'path', d: 'M9 20H5.5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1H9' },

@@ -270,6 +270,22 @@
               <span class="cc-lgu-vs">vs {{ lguNationalAverage.avgProcessingDays }}d national avg</span>
             </div>
           </div>
+          <div class="cc-lgu-compare-row">
+            <span class="cc-workload-label">Released Permits</span>
+            <div class="cc-lgu-compare-values">
+              <span>{{ mine.releasedPermits }}</span>
+              <span class="cc-lgu-vs">of {{ mine.totalApplications }} total applications</span>
+            </div>
+          </div>
+          <div class="cc-lgu-compare-row">
+            <span class="cc-workload-label">Current Performance Status</span>
+            <div class="cc-lgu-compare-values">
+              <span class="status-pill" [class]="lguPerformanceTierClass(mine.performanceScore)"
+                >{{ lguPerformanceLabel(mine.performanceScore) }}</span
+              >
+              <span class="cc-lgu-vs">E-BPCO operational indicator, not an official DILG rating</span>
+            </div>
+          </div>
         </div>
       } @else {
         <app-empty-state
@@ -281,34 +297,51 @@
     </div>
     <div class="card cc-workload-card">
       <div class="cc-sla-head">
-        <h3>Active Users</h3>
+        <h3>Active Users — Prototype Activity</h3>
       </div>
       <p class="cc-sla-caption">
-        Simulated presence, not connected to a real session service — {{ activeUsersList().length }} active now.
+        Simulated, session-derived activity for this LGU only — not a real-time presence feed.
+        {{ activeUsersList().length }} staff currently represented as active.
       </p>
-      <div class="cc-staff-list">
+      <div class="cc-activity-list">
         @for (row of activeUsersList(); track row.account.id) {
-          <div class="cc-staff-row">
-            <span class="cc-staff-avatar-wrap">
-              <app-avatar [name]="row.account.fullName" [size]="34" />
-              <span class="cc-staff-dot" [class]="row.availabilityStatus"></span>
-            </span>
-            <div class="cc-staff-info">
-              <span class="cc-staff-name">{{ row.account.fullName }}</span>
-              <span class="cc-staff-role">{{ row.account.roleLabel }} · {{ row.account.department }}</span>
+          <div class="cc-activity-row">
+            <div class="cc-activity-identity">
+              <span class="cc-activity-avatar-wrap">
+                <app-avatar [name]="row.account.fullName" [size]="36" />
+                <span class="cc-activity-dot" [class]="row.availabilityStatus"></span>
+              </span>
+              <div class="cc-activity-text">
+                <span class="cc-activity-name">{{ row.account.fullName }}</span>
+                <span class="cc-activity-role" [title]="row.account.roleLabel">{{ row.account.roleLabel }}</span>
+                <span class="cc-activity-dept" [title]="row.account.department">{{ row.account.department }}</span>
+              </div>
+            </div>
+
+            <div class="cc-activity-module">
+              <span class="cc-activity-zone-label">Current activity</span>
               @if (row.currentModule) {
-                <span class="cc-staff-activity">In: {{ row.currentModule }}</span>
+                <span class="cc-activity-module-value">{{ row.currentModule }}</span>
+              } @else {
+                <span class="cc-activity-module-value cc-activity-module-empty">No active module</span>
               }
             </div>
-            <div class="cc-staff-meta">
-              <span class="cc-staff-status-label" [class]="row.availabilityStatus">{{
-                availabilityLabel(row.availabilityStatus)
-              }}</span>
-              <span class="cc-staff-activity">{{ row.account.lastLogin }}</span>
+
+            <div class="cc-activity-workload">
+              <span class="cc-activity-workload-value">{{ row.activeTaskCount }}</span>
+              <span class="cc-activity-workload-label">task{{ row.activeTaskCount === 1 ? '' : 's' }}</span>
+            </div>
+
+            <div class="cc-activity-status">
+              <span class="cc-staff-status-label" [class]="row.availabilityStatus">
+                <app-icon [name]="activityStatusIcon(row.availabilityStatus)" [size]="11" aria-hidden="true" />
+                {{ availabilityLabel(row.availabilityStatus) }}
+              </span>
+              <span class="cc-activity-recency">{{ activityRecencyLabel(row.account.lastLogin) }}</span>
             </div>
           </div>
         } @empty {
-          <app-empty-state icon="users" title="No active users" message="No one is currently signed in." />
+          <app-empty-state icon="users" title="No staff activity available" message="No staff activity for this LGU right now." />
         }
       </div>
     </div>
@@ -321,7 +354,10 @@
         @for (action of quickActions; track action.label) {
           <a [routerLink]="action.route" class="cc-quick-action">
             <app-icon [name]="action.icon" [size]="16" />
-            {{ action.label }}
+            <span class="cc-quick-action-text">
+              <span class="cc-quick-action-label">{{ action.label }}</span>
+              <span class="cc-quick-action-desc">{{ action.description }}</span>
+            </span>
           </a>
         }
       </div>

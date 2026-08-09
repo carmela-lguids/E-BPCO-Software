@@ -21,7 +21,7 @@
     </div>
     <div class="cc-filter-field">
       <label for="cc-lgu-filter">LGU</label>
-      <select id="cc-lgu-filter" [(ngModel)]="lguFilter">
+      <select id="cc-lgu-filter" [(ngModel)]="lguFilter" (ngModelChange)="onLguHeaderFilterChange()">
         <option value="all">All LGUs</option>
         @for (name of lguOptions; track name) {
           <option [value]="name">{{ name }}</option>
@@ -207,7 +207,10 @@
     <div class="cc-sla-head">
       <h3>LGU Performance Ranking</h3>
     </div>
-    <p class="cc-sla-caption">Ranked by performance score — average of approval rate and SLA compliance.</p>
+    <p class="cc-sla-caption">
+      Ranked by E-BPCO performance score (average of approval rate and SLA compliance) — an internal operational
+      indicator to help identify LGUs that may need support, not an official DILG performance rating.
+    </p>
 
     <div class="cc-lgu-toolbar">
       <div class="search-input">
@@ -226,31 +229,107 @@
     </div>
 
     <div class="table-wrap">
-      <table aria-label="LGU performance ranking">
+      <table class="cc-lgu-table" aria-label="LGU performance ranking">
         <thead>
           <tr>
-            <th scope="col"><button type="button" class="cc-sort-btn" (click)="setLguSort('rank')">Rank</button></th>
-            <th scope="col"><button type="button" class="cc-sort-btn" (click)="setLguSort('name')">LGU</button></th>
-            <th scope="col">
-              <button type="button" class="cc-sort-btn" (click)="setLguSort('totalApplications')">Total Applications</button>
+            <th scope="col" [attr.aria-sort]="lguSortAria('rank')">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('rank')">
+                Rank
+                @if (lguSortAria('rank'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
             </th>
-            <th scope="col"><button type="button" class="cc-sort-btn" (click)="setLguSort('approvalRate')">Approval Rate</button></th>
-            <th scope="col">
-              <button type="button" class="cc-sort-btn" (click)="setLguSort('avgProcessingDays')">Avg. Processing</button>
+            <th scope="col" [attr.aria-sort]="lguSortAria('name')">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('name')">
+                LGU
+                @if (lguSortAria('name'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
             </th>
-            <th scope="col">
-              <button type="button" class="cc-sort-btn" (click)="setLguSort('slaCompliancePct')">SLA Compliance</button>
+            <th scope="col" [attr.aria-sort]="lguSortAria('totalApplications')">
+              <button
+                type="button"
+                class="cc-sort-btn"
+                title="Total applications submitted for this LGU, all time"
+                (click)="setLguSort('totalApplications')"
+              >
+                Total Applications
+                @if (lguSortAria('totalApplications'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
             </th>
-            <th scope="col">
-              <button type="button" class="cc-sort-btn" (click)="setLguSort('releasedPermits')">Released Permits</button>
+            <th scope="col" [attr.aria-sort]="lguSortAria('approvalRate')">
+              <button
+                type="button"
+                class="cc-sort-btn"
+                title="Share of decided applications that were approved"
+                (click)="setLguSort('approvalRate')"
+              >
+                Approval Rate
+                @if (lguSortAria('approvalRate'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
             </th>
-            <th scope="col">
-              <button type="button" class="cc-sort-btn" (click)="setLguSort('activeApplications')">Active Applications</button>
+            <th scope="col" [attr.aria-sort]="lguSortAria('avgProcessingDays')">
+              <button
+                type="button"
+                class="cc-sort-btn"
+                title="Average number of days from submission to decision"
+                (click)="setLguSort('avgProcessingDays')"
+              >
+                Avg. Processing
+                @if (lguSortAria('avgProcessingDays'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
             </th>
-            <th scope="col">
-              <button type="button" class="cc-sort-btn" (click)="setLguSort('performanceScore')">Performance Score</button>
+            <th scope="col" [attr.aria-sort]="lguSortAria('slaCompliancePct')">
+              <button
+                type="button"
+                class="cc-sort-btn"
+                title="Share of applications processed within the target service-level timeframe"
+                (click)="setLguSort('slaCompliancePct')"
+              >
+                SLA Compliance
+                @if (lguSortAria('slaCompliancePct'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
             </th>
-            <th scope="col">Trend</th>
+            <th scope="col" [attr.aria-sort]="lguSortAria('releasedPermits')">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('releasedPermits')">
+                Released Permits
+                @if (lguSortAria('releasedPermits'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
+            </th>
+            <th scope="col" [attr.aria-sort]="lguSortAria('activeApplications')">
+              <button type="button" class="cc-sort-btn" (click)="setLguSort('activeApplications')">
+                Active Applications
+                @if (lguSortAria('activeApplications'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
+            </th>
+            <th scope="col" [attr.aria-sort]="lguSortAria('performanceScore')">
+              <button
+                type="button"
+                class="cc-sort-btn"
+                title="E-BPCO operational indicator (average of approval rate and SLA compliance) — not an official DILG rating"
+                (click)="setLguSort('performanceScore')"
+              >
+                Performance Score
+                @if (lguSortAria('performanceScore'); as dir) {
+                  <app-icon [name]="dir === 'ascending' ? 'chevron-up' : 'chevron-down'" [size]="12" />
+                }
+              </button>
+            </th>
+            <th scope="col" title="Change in performance score compared with the previous period">Trend</th>
             <th scope="col">Action</th>
           </tr>
         </thead>
@@ -269,10 +348,21 @@
               </td>
               <td>{{ row.releasedPermits }}</td>
               <td>{{ row.activeApplications }}</td>
-              <td>{{ row.performanceScore }}</td>
               <td>
-                <span class="cc-workload-trend" [class.up]="row.trend === 'up'" [class.down]="row.trend === 'down'">
-                  <app-icon [name]="row.trend === 'up' ? 'trend-up' : 'trend-down'" [size]="12" />{{ row.trendPct }}%
+                <span class="status-pill" [class]="lguPerformanceTierClass(row.performanceScore)"
+                  >{{ lguPerformanceLabel(row.performanceScore) }} · {{ row.performanceScore }}</span
+                >
+              </td>
+              <td>
+                <span
+                  class="cc-lgu-trend"
+                  [class.up]="lguTrendLabel(row) === 'Improving'"
+                  [class.down]="lguTrendLabel(row) === 'Declining'"
+                  [class.flat]="lguTrendLabel(row) === 'Stable'"
+                >
+                  <app-icon [name]="lguTrendIcon(row)" [size]="12" aria-hidden="true" />
+                  <span class="cc-lgu-trend-label">{{ lguTrendLabel(row) }}</span>
+                  <span class="cc-lgu-trend-pct">{{ row.trendPct }}%</span>
                 </span>
               </td>
               <td class="actions-cell">
@@ -300,7 +390,127 @@
     <app-pagination [totalItems]="lguFilteredSorted().length" [pageSize]="lguPageSize" [(page)]="lguPage" />
   </div>
 
-  <div class="cc-grid-3">
+  <div class="card cc-active-users-card" style="margin-bottom: 1.25rem;">
+    <div class="cc-sla-head">
+      <h3>Active Users — Prototype Activity</h3>
+    </div>
+    <p class="cc-sla-caption">
+      Simulated, session-derived activity — not a real-time presence feed. Staff currently represented as active or
+      recently active, across every LGU with mock records.
+    </p>
+
+    <div class="cc-staff-summary">
+      <div class="cc-staff-summary-stat">
+        <span class="cc-staff-summary-value">{{ staffActivitySummary().activeCount }}</span>
+        <span class="cc-staff-summary-label">Active Users</span>
+      </div>
+      <div class="cc-staff-summary-stat">
+        <span class="cc-staff-summary-value">{{ staffActivitySummary().recentlyActiveCount }}</span>
+        <span class="cc-staff-summary-label">Recently Active</span>
+      </div>
+      <div class="cc-staff-summary-stat">
+        <span class="cc-staff-summary-value">{{ staffActivitySummary().tenantAdminsActiveCount }}</span>
+        <span class="cc-staff-summary-label">Tenant Administrators Active</span>
+      </div>
+      <div class="cc-staff-summary-stat">
+        <span class="cc-staff-summary-value">{{ staffActivitySummary().evaluatorsActiveCount }}</span>
+        <span class="cc-staff-summary-label">Evaluators Active</span>
+      </div>
+      <div class="cc-staff-summary-stat">
+        <span class="cc-staff-summary-value">{{ staffActivitySummary().lgusWithActivityCount }}</span>
+        <span class="cc-staff-summary-label">LGUs With Activity</span>
+      </div>
+    </div>
+
+    <div class="cc-lgu-toolbar">
+      <div class="cc-filter-field">
+        <label for="staff-status-filter">Activity status</label>
+        <select id="staff-status-filter" class="cc-filter-narrow" [(ngModel)]="staffStatusFilter">
+          <option value="all">All statuses</option>
+          <option value="available">Available</option>
+          <option value="busy">Busy</option>
+          <option value="recently-active">Recently Active</option>
+        </select>
+      </div>
+      <div class="cc-filter-field">
+        <label for="staff-lgu-filter">LGU</label>
+        <select id="staff-lgu-filter" class="cc-filter-medium" [(ngModel)]="staffLguFilter">
+          <option value="all">All LGUs</option>
+          @for (name of staffLguOptions; track name) {
+            <option [value]="name">{{ name }}</option>
+          }
+        </select>
+      </div>
+      <div class="cc-filter-field">
+        <label for="staff-role-filter">Role</label>
+        <select id="staff-role-filter" class="cc-filter-wide" [(ngModel)]="staffRoleFilter">
+          <option value="all">All roles</option>
+          @for (key of staffRoleOptions; track key) {
+            <option [value]="key">{{ roleLabelFor(key) }}</option>
+          }
+        </select>
+      </div>
+      <div class="cc-filter-field">
+        <label for="staff-dept-filter">Department</label>
+        <select id="staff-dept-filter" class="cc-filter-widest" [(ngModel)]="staffDeptFilter">
+          <option value="all">All departments</option>
+          @for (dept of staffDeptOptions; track dept) {
+            <option [value]="dept">{{ dept }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="cc-activity-list">
+      @for (row of filteredActiveUsers(); track row.account.id) {
+        <div class="cc-activity-row">
+          <div class="cc-activity-identity">
+            <span class="cc-activity-avatar-wrap">
+              <app-avatar [name]="row.account.fullName" [size]="36" />
+              <span class="cc-activity-dot" [class]="row.availabilityStatus"></span>
+            </span>
+            <div class="cc-activity-text">
+              <span class="cc-activity-name">{{ row.account.fullName }}</span>
+              <span class="cc-activity-role" [title]="row.account.roleLabel">{{ row.account.roleLabel }}</span>
+              <span class="cc-activity-dept" [title]="row.account.department + ' · ' + row.account.tenant"
+                >{{ row.account.department }} · {{ row.account.tenant }}</span
+              >
+            </div>
+          </div>
+
+          <div class="cc-activity-module">
+            <span class="cc-activity-zone-label">Current activity</span>
+            @if (row.currentModule) {
+              <span class="cc-activity-module-value">{{ row.currentModule }}</span>
+            } @else {
+              <span class="cc-activity-module-value cc-activity-module-empty">No active module</span>
+            }
+          </div>
+
+          <div class="cc-activity-workload">
+            <span class="cc-activity-workload-value">{{ row.activeTaskCount }}</span>
+            <span class="cc-activity-workload-label">task{{ row.activeTaskCount === 1 ? '' : 's' }}</span>
+          </div>
+
+          <div class="cc-activity-status">
+            <span class="cc-staff-status-label" [class]="row.availabilityStatus">
+              <app-icon [name]="activityStatusIcon(row.availabilityStatus)" [size]="11" aria-hidden="true" />
+              {{ activityStatusLabel(row.availabilityStatus) }}
+            </span>
+            <span class="cc-activity-recency">{{ activityRecencyLabel(row.account.lastLogin) }}</span>
+          </div>
+        </div>
+      } @empty {
+        <app-empty-state
+          icon="users"
+          title="No staff activity available"
+          message="No staff match the selected filters right now."
+        />
+      }
+    </div>
+  </div>
+
+  <div class="cc-grid-2">
     <div class="card cc-workload-card" id="recent-incidents">
       <div class="cc-sla-head">
         <h3>Recent Incidents</h3>
@@ -333,39 +543,6 @@
         }
       </div>
     </div>
-    <div class="card cc-workload-card">
-      <div class="cc-sla-head">
-        <h3>Active Users</h3>
-      </div>
-      <p class="cc-sla-caption">
-        Simulated presence, not connected to a real session service — {{ activeUsersList.length }} active now.
-      </p>
-      <div class="cc-staff-list">
-        @for (row of activeUsersList; track row.account.id) {
-          <div class="cc-staff-row">
-            <span class="cc-staff-avatar-wrap">
-              <app-avatar [name]="row.account.fullName" [size]="34" />
-              <span class="cc-staff-dot" [class]="row.availabilityStatus"></span>
-            </span>
-            <div class="cc-staff-info">
-              <span class="cc-staff-name">{{ row.account.fullName }}</span>
-              <span class="cc-staff-role">{{ row.account.roleLabel }} · {{ row.account.tenant }}</span>
-              @if (row.currentModule) {
-                <span class="cc-staff-activity">In: {{ row.currentModule }}</span>
-              }
-            </div>
-            <div class="cc-staff-meta">
-              <span class="cc-staff-status-label" [class]="row.availabilityStatus">{{
-                availabilityLabel(row.availabilityStatus)
-              }}</span>
-              <span class="cc-staff-activity">{{ row.account.lastLogin }}</span>
-            </div>
-          </div>
-        } @empty {
-          <app-empty-state icon="users" title="No active users" message="No one is currently signed in." />
-        }
-      </div>
-    </div>
 
     <div class="card cc-quick-actions-card">
       <div class="cc-sla-head">
@@ -376,12 +553,18 @@
           @if (action.route) {
             <a [routerLink]="action.route" class="cc-quick-action">
               <app-icon [name]="action.icon" [size]="16" />
-              {{ action.label }}
+              <span class="cc-quick-action-text">
+                <span class="cc-quick-action-label">{{ action.label }}</span>
+                <span class="cc-quick-action-desc">{{ action.description }}</span>
+              </span>
             </a>
           } @else {
             <a href="#" class="cc-quick-action" (click)="scrollToSection(action.scrollTargetId!, $event)">
               <app-icon [name]="action.icon" [size]="16" />
-              {{ action.label }}
+              <span class="cc-quick-action-text">
+                <span class="cc-quick-action-label">{{ action.label }}</span>
+                <span class="cc-quick-action-desc">{{ action.description }}</span>
+              </span>
             </a>
           }
         }
@@ -667,9 +850,19 @@
         <div><dt>SLA Compliance</dt><dd>{{ lguComplianceLabel(row.slaCompliancePct) }} · {{ row.slaCompliancePct }}%</dd></div>
         <div><dt>Released Permits</dt><dd>{{ row.releasedPermits }}</dd></div>
         <div><dt>Active Applications</dt><dd>{{ row.activeApplications }}</dd></div>
-        <div><dt>Performance Score</dt><dd>{{ row.performanceScore }}</dd></div>
-        <div><dt>Trend</dt><dd>{{ row.trend === 'up' ? '▲' : '▼' }} {{ row.trendPct }}%</dd></div>
+        <div>
+          <dt>Performance Score</dt>
+          <dd>
+            <span class="status-pill" [class]="lguPerformanceTierClass(row.performanceScore)"
+              >{{ lguPerformanceLabel(row.performanceScore) }} · {{ row.performanceScore }}</span
+            >
+          </dd>
+        </div>
+        <div><dt>Trend</dt><dd>{{ lguTrendLabel(row) }} ({{ row.trendPct }}%)</dd></div>
       </dl>
+      <p class="cc-sla-caption" style="margin-top: 0.5rem;">
+        Performance Score is an E-BPCO operational indicator, not an official DILG performance rating.
+      </p>
       <div class="modal-actions">
         <button type="button" class="modal-btn cancel" (click)="closeLguModal()">Close</button>
       </div>

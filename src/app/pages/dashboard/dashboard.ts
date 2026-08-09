@@ -15,9 +15,24 @@ import { RoleGate } from '../../core/role-gate.directive';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { STAGE_STATS, StageStat, isBottleneck } from '../../shared/workflow-monitor/stage-summary-data';
 import { DEPARTMENT_WORKLOAD, DepartmentWorkloadRow } from '../../shared/workflow-monitor/department-workload-data';
-import { staffSummaryByLgu, activeUsers, AvailabilityStatus } from '../../core/staff-availability-data';
+import {
+  staffSummaryByLgu,
+  activeUsers,
+  activityRoster,
+  AvailabilityStatus,
+  StaffAvailabilityRow,
+} from '../../core/staff-availability-data';
 import { Notifications } from '../../core/notifications';
-import { LGU_PERFORMANCE, LguPerformanceRow, complianceTier, complianceLabel } from '../../core/lgu-performance-data';
+import { ROLES, EVALUATOR_ROLES, RoleKey } from '../../core/roles';
+import {
+  LGU_PERFORMANCE,
+  LguPerformanceRow,
+  complianceTier,
+  complianceLabel,
+  performanceStatusLabel,
+  performanceTierPillClass,
+  trendStateLabel,
+} from '../../core/lgu-performance-data';
 import {
   SYSTEM_HEALTH_CHECKS,
   SystemHealthStatus,
@@ -69,6 +84,7 @@ export type DateRangeKey = 'today' | 'week' | 'month' | 'year' | 'custom';
 interface QuickAction {
   icon: string;
   label: string;
+  description: string;
   route?: string;
   scrollTargetId?: string;
 }
@@ -342,13 +358,21 @@ export class Dashboard {
   protected readonly lguPage = signal(1);
   protected readonly lguPageSize = 5;
 
+  // Reuses the existing header "LGU" filter (Phase 1 shell) as an
+  // additional narrowing condition on the ranking table, rather than
+  // leaving it purely decorative. The header "Date range" filter is NOT
+  // wired here — the mock dataset has no per-period history to filter by,
+  // and fabricating one would misrepresent static prototype figures as
+  // real time-series data.
   protected readonly lguFilteredSorted = computed(() => {
     const term = this.lguSearchTerm().trim().toLowerCase();
     const tier = this.lguTierFilter();
+    const scopedLgu = this.lguFilter();
     const filtered = this.lguPerformance.filter(
       (r) =>
         (!term || r.name.toLowerCase().includes(term)) &&
-        (tier === 'all' || complianceTier(r.slaCompliancePct) === tier),
+        (tier === 'all' || complianceTier(r.slaCompliancePct) === tier) &&
+        (scopedLgu === 'all' || r.name === scopedLgu),
     );
     const key = this.lguSortKey();
     const dir = this.lguSortDir() === 'asc' ? 1 : -1;
@@ -373,6 +397,10 @@ export class Dashboard {
     this.lguPage.set(1);
   }
 
+  onLguHeaderFilterChange(): void {
+    this.lguPage.set(1);
+  }
+
   setLguSort(key: keyof LguPerformanceRow): void {
     if (this.lguSortKey() === key) {
       this.lguSortDir.set(this.lguSortDir() === 'asc' ? 'desc' : 'asc');
@@ -391,6 +419,31 @@ export class Dashboard {
     return complianceLabel(pct);
   }
 
+  protected lguPerformanceLabel(score: number): string {
+    return performanceStatusLabel(score);
+  }
+
+  protected lguPerformanceTierClass(score: number): 'approved' | 'info' | 'pending' | 'rejected' {
+    return performanceTierPillClass(score);
+  }
+
+  protected lguTrendLabel(row: LguPerformanceRow): string {
+    return trendStateLabel(row.trend, row.trendPct);
+  }
+
+  protected lguTrendIcon(row: LguPerformanceRow): string {
+    const label = this.lguTrendLabel(row);
+    if (label === 'Stable') return 'trend-flat';
+    return label === 'Improving' ? 'trend-up' : 'trend-down';
+  }
+
+  // Drives both a visible sort-direction chevron and aria-sort, so the
+  // active sort column is clear visually and to assistive tech.
+  protected lguSortAria(key: keyof LguPerformanceRow): 'ascending' | 'descending' | null {
+    if (this.lguSortKey() !== key) return null;
+    return this.lguSortDir() === 'asc' ? 'ascending' : 'descending';
+  }
+
   // --- LGU row drill-down (view only — reuses the same modal markup
   // pattern as the Recent Tenants table below, not a new component) ---
   protected readonly selectedLguRow = signal<LguPerformanceRow | null>(null);
@@ -403,27 +456,117 @@ export class Dashboard {
     this.selectedLguRow.set(null);
   }
 
-  // --- Phase 8 — Active Users ---
-  // A filtered view of the same Phase 5 staff roster (available/busy only)
-  // across every LGU with mock records — not a second dataset.
-  protected readonly activeUsersList = activeUsers();
+  // --- Phase 8 — Active Users — Prototype Activity ---
+  // Reuses the same Phase 5 staff roster (staff-availability-data.ts),
+  // broadened to available/busy/recently-active (activityRoster()) rather
+  // than the narrower activeUsers() (available/busy only) used for the
+  // headline count — so someone who stepped away recently is still visible
+  // for operational awareness, distinguishable by their status badge. This
+  // is simulated, session-derived frontend data, not a real presence feed —
+  // every label here says so explicitly rather than implying live status.
+  protected readonly activeUserRoster: StaffAvailabilityRow[] = activityRoster();
 
-  protected availabilityLabel(status: AvailabilityStatus): string {
-    if (status === 'on-leave') return 'On Leave';
-    return status.charAt(0).toUpperCase() + status.slice(1);
+  protected readonly staffStatusFilter = signal<'all' | 'available' | 'busy' | 'recently-active'>('all');
+  protected readonly staffLguFilter = signal<string>('all');
+  protected readonly staffRoleFilter = signal<'all' | RoleKey>('all');
+  protected readonly staffDeptFilter = signal<string>('all');
+
+  // Filter option lists are derived from the roster itself, not a separate
+  // hardcoded set — so a filter never offers a choice with zero possible
+  // matches.
+  protected readonly staffLguOptions = Array.from(
+    new Set(this.activeUserRoster.map((r) => r.account.tenant).filter((t): t is string => !!t)),
+  ).sort();
+
+  protected readonly staffRoleOptions = Array.from(new Set(this.activeUserRoster.map((r) => r.account.role))).sort(
+    (a, b) => ROLES[a].label.localeCompare(ROLES[b].label),
+  );
+
+  protected readonly staffDeptOptions = Array.from(new Set(this.activeUserRoster.map((r) => r.account.department))).sort();
+
+  protected roleLabelFor(key: RoleKey): string {
+    return ROLES[key].label;
+  }
+
+  protected readonly filteredActiveUsers = computed(() => {
+    const status = this.staffStatusFilter();
+    const lgu = this.staffLguFilter();
+    const role = this.staffRoleFilter();
+    const dept = this.staffDeptFilter();
+    return this.activeUserRoster.filter(
+      (r) =>
+        (status === 'all' || r.availabilityStatus === status) &&
+        (lgu === 'all' || r.account.tenant === lgu) &&
+        (role === 'all' || r.account.role === role) &&
+        (dept === 'all' || r.account.department === dept),
+    );
+  });
+
+  // Recommended national summary (spec 8.1): breaks the roster down by what
+  // an administrator actually needs to scan for — how many are live right
+  // now vs. recently stepped away, how much of that is tenant leadership
+  // vs. evaluators, and how many LGUs have any representation at all today.
+  protected readonly staffActivitySummary = computed(() => {
+    const roster = this.activeUserRoster;
+    return {
+      activeCount: activeUsers().length,
+      recentlyActiveCount: roster.filter((r) => r.availabilityStatus === 'recently-active').length,
+      tenantAdminsActiveCount: roster.filter((r) => r.account.role === 'tenant-admin').length,
+      evaluatorsActiveCount: roster.filter((r) => EVALUATOR_ROLES.includes(r.account.role)).length,
+      lgusWithActivityCount: new Set(roster.map((r) => r.account.tenant).filter(Boolean)).size,
+    };
+  });
+
+  protected activityStatusLabel(status: AvailabilityStatus): string {
+    switch (status) {
+      case 'on-leave':
+        return 'On Leave';
+      case 'recently-active':
+        return 'Recently Active';
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
+    }
+  }
+
+  protected activityStatusIcon(status: AvailabilityStatus): string {
+    switch (status) {
+      case 'available':
+        return 'check-circle';
+      case 'busy':
+        return 'dots-horizontal';
+      case 'recently-active':
+        return 'clock';
+      case 'on-leave':
+        return 'calendar';
+      default:
+        return 'logout';
+    }
+  }
+
+  // "Last active: Online now" is redundant — "Active now" reads cleaner,
+  // matching the rest of the recency strings ("15m ago", "1h ago", ...)
+  // which already read fine with a "Last active" prefix in the template.
+  protected activityRecencyLabel(lastLogin: string): string {
+    return lastLogin === 'Online now' ? 'Active now' : `Last active ${lastLogin}`;
   }
 
   // --- Phase 8 — Quick Actions ---
   // Every action routes to a page that already exists in app.routes.ts, or
   // scrolls to a section already built on this same dashboard (Phase 3/6) —
-  // no dead buttons.
+  // no dead buttons. None of these perform LGU evaluation work directly —
+  // they all open a module or jump to a section already on this page.
   protected readonly quickActions: QuickAction[] = [
-    { icon: 'plus', label: 'Create Tenant', route: '/tenants' },
-    { icon: 'users', label: 'Manage Users', route: '/user-roles' },
-    { icon: 'trend-up', label: 'View Reports', route: '/reports' },
-    { icon: 'logs', label: 'Open System Logs', route: '/system-logs' },
-    { icon: 'workflow', label: 'Open Workflow', route: '/workflow' },
-    { icon: 'alert-triangle', label: 'Review Critical Incidents', scrollTargetId: 'recent-incidents' },
+    { icon: 'plus', label: 'Create Tenant', description: 'Onboard a new LGU', route: '/tenants' },
+    { icon: 'users', label: 'Manage Users', description: 'Roles and account access', route: '/user-roles' },
+    { icon: 'trend-up', label: 'View Reports', description: 'Platform-wide reporting', route: '/reports' },
+    { icon: 'logs', label: 'Open System Logs', description: 'Audit and activity trail', route: '/system-logs' },
+    { icon: 'workflow', label: 'Open Workflow', description: 'National workflow monitor', route: '/workflow' },
+    {
+      icon: 'alert-triangle',
+      label: 'Review Critical Incidents',
+      description: 'Jump to Recent Incidents below',
+      scrollTargetId: 'recent-incidents',
+    },
   ];
 
   // One stacked bar per permit type — bar length is that permit's total

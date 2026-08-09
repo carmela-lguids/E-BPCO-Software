@@ -8,7 +8,15 @@ import { findAccount, MockAccount } from './mock-accounts';
 //
 // This is explicitly SIMULATED presence, not a connection to any real
 // presence/session service — every UI that reads this must say so.
-export type AvailabilityStatus = 'available' | 'busy' | 'offline' | 'on-leave';
+//
+// 'recently-active' (Phase 8) means "had an open session a short while ago,
+// not right now" — distinct from 'available'/'busy' (in a module right
+// now) and 'offline' (no recent activity). None of the current 12 mock
+// staff records happen to fit that window today (each is either live now
+// or genuinely stale/on-leave) — see the Phase 8 completion report — but
+// the state is fully wired through labels/icons/colors/filters so it
+// renders correctly whenever a row is given this status.
+export type AvailabilityStatus = 'available' | 'busy' | 'recently-active' | 'offline' | 'on-leave';
 
 interface AvailabilityMeta {
   accountId: string;
@@ -68,6 +76,20 @@ export function activeUsers(): StaffAvailabilityRow[] {
 
 export function activeUsersForTenant(tenant: string | null): StaffAvailabilityRow[] {
   return activeUsers().filter((r) => r.account.tenant === tenant);
+}
+
+// The roster shown in the Active Users *list* — broader than activeUsers()
+// (which stays available/busy-only, the headline "Active Users" count) so
+// that anyone recently active is still visible for operational awareness,
+// just distinguishable by status. Excludes offline/on-leave — the list is
+// for "who's around," not a full staff directory (that's Staff Availability
+// / staffForTenant, Phase 5).
+export function activityRoster(): StaffAvailabilityRow[] {
+  return STAFF_AVAILABILITY.filter((r) => r.availabilityStatus !== 'offline' && r.availabilityStatus !== 'on-leave');
+}
+
+export function activityRosterForTenant(tenant: string | null): StaffAvailabilityRow[] {
+  return activityRoster().filter((r) => r.account.tenant === tenant);
 }
 
 /** Tenant Administrator view — staff belonging to one LGU only. */

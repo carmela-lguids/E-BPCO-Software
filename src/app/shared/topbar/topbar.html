@@ -1,5 +1,5 @@
 <header class="topbar">
-  <div class="title-row">
+  <div class="topbar-left">
     <button type="button" class="menu-btn" (click)="uiState.toggleSidebar()" aria-label="Open menu">
       <app-icon name="menu" [size]="20" />
     </button>
@@ -18,11 +18,11 @@
           }
         </nav>
       }
-      <h1 class="page-title">{{ title() }}</h1>
+      <h1 class="page-title" [title]="title()">{{ title() }}</h1>
     </div>
   </div>
 
-  <div class="topbar-right">
+  <div class="topbar-center">
     <div class="search-wrap">
       <div class="search-box" [class.focused]="searchOpen()">
         <app-icon name="search" [size]="17" />
@@ -101,7 +101,9 @@
         </div>
       }
     </div>
+  </div>
 
+  <div class="topbar-right">
     <div class="notif-wrap">
       <button
         type="button"
@@ -168,6 +170,8 @@
       }
     </div>
 
+    <span class="topbar-divider" aria-hidden="true"></span>
+
     <div class="user-menu-wrap">
       <button type="button" class="user-chip" (click)="toggleMenu()" [attr.aria-expanded]="menuOpen()">
         <span class="avatar-wrap">
@@ -175,11 +179,9 @@
           <span class="status-dot" [class]="account().status.toLowerCase().replace(' ', '-')"></span>
         </span>
         <span class="user-text">
-          <span class="user-name-row">
-            <span class="user-name">{{ account().fullName }}</span>
-            <app-role-badge [role]="account().role" [label]="account().roleLabel" [compact]="true" />
-          </span>
-          <span class="user-org">{{ orgLabel() }}</span>
+          <span class="user-name" [title]="account().fullName">{{ account().fullName }}</span>
+          <span class="user-org" [title]="orgLabel()">{{ orgLabel() }}</span>
+          <app-role-badge class="user-role-badge" [role]="account().role" [label]="account().roleLabel" [compact]="true" />
         </span>
         <app-icon name="chevron-down" [size]="14" class="chip-caret" />
       </button>

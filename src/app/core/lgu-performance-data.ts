@@ -71,6 +71,59 @@ export function complianceLabel(pct: number): string {
   return 'Non-Compliant';
 }
 
+// Overall performance-status labels for the ranking table — a plain-language
+// read of `performanceScore` meant to help an administrator spot which LGUs
+// may need operational support, not to rank them competitively. This is an
+// E-BPCO prototype indicator (average of approval rate and SLA compliance),
+// not an official DILG performance rating or scoring formula. Band cutoffs
+// are illustrative only, chosen to spread the current 13-row mock dataset
+// (scores ~74-97) across all four labels rather than clustering in one band.
+export type PerformanceTier = 'strong' | 'on-track' | 'attention' | 'critical';
+
+export function performanceTier(score: number): PerformanceTier {
+  if (score >= 92) return 'strong';
+  if (score >= 85) return 'on-track';
+  if (score >= 78) return 'attention';
+  return 'critical';
+}
+
+export function performanceStatusLabel(score: number): string {
+  switch (performanceTier(score)) {
+    case 'strong':
+      return 'Strong Performance';
+    case 'on-track':
+      return 'On Track';
+    case 'attention':
+      return 'Needs Attention';
+    case 'critical':
+      return 'Critical Attention';
+  }
+}
+
+// Reuses the same 4 status-pill tone classes already used across the app
+// (approved/info/pending/rejected) instead of introducing a 5th color.
+export function performanceTierPillClass(score: number): 'approved' | 'info' | 'pending' | 'rejected' {
+  switch (performanceTier(score)) {
+    case 'strong':
+      return 'approved';
+    case 'on-track':
+      return 'info';
+    case 'attention':
+      return 'pending';
+    case 'critical':
+      return 'rejected';
+  }
+}
+
+// Trend as a plain-language state rather than color/icon alone. A small
+// magnitude (<1 percentage point) reads as "Stable" regardless of direction
+// — the mock data's `trend` field only carries up/down, so the "flat" case
+// is derived here from `trendPct`, not stored on the row.
+export function trendStateLabel(trend: 'up' | 'down', trendPct: number): 'Improving' | 'Declining' | 'Stable' {
+  if (trendPct < 1) return 'Stable';
+  return trend === 'up' ? 'Improving' : 'Declining';
+}
+
 /** National average across every LGU in the ranking, including Esperanza —
  *  used by the Tenant Command Center's "this LGU vs. national average"
  *  scorecard. */
