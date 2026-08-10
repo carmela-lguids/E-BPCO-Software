@@ -435,6 +435,37 @@ h3 {
   font-weight: 700;
 }
 
+/* Phase 4 (Separate Building Permit and Occupancy) */
+.related-application-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 0.9rem;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #3730a3;
+
+  a {
+    font-weight: 700;
+    color: #3730a3;
+  }
+}
+
+.occupancy-stage-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 0.9rem;
+  margin-bottom: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
 /* Documents tab */
 .card-head {
   display: flex;
@@ -506,6 +537,22 @@ h3 {
   font-weight: 600;
   color: $color-info;
   margin-top: 0.2rem;
+}
+
+.doc-return-reason {
+  font-size: 0.72rem;
+  color: #b45309;
+  margin-top: 0.2rem;
+  max-width: 30ch;
+}
+
+.doc-group-heading {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 1.1rem 0 0.4rem;
 }
 
 .preview-btn {

@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -9,15 +10,45 @@ import { Session } from '../../core/session';
 import { MyQueueStrip, QueueTile } from '../../shared/my-queue-strip/my-queue-strip';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { RecordArchiveRow, RecordType, RETENTION_POLICY, RECORD_BASE_ROWS } from './records-seed';
+import { ApplicationStore } from '../../core/application-store';
+import { CanonicalApplication } from '../../core/application-model';
+
+// Phase 17 — Records Lifecycle Integration. Application -> Evaluation ->
+// Payment -> Permit Release -> Released Permit -> Records is the existing
+// lifecycle this app's own modules already imply (STAGE_ORDER's final
+// 'releasing' stage, Permit Release's ReleaseStatus 'Released'). A
+// canonical application that has actually reached release.status ===
+// 'Released' is now genuinely eligible to appear here, with a real
+// applicationId link — not yet archived (status: 'Active', the same
+// "—" placeholder pattern RECORD_BASE_ROWS already uses for its own
+// not-yet-archived rows), since nothing in this app writes an "archived"
+// state back to canonical.
+function recordsFromReleasedApplications(apps: CanonicalApplication[]): RecordArchiveRow[] {
+  return apps
+    .filter((a) => a.release?.status === 'Released')
+    .map((a) => ({
+      id: a.applicationId,
+      type: 'Permit',
+      applicant: a.applicant.fullName,
+      city: a.property.city,
+      archivedDate: '—',
+      archivedBy: '—',
+      status: 'Active',
+      retentionDeadline: '—',
+      eligibleForDisposal: false,
+      applicationId: a.applicationId,
+    }));
+}
 
 @Component({
   selector: 'app-tenant-records',
-  imports: [Topbar, Icon, Avatar, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState],
+  imports: [Topbar, Icon, Avatar, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState, RouterLink],
   templateUrl: './tenant-records.html',
   styleUrl: './tenant-records.scss',
 })
 export class TenantRecords {
   private readonly session = inject(Session);
+  private readonly applicationStore = inject(ApplicationStore);
 
   protected readonly isRecordsOfficer = computed(() => this.session.currentRole() === 'records');
 
@@ -34,7 +65,14 @@ export class TenantRecords {
     return tiles;
   });
 
-  protected readonly rows = signal<RecordArchiveRow[]>(RECORD_BASE_ROWS);
+  // Construction-time snapshot (same pattern as tenant-permit-release.ts's
+  // Phase 14 read migration) — this page only reads canonical release
+  // state, it never writes it, so a plain signal seeded once is enough;
+  // archive()/restore() below mutate this local copy exactly as before.
+  protected readonly rows = signal<RecordArchiveRow[]>([
+    ...RECORD_BASE_ROWS,
+    ...recordsFromReleasedApplications(this.applicationStore.applicationsForTenant(this.session.activeTenant())),
+  ]);
   protected readonly typeFilter = signal<'All' | RecordType>('All');
   protected readonly searchTerm = signal('');
   protected readonly page = signal(1);

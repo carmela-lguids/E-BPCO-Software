@@ -3,6 +3,8 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { Session } from '../../core/session';
+import { ApplicationStore } from '../../core/application-store';
+import { CanonicalApplication } from '../../core/application-model';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -10,6 +12,8 @@ import { StatCard, StatDelta } from '../../shared/stat-card/stat-card';
 import { StackedBarChart } from '../../shared/stacked-bar-chart/stacked-bar-chart';
 import { HBarChart, HBarRow } from '../../shared/h-bar-chart/h-bar-chart';
 import { buildPermitQueueRows } from '../../shared/permit-queue/permit-queue';
+import { AppStage, STAGE_ORDER } from '../tenant-applications/applications-data';
+import { buildWorkQueueTasks, sortTasks } from '../tenant-work-queue/work-queue-data';
 import { STAGE_STATS, StageStat, isBottleneck } from '../../shared/workflow-monitor/stage-summary-data';
 import { DEPARTMENT_WORKLOAD, DepartmentWorkloadRow } from '../../shared/workflow-monitor/department-workload-data';
 import { AvailabilityStatus, staffForTenant, activityRosterForTenant } from '../../core/staff-availability-data';
@@ -71,6 +75,45 @@ interface ApplicationRow {
   status: 'Approved' | 'Pending' | 'Rejected';
 }
 
+// Phase 18 — Recent Applications + Dashboard Consistency. This widget's 7
+// rows used to be an independent hardcoded literal that had already
+// partially drifted from the real application data (e.g. #WA-2026 showed
+// officer: 'Engr. Doe'/status: 'Approved' here, while the real record has
+// officer: ''/status: 'Pending' — found during Phase 11's audit). Now
+// derived from ApplicationStore, tenant-scoped, capped to 7 to preserve
+// this widget's existing footprint on the page (a "Recent Applications"
+// preview, not the full Applications table) — same 7 canonical applications
+// as before (#WA-2026 down to #WA-2020, canonical order), now with accurate
+// field values instead of a second, independently-drifted copy.
+const RECENT_APPLICATIONS_LIMIT = 7;
+
+const APP_STATUSES = new Set<string>(['Approved', 'Pending', 'Rejected']);
+function toDashboardStatus(status: string): 'Approved' | 'Pending' | 'Rejected' {
+  return APP_STATUSES.has(status) ? (status as 'Approved' | 'Pending' | 'Rejected') : 'Pending';
+}
+
+function recentApplicationsFrom(apps: CanonicalApplication[]): ApplicationRow[] {
+  return apps.slice(0, RECENT_APPLICATIONS_LIMIT).map((app) => ({
+    id: app.applicationId,
+    applicant: app.applicant.fullName,
+    location: app.property.city,
+    type: app.project.type,
+    dateSubmitted: app.dateSubmitted,
+    officer: app.assignment.assignedOfficer ?? '',
+    status: toDashboardStatus(app.workflow.status),
+  }));
+}
+
+// Phase 1 (Unify Workflow Stage Names) — mirrors work-queue-data.ts's own
+// canonicalStageLabel(): 'inspection' has no Applications/Workflow Monitor
+// equivalent (this widget only ever shows Building-Permit-track stages
+// today), every other stage resolves through the same STAGE_ORDER every
+// other "Current Stage" display already reads from.
+function canonicalStageLabel(stage: string): string {
+  if (stage === 'inspection') return 'Site Inspection';
+  return STAGE_ORDER.find((s) => s.key === stage)?.label ?? stage;
+}
+
 export type DateRangeKey = 'today' | 'week' | 'month' | 'year' | 'custom';
 
 // Phase 8 — Quick Actions. `route` and `scrollTargetId` are mutually
@@ -93,6 +136,7 @@ interface QuickAction {
 })
 export class TenantDashboard {
   private readonly session = inject(Session);
+  private readonly applicationStore = inject(ApplicationStore);
 
   // --- Executive Command Center shell (Phase 1: filter only; no LGU
   // filter here — a Tenant Administrator has exactly one LGU in scope). ---
@@ -226,64 +270,73 @@ export class TenantDashboard {
   // queue volume, and the fill is its own Pending/Approved/Rejected split.
   protected readonly permitQueueRows = buildPermitQueueRows();
 
-  protected readonly pendingRows: HBarRow[] = [
-    { label: 'Initial Evaluation', value: 130 },
-    { label: 'Zoning Review', value: 340 },
-    { label: 'Fire Review', value: 380 },
-    { label: 'OBO Review', value: 270 },
-    { label: 'Final Approval', value: 650 },
+  // Phase 8 (Connect Operational Dashboards) — real per-stage application
+  // counts for this LGU, replacing static sample numbers (130/340/380/270/
+  // 650) that bore no relationship to Esperanza's actual ~45 Building
+  // Permit applications. The 5 categories themselves are unchanged (this
+  // widget's own existing "under review" breakdown, not the full pipeline
+  // — payment/releasing/inspection were never shown here either); only the
+  // counts now come from the canonical store.
+  private readonly pendingStageLabels: { stage: AppStage; label: string }[] = [
+    { stage: 'applicant', label: 'Initial Evaluation' },
+    { stage: 'zoning', label: 'Zoning Review' },
+    { stage: 'fire-safety', label: 'Fire Review' },
+    { stage: 'obo-review', label: 'OBO Review' },
+    { stage: 'building-official', label: 'Final Approval' },
   ];
 
-  // Phase 3 — SLA Monitoring, worst-offender first. Structured prototype
-  // mock data — daysRemaining/slaDueDate are configurable operational
-  // targets, not derived legal SLA durations.
-  protected readonly slaWatchItems: SlaWatchItem[] = [
-    {
-      id: '#WA-2025',
-      applicant: 'Fea Sims',
-      currentStage: 'Zoning',
-      assignedOfficer: 'Engr. Doe',
-      slaDueDate: '30 Jul 2026',
-      daysRemaining: -3,
-      slaStatus: 'overdue',
-    },
-    {
-      id: '#WA-2021',
-      applicant: 'Jack Nunnally',
-      currentStage: 'Fire Safety',
-      assignedOfficer: 'Arch. Santos',
-      slaDueDate: '01 Aug 2026',
-      daysRemaining: -1,
-      slaStatus: 'overdue',
-    },
-    {
-      id: '#WA-2017',
-      applicant: 'Glen Morning',
-      currentStage: 'OBO Review',
-      assignedOfficer: 'Engr. Reyes',
-      slaDueDate: '03 Aug 2026',
-      daysRemaining: 0,
-      slaStatus: 'due-today',
-    },
-    {
-      id: '#WA-2022',
-      applicant: 'Denese Martin',
-      currentStage: 'Zoning',
-      assignedOfficer: 'Arch. Santos',
-      slaDueDate: '05 Aug 2026',
-      daysRemaining: 2,
-      slaStatus: 'due-soon',
-    },
-    {
-      id: '#WA-2019',
-      applicant: 'Anthony Williams',
-      currentStage: 'OBO Review',
-      assignedOfficer: 'Arch. Santos',
-      slaDueDate: '07 Aug 2026',
-      daysRemaining: 4,
-      slaStatus: 'due-soon',
-    },
-  ];
+  protected readonly pendingRows = computed<HBarRow[]>(() => {
+    const apps = this.applicationStore
+      .applicationsForTenant(this.session.activeTenant())
+      .filter((a) => a.permitTrack === 'building-permit');
+    return this.pendingStageLabels.map(({ stage, label }) => ({
+      label,
+      value: apps.filter((a) => a.workflow.stage === stage).length,
+    }));
+  });
+
+  // The chart's fixed 700-ceiling scale was calibrated to the old static
+  // sample data (max 650) — real counts for one LGU's ~45 applications are
+  // far smaller, so the scale must follow the real data or every bar would
+  // read as nearly empty.
+  protected readonly pendingRowsMax = computed(() => {
+    const max = Math.max(1, ...this.pendingRows().map((r) => r.value));
+    return Math.ceil(max / 5) * 5 || 5;
+  });
+
+  protected readonly pendingRowsTicks = computed(() => {
+    const max = this.pendingRowsMax();
+    return [0, Math.round(max / 4), Math.round(max / 2), Math.round((max * 3) / 4), max];
+  });
+
+  // Phase 8 (Connect Operational Dashboards) — membership is now the same
+  // live overdue/due-soon/due-today computation Work Queue's own Overdue
+  // Reviews tab already uses (work-queue-data.ts's buildWorkQueueTasks,
+  // whose slaStatus is derived from each canonical application's own
+  // processingTarget), worst-offender first via that same module's
+  // sortTasks('urgency') — not a fixed 5-application seed list. An
+  // application with no real SLA tracking data defaults to slaStatus
+  // 'on-track' there and is correctly filtered out below, never shown with
+  // fabricated urgency it was never actually given.
+  protected readonly slaWatchItems = computed<SlaWatchItem[]>(() => {
+    const apps = this.applicationStore
+      .applicationsForTenant(this.session.activeTenant())
+      .filter((a) => a.permitTrack === 'building-permit');
+    const overdueOrDueSoon = sortTasks(
+      buildWorkQueueTasks(apps).filter((t) => t.slaStatus !== 'on-track'),
+      'urgency',
+      'asc',
+    );
+    return overdueOrDueSoon.slice(0, 5).map((t) => ({
+      id: t.applicationId,
+      applicant: t.applicant,
+      currentStage: canonicalStageLabel(t.currentStage),
+      assignedOfficer: t.assignedOfficer,
+      slaDueDate: t.slaDueDate,
+      daysRemaining: t.daysRemaining,
+      slaStatus: t.slaStatus as SlaStatus,
+    }));
+  });
 
   protected slaChipLabel(item: SlaWatchItem): string {
     if (item.daysRemaining < 0) return `+${Math.abs(item.daysRemaining)}d overdue`;
@@ -291,8 +344,8 @@ export class TenantDashboard {
     return `${item.daysRemaining}d remaining`;
   }
 
-  protected readonly slaOverdueCount = this.slaWatchItems.filter((i) => i.slaStatus === 'overdue').length;
-  protected readonly slaDueTodayCount = this.slaWatchItems.filter((i) => i.slaStatus === 'due-today').length;
+  protected readonly slaOverdueCount = computed(() => this.slaWatchItems().filter((i) => i.slaStatus === 'overdue').length);
+  protected readonly slaDueTodayCount = computed(() => this.slaWatchItems().filter((i) => i.slaStatus === 'due-today').length);
 
   // Bottleneck detection reuses the existing Workflow Monitor's own
   // STAGE_STATS + isBottleneck() rather than a second calculation.
@@ -462,71 +515,9 @@ export class TenantDashboard {
     { icon: 'alert-triangle', label: 'Review Bottlenecks', description: 'Workflow stages over target', route: '/tenant/workflow' },
   ];
 
-  protected readonly applications = signal<ApplicationRow[]>([
-    {
-      id: '#WA-2026',
-      applicant: 'Raul Villa',
-      location: 'Taguig City',
-      type: 'Residential',
-      dateSubmitted: '12 Apr 2024',
-      officer: 'Engr. Doe',
-      status: 'Approved',
-    },
-    {
-      id: '#WA-2025',
-      applicant: 'Fea Sims',
-      location: 'Quezon City',
-      type: 'Commercial',
-      dateSubmitted: '24 Apr 2024',
-      officer: 'Engr. Doe',
-      status: 'Pending',
-    },
-    {
-      id: '#WA-2024',
-      applicant: 'David Roderick',
-      location: 'Pasig City',
-      type: 'Renovation',
-      dateSubmitted: '25 Apr 2024',
-      officer: 'Engr. Doe',
-      status: 'Approved',
-    },
-    {
-      id: '#WA-2023',
-      applicant: 'James Zavel',
-      location: 'Pasay City',
-      type: 'Renovation',
-      dateSubmitted: '14 Dec 2024',
-      officer: 'Engr. Doe',
-      status: 'Approved',
-    },
-    {
-      id: '#WA-2022',
-      applicant: 'Denese Martin',
-      location: 'Makati City',
-      type: 'Renovation',
-      dateSubmitted: '14 Jan 2024',
-      officer: 'Engr. Doe',
-      status: 'Rejected',
-    },
-    {
-      id: '#WA-2021',
-      applicant: 'Jack Nunnally',
-      location: 'Paranaque City',
-      type: 'Renovation',
-      dateSubmitted: '2 Dec 2024',
-      officer: 'Engr. Doe',
-      status: 'Pending',
-    },
-    {
-      id: '#WA-2020',
-      applicant: 'James Zavel',
-      location: 'Bulacan City',
-      type: 'Residential',
-      dateSubmitted: '14 Dec 2024',
-      officer: 'Engr. Doe',
-      status: 'Approved',
-    },
-  ]);
+  protected readonly applications = signal<ApplicationRow[]>(
+    recentApplicationsFrom(this.applicationStore.applicationsForTenant(this.session.activeTenant())),
+  );
 
   protected readonly searchTerm = signal('');
 

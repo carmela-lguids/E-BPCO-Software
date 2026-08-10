@@ -137,6 +137,20 @@ export const routes: Routes = [
             (m) => m.TenantApplications,
           ),
       },
+      // Phase 21 — Canonical Application Detail Route. Same component as
+      // the bare list route above (not a second detail page) — the
+      // component reads :applicationId from ActivatedRoute and resolves it
+      // against ApplicationStore itself. applicationId (e.g. '#WA-2026')
+      // is passed through Router's array-navigation API, which handles
+      // encoding the leading '#' correctly; nothing here builds the URL by
+      // manual string concatenation.
+      {
+        path: 'applications/:applicationId',
+        loadComponent: () =>
+          import('./pages/tenant-applications/tenant-applications').then(
+            (m) => m.TenantApplications,
+          ),
+      },
       {
         path: 'evaluations',
         loadComponent: () =>

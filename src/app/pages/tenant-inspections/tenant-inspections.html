@@ -74,6 +74,14 @@
                 <app-icon name="clipboard-check" [size]="14" />
                 Checklist
               </button>
+              <a
+                class="icon-btn view small"
+                [routerLink]="['/tenant/applications', row.applicationId]"
+                title="View Application"
+                [attr.aria-label]="'View application ' + row.applicationId"
+              >
+                <app-icon name="eye" [size]="14" />
+              </a>
             </td>
           </tr>
         } @empty {

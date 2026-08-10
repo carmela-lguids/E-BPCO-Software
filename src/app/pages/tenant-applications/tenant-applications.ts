@@ -1,8 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Toast } from '../../core/toast';
 import { Session } from '../../core/session';
-import { RoleKey } from '../../core/roles';
+import { RoleKey, ROLES } from '../../core/roles';
+import { ApplicationStore } from '../../core/application-store';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -16,12 +19,11 @@ import { EmptyState } from '../../shared/empty-state/empty-state';
 import { SearchIndex } from '../../core/search-index';
 import { EVAL_ROWS, EvalTypeKey } from '../tenant-evaluations/evaluations-data';
 import {
-  APP_ROWS,
   AppRow,
+  AppStatus,
   AppDetail,
   buildDetailFor,
   DOCUMENTS,
-  DocumentItem,
   COMMENTS,
   TIMELINE,
   SHARED_TIMELINE,
@@ -34,6 +36,82 @@ import {
   STAGE_ORDER,
   AppStage,
 } from './applications-data';
+import { ApplicationDocumentRequirement, CanonicalApplication } from '../../core/application-model';
+import { castillaGroupsForTrack } from './castilla-document-requirements';
+
+// Phase 4 — Tenant Applications Migration (initial canonical read). Phase
+// 21 — Canonical Application Detail Route later moved `rows` from a static
+// snapshot to a live ApplicationStore projection — see that field's own
+// comment below for why. The AppRow mapping stays lossless either way.
+//
+// Row edits (saveRow/confirmDeleteRow/confirmAssign below) still only
+// mutate this page's own local overlay, never the shared store — writing
+// changes back into the shared canonical dataset remains out of scope.
+const APP_STAGE_KEYS = new Set<string>(STAGE_ORDER.map((s) => s.key));
+const APP_STATUSES = new Set<AppStatus>(['Approved', 'Pending', 'Rejected']);
+
+function toAppStage(stage: string): AppStage {
+  return APP_STAGE_KEYS.has(stage) ? (stage as AppStage) : 'applicant';
+}
+
+function toAppStatus(status: string): AppStatus {
+  return APP_STATUSES.has(status as AppStatus) ? (status as AppStatus) : 'Pending';
+}
+
+// Phase 6 (Connect Status Changes Between Modules) — mirrors tenant-
+// evaluations.ts's own EVAL_TYPE_OWNED_STAGE/nextStage/stageLabel (that
+// file's local copy, not shared, matching this codebase's existing
+// convention of each page keeping its own view of the same stage<->evalType
+// relationship — see also work-queue-data.ts's evalTypeForStage). Needed so
+// this page's own "Forward to X" button can perform the same real
+// transition Evaluations' approveReview() already does, instead of being a
+// button with no (click) handler at all.
+const EVAL_TYPE_OWNED_STAGE: Record<EvalKey, AppStage> = {
+  initial: 'applicant',
+  zoning: 'zoning',
+  fire: 'fire-safety',
+  obo: 'obo-review',
+  final: 'building-official',
+};
+
+function nextStage(stage: AppStage): AppStage | null {
+  const idx = STAGE_ORDER.findIndex((s) => s.key === stage);
+  if (idx === -1 || idx === STAGE_ORDER.length - 1) return null;
+  return STAGE_ORDER[idx + 1].key;
+}
+
+function stageLabel(stage: AppStage): string {
+  return STAGE_ORDER.find((s) => s.key === stage)?.label ?? stage;
+}
+
+// Phase 4 (Separate Building Permit and Occupancy) — display labels for
+// OccupancyWorkflowStage (core/application-model.ts), the stage sequence
+// given directly in the phase brief: Documentary Review -> Inspection ->
+// FSIC -> Final Review -> Payment -> Release.
+const OCCUPANCY_STAGE_LABEL: Record<string, string> = {
+  'documentary-review': 'Documentary Review',
+  inspection: 'Inspection',
+  fsic: 'FSIC',
+  'final-review': 'Final Review',
+  payment: 'Payment',
+  releasing: 'Release',
+};
+
+function fromCanonical(app: CanonicalApplication): AppRow {
+  return {
+    id: app.applicationId,
+    applicant: app.applicant.fullName,
+    city: app.property.city,
+    type: app.project.type,
+    dateSubmitted: app.dateSubmitted,
+    officer: app.assignment.assignedOfficer ?? '',
+    status: toAppStatus(app.workflow.status),
+    currentStage: toAppStage(app.workflow.stage),
+    permitTrack: app.permitTrack,
+    relatedApplicationId: app.relatedApplicationId,
+    occupancyStage: app.permitTrack === 'occupancy' ? app.workflow.stage : undefined,
+  };
+}
 
 function buildQrCells(): { x: number; y: number }[] {
   const cells: { x: number; y: number }[] = [];
@@ -71,7 +149,7 @@ function buildQrCells(): { x: number; y: number }[] {
   return cells;
 }
 
-type View = 'list' | 'detail' | 'info' | 'evaluations' | 'evaluation-detail';
+type View = 'list' | 'detail' | 'info' | 'evaluations' | 'evaluation-detail' | 'unavailable';
 type DetailTab = 'timeline' | 'documents' | 'comments';
 type InfoSection = 'meta' | 'project' | 'type' | 'govid' | 'professional' | 'ownership';
 type ListTab = 'all' | 'unassigned';
@@ -103,7 +181,7 @@ const STAGE_WAITING_LABEL: Record<AppStage, string> = {
 
 @Component({
   selector: 'app-tenant-applications',
-  imports: [Topbar, Icon, Avatar, DilgSeal, DonutChart, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState, FocusTrapDirective],
+  imports: [Topbar, Icon, Avatar, DilgSeal, DonutChart, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState, FocusTrapDirective, RouterLink],
   templateUrl: './tenant-applications.html',
   styleUrl: './tenant-applications.scss',
 })
@@ -111,6 +189,9 @@ export class TenantApplications {
   private readonly toast = inject(Toast);
   private readonly session = inject(Session);
   private readonly searchIndex = inject(SearchIndex);
+  private readonly applicationStore = inject(ApplicationStore);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
   // The four evaluator roles all land on this page (no separate dashboard) —
   // this is their own stage queue, using the same real, stage-scoped data
@@ -131,11 +212,145 @@ export class TenantApplications {
     ];
   });
 
-  protected readonly rows = signal<AppRow[]>([...APP_ROWS]);
+  // Phase 21 — Canonical Application Detail Route. The list is now a live
+  // projection of ApplicationStore, tenant-scoped, same pattern as
+  // tenant-payments.ts's Phase 14 migration — deferred until this phase
+  // because the detail route (below) resolves through the store, and a
+  // list still reading a static snapshot would risk disagreeing with its
+  // own detail view once another module (Payments/Evaluations) writes a
+  // change this page didn't originate.
+  //
+  // saveRow()/confirmDeleteRow()/confirmAssign() still only mutate this
+  // page's own state, not the shared store — same local-only write
+  // boundary every other migrated page has kept (see Phase 8's payments
+  // refunds for the same pattern). Since `rows` is now recomputed fresh
+  // from the store rather than a stable mutable array, these overlays are
+  // keyed by applicationId rather than object reference, which no longer
+  // survives a recompute.
+  private readonly localOverrides = signal<Record<string, AppRow>>({});
+  private readonly localDeletedIds = signal<Set<string>>(new Set());
+
+  protected readonly rows = computed<AppRow[]>(() => {
+    // Phase 4 (Separate Building Permit and Occupancy) — this table/its
+    // AppStage progress tracker is Building-Permit-shaped; a Certificate of
+    // Occupancy record's own stage vocabulary (documentary-review/fsic/
+    // final-review) doesn't fit it and would otherwise silently fall back
+    // to a misleading 'applicant' stage via toAppStage()'s AppStage guard.
+    // Still directly reachable at its own canonical route via the Related
+    // Application link (see selectedDetail's relatedApplication below) —
+    // this only scopes the list/table view.
+    const base = this.applicationStore
+      .applicationsForTenant(this.session.activeTenant())
+      .filter((a) => a.permitTrack === 'building-permit')
+      .map(fromCanonical);
+    const overrides = this.localOverrides();
+    const deleted = this.localDeletedIds();
+    return base.filter((r) => !deleted.has(r.id)).map((r) => overrides[r.id] ?? r);
+  });
   protected readonly documents = DOCUMENTS;
   protected readonly comments = COMMENTS;
   protected readonly timeline = TIMELINE;
-  protected readonly sharedTimeline = SHARED_TIMELINE;
+
+  // Phase 4 (Separate Building Permit and Occupancy) — reads the selected
+  // application's OWN canonical documents (same pattern as sharedTimeline
+  // above), not the static `documents` fallback. Required so a Certificate
+  // of Occupancy record shows its own Occupancy Requirements/FSIC
+  // documents instead of the Building Permit mock every BP record shares.
+  protected readonly selectedDocuments = computed(() => {
+    const row = this.selectedRow();
+    const canonical = row && this.applicationStore.getApplicationById(row.id);
+    return canonical ? canonical.documents : this.documents;
+  });
+
+  // Phase 3 (Castilla Document Requirements) — groups the Documents tab by
+  // the same structured categories as castilla-document-requirements.ts,
+  // in that file's own group order, instead of one flat undifferentiated
+  // list. Phase 4 — now reads the selected application's own permitTrack,
+  // so a Building Permit record shows its groups and a Certificate of
+  // Occupancy record shows its own (Occupancy Requirements/FSIC), never
+  // the other track's.
+  protected readonly documentGroups = computed(() => {
+    const track = this.selectedRow()?.permitTrack ?? 'building-permit';
+    const docs = this.selectedDocuments();
+    return castillaGroupsForTrack(track)
+      .map((g) => ({ key: g.key, label: g.label, items: docs.filter((d) => d.group === g.key) }))
+      .filter((g) => g.items.length > 0);
+  });
+
+  // Phase 7 — Workflow + Timeline Integration. The "Shared Evaluation
+  // Timeline" panel reads the selected application's own canonical
+  // timeline instead of the flat, module-level SHARED_TIMELINE constant.
+  // Falls back to SHARED_TIMELINE only if a selected row's id somehow has
+  // no canonical match (not expected in practice).
+  protected readonly sharedTimeline = computed(() => {
+    const row = this.selectedRow();
+    const canonical = row && this.applicationStore.getApplicationById(row.id);
+    return canonical ? canonical.timeline : SHARED_TIMELINE;
+  });
+
+  // Phase 21 — Canonical Application Detail Route. :applicationId (if
+  // present) drives whether this page shows the list or a specific
+  // application's detail — reactive via toSignal() rather than a one-time
+  // snapshot, since navigating directly between two application detail
+  // URLs (e.g. clicking a different row while already on a detail view)
+  // reuses this component instance rather than recreating it; a snapshot
+  // read once at construction would miss that second navigation.
+  private readonly routeParamMap = toSignal(this.route.paramMap);
+  protected readonly routeApplicationId = computed(() => this.routeParamMap()?.get('applicationId') ?? null);
+
+  // Phase 2 (Connect Work Queue Actions) — an optional ?tab= query param so
+  // a caller that already knows which tab is relevant (e.g. Work Queue's
+  // Returned Applications linking straight to the document checklist and
+  // revision history) can land there directly instead of always opening on
+  // Timeline. Reactive for the same reason routeApplicationId is: this
+  // route can be re-navigated onto itself with a different id/tab without
+  // the component being recreated.
+  private readonly routeQueryParamMap = toSignal(this.route.queryParamMap);
+  private readonly VALID_DETAIL_TABS: readonly DetailTab[] = ['timeline', 'documents', 'comments'];
+  protected readonly routeDetailTab = computed<DetailTab>(() => {
+    const tab = this.routeQueryParamMap()?.get('tab');
+    return this.VALID_DETAIL_TABS.includes(tab as DetailTab) ? (tab as DetailTab) : 'timeline';
+  });
+
+  // 'ok' when the id resolves to a real application in the active tenant;
+  // 'not-found'/'wrong-tenant' drive the empty-state block in the template
+  // instead of ever rendering another tenant's data or a broken detail view.
+  protected readonly routeAccessState = computed<'ok' | 'not-found' | 'wrong-tenant' | null>(() => {
+    const id = this.routeApplicationId();
+    if (!id) return null;
+    const app = this.applicationStore.getApplicationById(id);
+    if (!app) return 'not-found';
+    if (app.tenant.tenantId !== this.session.activeTenant()) return 'wrong-tenant';
+    return 'ok';
+  });
+
+  constructor() {
+    // Single source of truth for "what does the route say to show" — both
+    // openDetail() and backToList() below only navigate; this effect is
+    // the one place that actually updates selectedRow/view in response,
+    // so a direct URL, a row click, and the browser back button all end
+    // up going through the exact same resolution logic.
+    effect(() => {
+      const id = this.routeApplicationId();
+      if (!id) {
+        if (this.view() !== 'list') {
+          this.view.set('list');
+          this.selectedRow.set(null);
+        }
+        return;
+      }
+      const app = this.applicationStore.getApplicationById(id);
+      if (!app || app.tenant.tenantId !== this.session.activeTenant()) {
+        this.selectedRow.set(null);
+        this.view.set('unavailable');
+        return;
+      }
+      this.selectedRow.set(fromCanonical(app));
+      this.detailTab.set(this.routeDetailTab());
+      this.view.set('detail');
+    });
+  }
+
   protected readonly evalCards = EVAL_CARDS;
   protected readonly evalDetails = EVAL_DETAILS;
 
@@ -238,6 +453,22 @@ export class TenantApplications {
 
   protected readonly stageOrder = STAGE_ORDER;
 
+  // Phase 4 (Separate Building Permit and Occupancy) — the related BP/CO
+  // record, resolved from the SAME canonical store every other "View
+  // Application" link already uses (never a second, locally-reconstructed
+  // copy). Works in both directions: a Building Permit's detail page can
+  // link to its Certificate of Occupancy, and vice versa.
+  protected readonly relatedApplication = computed(() => {
+    const row = this.selectedRow();
+    if (!row?.relatedApplicationId) return null;
+    const app = this.applicationStore.getApplicationById(row.relatedApplicationId);
+    return app ?? null;
+  });
+
+  protected occupancyStageLabel(stage: string | undefined): string {
+    return (stage && OCCUPANCY_STAGE_LABEL[stage]) ?? 'Documentary Review';
+  }
+
   protected readonly progressStages = computed(() => {
     const row = this.selectedRow();
     if (!row) return [];
@@ -265,6 +496,18 @@ export class TenantApplications {
     return key ? this.evalDetails[key] : null;
   });
 
+  // Phase 3 (Castilla Document Requirements) — Initial Evaluation must
+  // clearly distinguish Complete Documents vs Incomplete Documents. Only
+  // meaningful for the 'initial' evalType, whose checklist above is
+  // specifically the documentary-completeness check; the other stages'
+  // checklists are their own domain reviews, not a completeness gate.
+  protected readonly initialDocumentsComplete = computed(() => {
+    if (this.selectedEval() !== 'initial') return null;
+    const checklist = this.activeEvalDetail()?.checklist ?? [];
+    if (checklist.length === 0) return null;
+    return checklist.every((item) => item.status === 'Approved');
+  });
+
   protected readonly breadcrumbs = computed(() => {
     const row = this.selectedRow();
     if (!row) return [];
@@ -288,16 +531,23 @@ export class TenantApplications {
     return trail;
   });
 
+  // Phase 21 — navigates to the canonical detail route rather than setting
+  // selectedRow/view directly; the constructor effect above is what
+  // actually applies that state once the route updates, so this and a
+  // direct URL visit resolve through the exact same logic.
   openDetail(row: AppRow): void {
-    this.selectedRow.set(row);
-    this.detailTab.set('timeline');
-    this.view.set('detail');
+    this.router.navigate(['/tenant/applications', row.id]);
+    // Phase 25 — route points at the canonical Application Detail (real
+    // applicationId) rather than the bare list, and shares its `id`/
+    // category with tenant-payments.ts's own recordView() call so viewing
+    // the same application from either module collapses into one Recently
+    // Viewed entry instead of two.
     this.searchIndex.recordView({
       id: `app-${row.id}`,
       title: row.applicant,
       subtitle: `${row.id} · ${row.type} · ${row.city}`,
       category: 'Application',
-      route: '/tenant/applications',
+      route: `/tenant/applications/${encodeURIComponent(row.id)}`,
       icon: 'user',
     });
   }
@@ -307,8 +557,7 @@ export class TenantApplications {
   }
 
   backToList(): void {
-    this.view.set('list');
-    this.selectedRow.set(null);
+    this.router.navigate(['/tenant/applications']);
   }
 
   openInfo(): void {
@@ -344,6 +593,90 @@ export class TenantApplications {
     this.view.set('evaluations');
   }
 
+  // Phase 6 (Connect Status Changes Between Modules) — the "Forward to X"
+  // button (cfg.primaryActionLabel) previously had no (click) handler at
+  // all: clicking it did nothing, on this page or anywhere else. This
+  // performs the same real transition tenant-evaluations.ts's
+  // approveReview() already does for the same evalType/canonical record —
+  // writing through ApplicationStore so Work Queue, Evaluations, Workflow
+  // Monitor, and Dashboard all reactively update, not just this page.
+  //
+  // Only the 10 original applications (applications-data.ts's APP_ROWS)
+  // carry real evaluations data (evaluationsFor(), core/application-data.ts)
+  // — the 35 promoted from Work Queue and the one Certificate of Occupancy
+  // record don't, honestly, since none of those ever had real evaluation
+  // rows to begin with (Phase 16's own finding). For those, this reports
+  // that plainly instead of pretending a transition happened.
+  advanceEvaluation(): void {
+    const row = this.selectedRow();
+    const key = this.selectedEval();
+    if (!row || !key) return;
+
+    const tenantId = this.session.activeTenant();
+    const app = this.applicationStore.getApplicationById(row.id);
+    if (!app) return;
+
+    const ok = this.applicationStore.updateEvaluation(row.id, key, { stage: 'passed' }, tenantId);
+    if (!ok) {
+      this.toast.show(`${row.id} has no active ${EVAL_CARDS.find((c) => c.key === key)?.title ?? 'evaluation'} record to forward.`);
+      return;
+    }
+
+    const actor = this.session.currentAccount().fullName;
+    const actorRole = ROLES[this.session.currentRole()]?.label ?? 'Evaluator';
+    const evalTitle = EVAL_CARDS.find((c) => c.key === key)?.title ?? 'Evaluation';
+    this.applicationStore.addTimelineEvent(row.id, { label: `${evalTitle} Approved`, date: 'Just now', who: actor, role: actorRole }, tenantId);
+
+    const ownedStage = EVAL_TYPE_OWNED_STAGE[key];
+    if (app.workflow.stage === ownedStage) {
+      const next = nextStage(ownedStage);
+      if (next) {
+        this.applicationStore.updateWorkflow(row.id, { stage: next }, tenantId);
+        this.applicationStore.addTimelineEvent(
+          row.id,
+          { label: `Forwarded to ${stageLabel(next)}`, date: 'Just now', who: actor, role: actorRole },
+          tenantId,
+        );
+      }
+    }
+
+    this.toast.show(`${row.id} forwarded.`);
+    this.backFromEvalDetail();
+  }
+
+  // Phase 6 — mirrors tenant-evaluations.ts's returnReview(): workflow.stage
+  // is left unchanged (a return means revision is needed at the current
+  // stage, not that the pipeline position resets), only the evaluation
+  // record and overall decision status change, plus a timeline event.
+  returnEvaluationForRevision(): void {
+    const row = this.selectedRow();
+    const key = this.selectedEval();
+    if (!row || !key) return;
+
+    const tenantId = this.session.activeTenant();
+    const app = this.applicationStore.getApplicationById(row.id);
+    if (!app) return;
+
+    const ok = this.applicationStore.updateEvaluation(row.id, key, { stage: 'returned' }, tenantId);
+    if (!ok) {
+      this.toast.show(`${row.id} has no active ${EVAL_CARDS.find((c) => c.key === key)?.title ?? 'evaluation'} record to return.`);
+      return;
+    }
+    this.applicationStore.updateWorkflow(row.id, { status: 'Return for Revision' }, tenantId);
+
+    const actor = this.session.currentAccount().fullName;
+    const actorRole = ROLES[this.session.currentRole()]?.label ?? 'Evaluator';
+    const evalTitle = EVAL_CARDS.find((c) => c.key === key)?.title ?? 'Evaluation';
+    this.applicationStore.addTimelineEvent(
+      row.id,
+      { label: `${evalTitle} Returned for Revision`, date: 'Just now', who: actor, role: actorRole, detail: 'Returned for revision' },
+      tenantId,
+    );
+
+    this.toast.show(`${row.id} returned for revision.`);
+    this.backFromEvalDetail();
+  }
+
   openDocPreview(item: ChecklistItem): void {
     if (!item.filename) return;
     this.previewItem.set(item);
@@ -354,9 +687,13 @@ export class TenantApplications {
   }
 
   // --- Documents tab preview (mock document sheet) ---
-  protected readonly previewDocument = signal<DocumentItem | null>(null);
+  // Phase 4 — ApplicationDocumentRequirement (not DocumentItem) since
+  // selectedDocuments()/documentGroups() now read the selected
+  // application's own canonical documents, which may be a Building Permit
+  // or a Certificate of Occupancy record.
+  protected readonly previewDocument = signal<ApplicationDocumentRequirement | null>(null);
 
-  openDocumentPreview(doc: DocumentItem): void {
+  openDocumentPreview(doc: ApplicationDocumentRequirement): void {
     this.previewDocument.set(doc);
   }
 
@@ -398,14 +735,14 @@ export class TenantApplications {
     const original = this.modalRow();
     if (!original) return;
     const updated = { ...this.editRowForm };
-    this.rows.update((list) => list.map((r) => (r === original ? updated : r)));
+    this.localOverrides.update((map) => ({ ...map, [original.id]: updated }));
     this.closeRowModal();
   }
 
   confirmDeleteRow(): void {
     const original = this.modalRow();
     if (!original) return;
-    this.rows.update((list) => list.filter((r) => r !== original));
+    this.localDeletedIds.update((set) => new Set(set).add(original.id));
     this.closeRowModal();
   }
 
@@ -482,9 +819,13 @@ export class TenantApplications {
     const targets = new Set(this.assignTargetRows().map((r) => r.id));
     const officer = this.assignChoice();
     if (!officer || targets.size === 0) return;
-    this.rows.update((list) =>
-      list.map((r) => (targets.has(r.id) ? { ...r, officer } : r)),
-    );
+    this.localOverrides.update((map) => {
+      const next = { ...map };
+      for (const row of this.rows()) {
+        if (targets.has(row.id)) next[row.id] = { ...row, officer };
+      }
+      return next;
+    });
     this.selectedUnassignedIds.set(new Set());
     this.closeAssignDrawer();
   }

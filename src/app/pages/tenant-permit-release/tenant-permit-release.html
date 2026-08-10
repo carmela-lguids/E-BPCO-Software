@@ -120,6 +120,14 @@
                 <button type="button" class="icon-btn history" title="View history" [attr.aria-label]="'View history for ' + row.id" (click)="viewHistory(row)">
                   <app-icon name="logs" [size]="15" />
                 </button>
+                <a
+                  class="icon-btn view"
+                  [routerLink]="['/tenant/applications', row.id]"
+                  title="View Application"
+                  [attr.aria-label]="'View application ' + row.id"
+                >
+                  <app-icon name="eye" [size]="15" />
+                </a>
                 @if (row.permitStatus === 'Released') {
                   <button
                     type="button"

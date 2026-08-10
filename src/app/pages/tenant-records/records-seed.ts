@@ -15,6 +15,15 @@ export interface RecordArchiveRow {
   status: RecordStatus;
   retentionDeadline: string;
   eligibleForDisposal: boolean;
+  /** Phase 17 — Records Lifecycle Integration. Set only for rows derived
+   *  from a real canonical application (core/application-data.ts) that has
+   *  reached release.status === 'Released' — see tenant-records.ts's
+   *  recordsFromReleasedApplications(). The 7 rows below predate the
+   *  canonical dataset and have no real relationship to any canonical
+   *  application (different applicants, a distinct #WA-2010-2016 id block
+   *  Phase 1's audit already confirmed doesn't correspond to anything) —
+   *  left undefined here rather than fabricating one. */
+  applicationId?: string;
 }
 
 // How long a record must be kept before it's eligible for disposal, once

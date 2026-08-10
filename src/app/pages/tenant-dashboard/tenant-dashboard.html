@@ -23,7 +23,7 @@
 </div>
 
 <div class="cc-alert-band" role="status" aria-live="polite">
-  @if (bottleneckedStages.length === 0 && slaOverdueCount === 0 && slaDueTodayCount === 0) {
+  @if (bottleneckedStages.length === 0 && slaOverdueCount() === 0 && slaDueTodayCount() === 0) {
     <p class="cc-alert-clear">
       <app-icon name="check-circle" [size]="15" />
       All systems nominal — no bottlenecks, no SLA breaches right now.
@@ -45,7 +45,7 @@
       </div>
       <div class="cc-alert-row">
         <app-icon name="alert-circle" [size]="15" />
-        <span><strong>{{ slaOverdueCount }}</strong> overdue · <strong>{{ slaDueTodayCount }}</strong> due today in this LGU</span>
+        <span><strong>{{ slaOverdueCount() }}</strong> overdue · <strong>{{ slaDueTodayCount() }}</strong> due today in this LGU</span>
         <a href="#sla-monitoring" class="cc-alert-link" (click)="scrollToSlaMonitoring($event)">View SLA Monitoring ↓</a>
       </div>
     </div>
@@ -179,7 +179,7 @@
       </p>
 
       <div class="overdue-list">
-        @for (item of slaWatchItems; track item.id) {
+        @for (item of slaWatchItems(); track item.id) {
           <div class="overdue-item" [class]="item.slaStatus">
             <span class="overdue-dot" [class]="item.slaStatus"></span>
             <div class="overdue-body">
@@ -401,7 +401,7 @@
     </button>
   </div>
 
-  <app-h-bar-chart [rows]="pendingRows" [maxValue]="700" [ticks]="[0, 175, 350, 525, 700]" />
+  <app-h-bar-chart [rows]="pendingRows()" [maxValue]="pendingRowsMax()" [ticks]="pendingRowsTicks()" />
 </section>
 
 <section class="card recent-card">
@@ -508,6 +508,7 @@
           <div><dt>Status</dt><dd>{{ row.status }}</dd></div>
         </dl>
         <div class="modal-actions">
+          <a class="modal-btn cancel" [routerLink]="['/tenant/applications', row.id]" (click)="closeAppRowModal()">View Application</a>
           <button type="button" class="modal-btn cancel" (click)="closeAppRowModal()">Close</button>
         </div>
       </div>

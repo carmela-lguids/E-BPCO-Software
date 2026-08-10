@@ -150,6 +150,7 @@
           row.status
         }}</span>
       }
+      <a class="btn-outline" [routerLink]="['/tenant/applications', row.id]">View Application</a>
       <button type="button" class="btn-primary" (click)="backToList()">Back to List</button>
     </div>
   </div>

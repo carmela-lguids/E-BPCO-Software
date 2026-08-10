@@ -1,3 +1,5 @@
+import { CastillaGroupKey } from './castilla-document-requirements';
+
 export type AppStatus = 'Approved' | 'Pending' | 'Rejected';
 export type EvalKey = 'initial' | 'zoning' | 'fire' | 'obo' | 'final';
 
@@ -32,6 +34,17 @@ export interface AppRow {
   officer: string;
   status: AppStatus;
   currentStage: AppStage;
+  /** Phase 4 (Separate Building Permit and Occupancy) — optional so every
+   *  existing AppRow literal in this file (all Building Permit) doesn't
+   *  need updating; only the live canonical projection (fromCanonical,
+   *  tenant-applications.ts) sets these for a real record. */
+  permitTrack?: 'building-permit' | 'occupancy';
+  relatedApplicationId?: string;
+  /** Raw Certificate of Occupancy stage (only set when permitTrack ===
+   *  'occupancy') — currentStage above is always the Building Permit
+   *  AppStage vocabulary and would otherwise mislabel a CO record's real
+   *  stage as 'applicant' via toAppStage()'s fallback. */
+  occupancyStage?: string;
 }
 
 export interface DocumentItem {
@@ -43,6 +56,11 @@ export interface DocumentItem {
    * instead of silently replacing the original with no history. */
   version?: number;
   previousUploadedDate?: string;
+  /** Phase 3 (Castilla Document Requirements) — which structured
+   *  requirement group (castilla-document-requirements.ts) this item
+   *  belongs to. Optional so existing non-BP document lists elsewhere
+   *  aren't forced to classify themselves. */
+  group?: CastillaGroupKey;
 }
 
 export interface CommentItem {
@@ -78,6 +96,11 @@ export interface ChecklistItem {
   filename: string;
   status: 'Approved' | 'For Review' | 'Pending' | 'Return' | 'Reject' | 'Missing';
   checked: boolean;
+  /** Phase 5 (Expand Real LGU Evaluation Flow) — shown only for status
+   *  'Return', so the applicant/officer sees why, not just that it was
+   *  returned. Optional so the other five statuses aren't forced to carry
+   *  an empty reason field. */
+  returnReason?: string;
 }
 
 export interface ReviewStep {
@@ -131,13 +154,22 @@ export const UNASSIGNED_DAYS: Record<string, number> = {
   '#WA-2020': 9,
 };
 
+// Phase 3 (Castilla Document Requirements) — Building Permit documentary
+// checklist, grouped per castilla-document-requirements.ts (the full,
+// faithfully-transcribed Municipality of Castilla requirement set). One
+// representative item per group is shown here, matching this page's
+// existing checklist density elsewhere (EVAL_DETAILS' 3-4 items per
+// stage) rather than reproducing all ~35 line items from the source form.
 export const DOCUMENTS: DocumentItem[] = [
-  { name: 'Site Development Plan', filename: 'Site_Dev.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Missing' },
-  { name: 'Building Plans', filename: 'Buildingplans.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved', version: 2, previousUploadedDate: 'Mon-Mar 22, 2021' },
-  { name: 'Proof of Ownership', filename: 'Landtitle.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved' },
-  { name: 'Barangay Clearance', filename: 'BarangayClearance.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved' },
-  { name: 'Tax Declaration', filename: 'tax_declaration.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Rejected' },
-  { name: 'Lorem ipsum sit ..', filename: 'Santo Agency Group', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved' },
+  { name: 'Proof of Ownership (OCT/TCT, Deed of Sale, or equivalent)', filename: 'Landtitle.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved', group: 'property-ownership' },
+  { name: 'Design Plans (Duly signed & sealed)', filename: 'Buildingplans.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved', version: 2, previousUploadedDate: 'Mon-Mar 22, 2021', group: 'technical-plans' },
+  { name: 'Valid Licenses of Involved Professionals (PRC/PTR)', filename: 'ProfessionalLicenses.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved', group: 'professional-credentials' },
+  { name: 'Unified Building Permit Form', filename: 'UnifiedBuildingPermitForm.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Pending', group: 'ancillary-permits' },
+  { name: 'Site Development Plan', filename: 'Site_Dev.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Missing', group: 'zoning-locational-clearance' },
+  { name: 'Barangay Building Clearance', filename: 'BarangayClearance.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Approved', group: 'zoning-locational-clearance' },
+  { name: 'Tax Declaration / COT / OCT', filename: 'tax_declaration.pdf', uploadedDate: 'Sun-Apr 14, 2021', status: 'Rejected', group: 'zoning-locational-clearance' },
+  { name: 'Fire Safety Evaluation Clearance (FSEC)', filename: '', uploadedDate: '', status: 'Missing', group: 'fsec' },
+  { name: 'Road Clearance (DPWH/PEO)', filename: '', uploadedDate: '', status: 'Pending', group: 'other-regulatory-clearances' },
 ];
 
 export const COMMENTS: CommentItem[] = [
@@ -164,7 +196,7 @@ export const SHARED_TIMELINE: { label: string; date: string; who: string; role: 
 export const EVAL_CARDS: EvalCard[] = [
   { key: 'initial', title: 'Initial Evaluation', statusLabel: 'Ready to Review', statusTone: 'good', description: 'Application is completed and ready for review', documents: 6, comments: 12, officerInitials: ['ES', 'DM', 'RL'], progressPct: 100 },
   { key: 'zoning', title: 'Zoning Evaluation', statusLabel: 'In Progress', statusTone: 'progress', description: 'Application is still in Progress', documents: 4, comments: 0, officerInitials: ['AB', 'CD'], progressPct: 60 },
-  { key: 'fire', title: 'Fire Safety Evaluation', statusLabel: 'In Progress', statusTone: 'progress', description: 'Application is still in Progress', documents: 9, comments: 0, officerInitials: ['EF', 'GH'], progressPct: 90 },
+  { key: 'fire', title: 'Fire Safety Evaluation Clearance (FSEC)', statusLabel: 'In Progress', statusTone: 'progress', description: 'Application is still in Progress', documents: 9, comments: 0, officerInitials: ['EF', 'GH'], progressPct: 90 },
   { key: 'obo', title: 'OBO Review', statusLabel: 'In Progress', statusTone: 'progress', description: 'Application is still in Progress', documents: 0, comments: 0, officerInitials: ['IJ', 'KL', 'MN'], progressPct: 0 },
   { key: 'final', title: 'Final Evaluation', statusLabel: 'In Progress', statusTone: 'progress', description: 'Application is still in Progress', documents: 0, comments: 0, officerInitials: ['OP'], progressPct: 0 },
 ];
@@ -228,49 +260,86 @@ export function buildDetailFor(row: AppRow): AppDetail {
 }
 
 export const EVAL_DETAILS: Record<EvalKey, EvalDetailConfig> = {
+  // Phase 3 (Castilla Document Requirements) — this checklist is the
+  // documentary-completeness check Initial Evaluation actually performs:
+  // one representative item from each of the core Building Permit package
+  // groups (Property/Ownership, Technical Plans, Professional Credentials,
+  // Ancillary Permits — see castilla-document-requirements.ts). Zoning/Fire/
+  // OBO keep their own stage-specific checklists below, unchanged; refining
+  // those to their own real requirement sets is Phase 5's scope, not this
+  // one's.
+  // Phase 5 (Expand Real LGU Evaluation Flow) — documentary completeness +
+  // complete/incomplete decision (Phase 3) + return reason, shown when a
+  // reviewed item comes back 'Return' rather than passing silently (the
+  // Design Plans item below is deliberately 'Return', not 'For Review', to
+  // demonstrate this — see returnReason on ChecklistItem).
   initial: {
     title: 'Initial Evaluation',
     checklistTitle: 'Documents Checklist',
-    checklistSubtitle: 'Lorem ipsum sit dolor amet consecturer.',
+    checklistSubtitle: 'Documentary completeness check — Municipality of Castilla Building Permit requirements.',
     checklist: [
-      { label: 'Application for Building Permit', filename: 'ApplicationforBuildingPermit.pdf', status: 'Approved', checked: true },
-      { label: 'Architectural Permit', filename: 'ArchitecturaPermit.pdf', status: 'Approved', checked: true },
-      { label: 'Civil Structural Permit', filename: 'CivilStructuralPermit.pdf', status: 'Return', checked: false },
-      { label: 'Demolition Permit', filename: 'DemolitionPermit.pdf', status: 'Missing', checked: false },
+      { label: 'Unified Building Permit Form', filename: 'UnifiedBuildingPermitForm.pdf', status: 'Approved', checked: true },
+      { label: 'Proof of Ownership (OCT/TCT or equivalent)', filename: 'Landtitle.pdf', status: 'Approved', checked: true },
+      {
+        label: 'Design Plans (Duly signed & sealed)',
+        filename: 'Buildingplans.pdf',
+        status: 'Return',
+        checked: false,
+        returnReason: "Missing engineer's signature and seal on sheet 3 of the structural plan.",
+      },
+      { label: 'Valid Licenses of Involved Professionals (PRC/PTR)', filename: '', status: 'Missing', checked: false },
     ],
     progressDone: 2,
     progressTotal: 4,
     rightPanel: 'preview',
     primaryActionLabel: 'Forward to Zoning Evaluation',
   },
+  // Phase 5 — replaces the generic compliance checklist with the Municipal
+  // Planning and Development Office's own 5-step procedure (Zoning
+  // Checklist, MPDO) and its real document requirements (Zoning Checklist /
+  // Zoning-Locational Form). reviewSteps mirrors OBO's existing step-tracker
+  // pattern below rather than inventing new UI for this.
   zoning: {
     title: 'Zoning Evaluation',
-    checklistTitle: 'Zoning Compliance Checklist',
-    checklistSubtitle: 'Lorem ipsum sit dolor amet consecturer.',
+    checklistTitle: 'Zoning Documentary Requirements',
+    checklistSubtitle: 'Municipal Planning and Development Office (Zoning Administrator) checklist.',
     checklist: [
-      { label: 'Land Use / Zoning Compliance', filename: '', status: 'Approved', checked: true },
-      { label: 'Minimal Area', filename: '', status: 'Approved', checked: true },
-      { label: 'Setback Requirements', filename: '', status: 'Pending', checked: false },
-      { label: 'Building Coverage', filename: '', status: 'Reject', checked: false },
+      { label: 'Site Development Plan', filename: 'Site_Dev.pdf', status: 'Approved', checked: true },
+      { label: 'Vicinity Map', filename: '', status: 'Approved', checked: true },
+      { label: 'Barangay Building Clearance', filename: 'BarangayClearance.pdf', status: 'For Review', checked: false },
+      { label: 'Tax Declaration / COT / OCT', filename: 'tax_declaration.pdf', status: 'Pending', checked: false },
     ],
     progressDone: 2,
-    progressTotal: 10,
+    progressTotal: 4,
+    reviewSteps: [
+      { num: '01', label: 'Documentary Review', status: 'Approved', detail: 'Complete documentary requirements verified' },
+      { num: '02', label: 'Ocular Site Inspection', status: 'Approved', detail: 'Site visit conducted' },
+      { num: '03', label: 'Zoning Findings / Project Evaluation Report', status: 'In Review', detail: 'Current Stage' },
+      { num: '04', label: 'Zoning Fee Computation & Order of Payment', status: 'Pending' },
+      { num: '05', label: 'Locational / Zoning Clearance Issuance', status: 'Pending' },
+    ],
     rightPanel: 'map',
-    primaryActionLabel: 'Forward to Fire Evaluation',
+    primaryActionLabel: 'Forward to Fire Safety Evaluation (FSEC)',
   },
+  // Phase 5 — explicitly labeled FSEC (Fire Safety Evaluation Clearance),
+  // distinct from FSIC (Fire Safety Inspection Certificate — Certificate of
+  // Occupancy's own post-construction clearance, Phase 4). Checklist items
+  // are the real FSEC application form's attached documentary requirements
+  // (BFP FSEC Application Form), not the previous placeholder filenames
+  // copy-pasted from other stages.
   fire: {
-    title: 'Fire Evaluation',
-    checklistTitle: 'Documents Checklist',
-    checklistSubtitle: 'Synced from Bureau of Fire Protection evaluation portal',
+    title: 'Fire Safety Evaluation Clearance (FSEC)',
+    checklistTitle: 'FSEC Documentary Requirements',
+    checklistSubtitle: 'Bureau of Fire Protection — Castilla Fire Station. Plan-evaluation stage clearance for Building Permit (not FSIC, the post-construction Occupancy clearance).',
     checklist: [
-      { label: 'BFP Citizens Charter', filename: 'ApplicationforBuildingPermit.pdf', status: 'Approved', checked: true },
-      { label: 'Fire Safety Inspection', filename: 'ArchitecturaPermit.pdf', status: 'Approved', checked: true },
-      { label: 'Fire Safety Evaluation Report', filename: 'CivilStructuralPermit.pdf', status: 'For Review', checked: false },
+      { label: 'Architectural, Civil/Structural, Electrical, Mechanical, Plumbing, Electronics, Sanitary & Fire Protection Documents (3 Sets)', filename: 'FSEC_PlanSets.pdf', status: 'Approved', checked: true },
+      { label: 'Fire Safety Compliance Report (FSCR)', filename: '', status: 'Approved', checked: true },
+      { label: 'Cost Estimates (Signed, Sealed & Notarized)', filename: 'CostEstimate.pdf', status: 'For Review', checked: false },
     ],
     progressDone: 2,
     progressTotal: 3,
     rightPanel: 'qr',
-    primaryActionLabel: 'Forward to Zoning',
+    primaryActionLabel: 'Forward to OBO Review',
   },
   obo: {
     title: 'OBO Evaluation',

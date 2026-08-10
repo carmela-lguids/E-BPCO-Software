@@ -131,7 +131,7 @@
           <app-icon [name]="sortDirection() === 'asc' ? 'chevron-up' : 'chevron-down'" [size]="15" />
         </button>
         @if (activeSortTooltip(); as tip) {
-          <span class="wq-sort-tooltip-icon" [title]="tip" [attr.aria-label]="tip" tabindex="0">
+          <span class="wq-sort-tooltip-icon" role="img" [title]="tip" [attr.aria-label]="tip" tabindex="0">
             <app-icon name="info" [size]="14" />
           </span>
         }
@@ -402,9 +402,10 @@
                 <td class="actions-cell">
                   <a
                     class="icon-btn view"
-                    routerLink="/tenant/applications"
-                    title="Open Application"
-                    [attr.aria-label]="'Open application ' + task.id"
+                    [routerLink]="['/tenant/applications', task.applicationId]"
+                    [queryParams]="activeTab() === 'returned' ? { tab: 'documents' } : null"
+                    [title]="activeTab() === 'returned' ? 'View Documents & Revision History' : 'Open Application'"
+                    [attr.aria-label]="(activeTab() === 'returned' ? 'View documents and revision history for ' : 'Open application ') + task.id"
                   >
                     <app-icon name="eye" [size]="15" />
                   </a>
@@ -417,14 +418,17 @@
                   >
                     <app-icon name="calendar" [size]="15" />
                   </button>
-                  <a
-                    class="icon-btn edit"
-                    routerLink="/tenant/evaluations"
-                    [title]="activeTab() === 'returned' ? 'Resume Review' : 'Continue Evaluation'"
-                    [attr.aria-label]="(activeTab() === 'returned' ? 'Resume review for ' : 'Continue evaluation for ') + task.id"
-                  >
-                    <app-icon name="send" [size]="15" />
-                  </a>
+                  @if (canContinueEvaluation(task)) {
+                    <a
+                      class="icon-btn edit"
+                      routerLink="/tenant/evaluations"
+                      [queryParams]="evaluationQueryParams(task)"
+                      [title]="activeTab() === 'returned' ? 'Resume Review' : 'Continue Evaluation'"
+                      [attr.aria-label]="(activeTab() === 'returned' ? 'Resume review for ' : 'Continue evaluation for ') + task.id"
+                    >
+                      <app-icon name="send" [size]="15" />
+                    </a>
+                  }
                 </td>
               </tr>
             } @empty {
@@ -508,46 +512,37 @@
       <button type="button" class="modal-close" (click)="closeTimeline()" aria-label="Close">&#10005;</button>
       <h2 id="wq-timeline-heading">{{ task.id }} — Timeline</h2>
       <p class="wq-sub">{{ task.applicant }} · {{ task.permitType }}, {{ task.location }}</p>
-      <ul class="wq-timeline">
+
+      <!-- Phase 2 (Connect Work Queue Actions) — queue-local operational
+           context as a plain summary line, not a second parallel timeline:
+           "View Timeline" shows the one canonical shared timeline below,
+           not a queue-reconstructed approximation of the same events. -->
+      <p class="wq-sub">
         @if (task.assignmentType === 'reassigned' && task.previousEvaluator) {
-          <li>
-            <span class="wq-timeline-dot"></span>
-            <div class="wq-timeline-text">
-              <strong>Previously assigned to {{ task.previousEvaluator }}</strong>
-              <span>Reassigned · {{ task.department }}</span>
-            </div>
-          </li>
-          <li>
-            <span class="wq-timeline-dot"></span>
-            <div class="wq-timeline-text">
-              <strong>Assigned to you: {{ task.assignedOfficer }}</strong>
-              <span>{{ task.reassignedDate || task.assignedDate }} · {{ task.department }}</span>
-            </div>
-          </li>
+          Reassigned from {{ task.previousEvaluator }} to {{ task.assignedOfficer }} ({{ task.reassignedDate || task.assignedDate }})
         } @else {
-          <li>
-            <span class="wq-timeline-dot"></span>
-            <div class="wq-timeline-text">
-              <strong>Assigned to {{ task.assignedOfficer }}</strong>
-              <span>{{ task.assignedDate }} · {{ task.department }}</span>
-            </div>
-          </li>
+          Assigned to {{ task.assignedOfficer }} ({{ task.assignedDate }})
         }
-        <li>
-          <span class="wq-timeline-dot"></span>
-          <div class="wq-timeline-text">
-            <strong>Currently at: {{ stageLabel[task.currentStage] }}</strong>
-            <span>Status: {{ task.status }} · Priority: {{ priorityLabel(task.priority) }}</span>
-          </div>
-        </li>
-        <li>
-          <span class="wq-timeline-dot"></span>
-          <div class="wq-timeline-text">
-            <strong>SLA target: {{ task.slaDueDate }}</strong>
-            <span>{{ slaChipLabel(task) }}</span>
-          </div>
-        </li>
-      </ul>
+        · {{ task.department }} · Currently at {{ stageLabel[task.currentStage] }}
+        · SLA target {{ task.slaDueDate }} ({{ slaChipLabel(task) }})
+      </p>
+
+      @if (canonicalTimelineFor(task).length > 0) {
+        <ul class="wq-timeline">
+          @for (event of canonicalTimelineFor(task); track event.label + event.date) {
+            <li>
+              <span class="wq-timeline-dot"></span>
+              <div class="wq-timeline-text">
+                <strong>{{ event.label }}</strong>
+                <span>{{ event.date }}@if (event.who) { · {{ event.who }} }</span>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <p class="wq-sub">No timeline events recorded yet for this application.</p>
+      }
+
       <div class="modal-actions">
         <button type="button" class="modal-btn cancel" (click)="closeTimeline()">Close</button>
       </div>

@@ -8,12 +8,13 @@ import { FocusTrapDirective } from '../../core/focus-trap.directive';
 import { Session } from '../../core/session';
 import { RoleKey } from '../../core/roles';
 import { Toast } from '../../core/toast';
+import { ApplicationStore } from '../../core/application-store';
 import {
-  WORK_QUEUE_TASKS,
   WORK_QUEUE_TENANT,
   WorkQueueTask,
   WorkQueueStage,
   STAGE_LABEL,
+  buildWorkQueueTasks,
   tasksForRole,
   slaChipLabel,
   priorityTier,
@@ -38,6 +39,8 @@ import {
   unassignedApplicationsCount,
   departmentWorkload,
   DepartmentWorkloadStat,
+  evalTypeForStage,
+  canContinueEvaluation,
 } from './work-queue-data';
 
 type QueueTabKey = 'my-tasks' | 'overdue' | 'due-today' | 'high-priority' | 'returned' | 'recently-assigned';
@@ -111,6 +114,7 @@ const STAGE_OPTIONS: { key: WorkQueueStage; label: string }[] = (
 export class TenantWorkQueue {
   private readonly session = inject(Session);
   private readonly toast = inject(Toast);
+  private readonly applicationStore = inject(ApplicationStore);
 
   // A Tenant Administrator supervises everyone's queue rather than
   // processing their own — same distinction tenant-applications.ts already
@@ -146,10 +150,9 @@ export class TenantWorkQueue {
 
   // --- Phase 2 — My Assigned Tasks ---
   // Personal queue for the 7 "own queue" roles; the full pool for
-  // tenant-admin's supervisory view. Not a new roster per role — filtered
-  // straight from the one WORK_QUEUE_TASKS array (work-queue-data.ts).
+  // tenant-admin's supervisory view.
   //
-  // Phase 12 — Tenant Isolation Audit fix: WORK_QUEUE_TASKS only represents
+  // Phase 12 — Tenant Isolation Audit fix: this only represents
   // WORK_QUEUE_TENANT's (Esperanza) roster. A role key alone isn't unique
   // across LGUs — e.g. Ana Garcia (Manila) and Denese Martin (Esperanza)
   // are both 'zoning'. Without this gate, tasksForRole('zoning') would
@@ -157,9 +160,24 @@ export class TenantWorkQueue {
   // cross-tenant leak this audit caught live. Any account whose active
   // tenant isn't Esperanza sees an empty queue instead, which is the
   // honest answer: this prototype simply has no mock data for their LGU.
+  //
+  // Phase 16 — Smart Work Queue Canonical Integration: the task pool is now
+  // built live from ApplicationStore (buildWorkQueueTasks), tenant-scoped
+  // the same way Payments/Evaluations already are, instead of reading a
+  // static WORK_QUEUE_TASKS literal — every task now genuinely references
+  // a canonical application via applicationId.
+  // Phase 4 (Separate Building Permit and Occupancy) — Work Queue's stage
+  // vocabulary (WorkQueueStage) is Building-Permit-shaped; a Certificate of
+  // Occupancy record's own stages (documentary-review/fsic/final-review)
+  // don't belong in this queue and would otherwise silently fall back to a
+  // misleading 'applicant' stage via toWorkQueueStage()'s guard.
   protected readonly myTasks = computed(() => {
     if (this.session.activeTenant() !== WORK_QUEUE_TENANT) return [];
-    return this.isSupervisor() ? WORK_QUEUE_TASKS : tasksForRole(this.session.currentRole());
+    const apps = this.applicationStore
+      .applicationsForTenant(this.session.activeTenant())
+      .filter((a) => a.permitTrack === 'building-permit');
+    const tasks = buildWorkQueueTasks(apps);
+    return this.isSupervisor() ? tasks : tasksForRole(tasks, this.session.currentRole());
   });
 
   // --- Phase 3 — Overdue Reviews ---
@@ -421,11 +439,13 @@ export class TenantWorkQueue {
     this.overdueSeverityFilter.set(severity);
   }
 
-  // --- View Timeline — a lightweight modal built from the task's own
-  // fields (assigned date → current stage → SLA due date). There's no
-  // per-record deep timeline dataset behind these new mock ids, so this
-  // shows what's honestly known rather than fabricating history that
-  // doesn't exist. ---
+  // --- View Timeline — the modal's top section is still built from the
+  // task's own current queue fields (assigned date → current stage → SLA
+  // due date), unchanged from before. Phase 22 — Applications + Work
+  // Queue Linking adds a second "Application Timeline" section below it,
+  // reading the real canonical timeline for task.applicationId (every one
+  // of these 35 tasks is a genuine canonical application as of Phase 16 —
+  // this is no longer a locally-reconstructed approximation for that part). ---
   protected readonly timelineTask = signal<WorkQueueTask | null>(null);
 
   viewTimeline(task: WorkQueueTask): void {
@@ -434,5 +454,32 @@ export class TenantWorkQueue {
 
   closeTimeline(): void {
     this.timelineTask.set(null);
+  }
+
+  protected canonicalTimelineFor(task: WorkQueueTask) {
+    return this.applicationStore.getApplicationById(task.applicationId)?.timeline ?? [];
+  }
+
+  // --- Phase 2 (Connect Work Queue Actions) — Continue Evaluation must land
+  // on the correct evaluation stage for this task's applicationId, not just
+  // the Evaluations card menu. A task's currentStage unambiguously owns one
+  // evaluation type (evalTypeForStage) while it's actionable here, so this
+  // is a derived fact, not a guess. ---
+  protected canContinueEvaluation(task: WorkQueueTask): boolean {
+    return canContinueEvaluation(task.currentStage);
+  }
+
+  protected evaluationQueryParams(
+    task: WorkQueueTask,
+  ): { applicationId: string; evalType: string; stage?: string } | null {
+    const evalType = evalTypeForStage(task.currentStage);
+    if (!evalType) return null;
+    // A returned task's own evaluation row is genuinely at the 'returned'
+    // stage, not the default 'pending-review' — landing on the right card
+    // without landing on the right stage tab inside it would still hide the
+    // one row this action is about.
+    return task.isReturned
+      ? { applicationId: task.applicationId, evalType, stage: 'returned' }
+      : { applicationId: task.applicationId, evalType };
   }
 }

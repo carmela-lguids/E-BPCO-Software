@@ -97,7 +97,10 @@ const BASE: Array<{
 // Status is derived from stage (not stored independently) so a row's badge
 // never contradicts the stage tab it's filed under — e.g. an application
 // filed under "Pending Review" can no longer show an "Approved" badge.
-const STAGE_STATUS: Record<Stage, RowStatus> = {
+// Exported (Phase 6 — Evaluations Migration) so tenant-evaluations.ts can
+// apply the same derivation to canonical evaluation data instead of
+// duplicating this mapping a second time.
+export const STAGE_STATUS: Record<Stage, RowStatus> = {
   'pending-review': 'Pending',
   'under-review': 'Pending',
   returned: 'Return for Revision',

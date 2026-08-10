@@ -1,5 +1,6 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { Topbar } from '../../shared/topbar/topbar';
 import { Icon } from '../../shared/icon/icon';
 import { Avatar } from '../../shared/avatar/avatar';
@@ -9,6 +10,7 @@ import { RoleGate } from '../../core/role-gate.directive';
 import { Session } from '../../core/session';
 import { MyQueueStrip, QueueTile } from '../../shared/my-queue-strip/my-queue-strip';
 import { EmptyState } from '../../shared/empty-state/empty-state';
+import { CANONICAL_APPLICATIONS } from '../../core/application-data';
 
 type InspectionStatus = 'Scheduled' | 'In Progress' | 'Passed' | 'Needs Correction';
 
@@ -47,35 +49,43 @@ const CHECKLIST_TEMPLATE = [
   'Site cleared of hazards',
 ];
 
-const BASE_ROWS: Array<{
-  id: string;
-  applicationId: string;
-  applicant: string;
-  city: string;
-  type: string;
-  scheduledDate: string;
-  status: InspectionStatus;
-}> = [
-  { id: 'INS-2031', applicationId: '#WA-2026', applicant: 'Raul Villa', city: 'Taguig City', type: 'Residential', scheduledDate: '22 Jul 2026', status: 'Scheduled' },
-  { id: 'INS-2030', applicationId: '#WA-2024', applicant: 'David Roderick', city: 'Pasig City', type: 'Renovation', scheduledDate: '20 Jul 2026', status: 'In Progress' },
-  { id: 'INS-2029', applicationId: '#WA-2020', applicant: 'James Zavel', city: 'Bulacan City', type: 'Residential', scheduledDate: '18 Jul 2026', status: 'Passed' },
-  { id: 'INS-2028', applicationId: '#WA-2019', applicant: 'Anthony Williams', city: 'Mandaluyong City', type: 'Commercial', scheduledDate: '15 Jul 2026', status: 'Needs Correction' },
-  { id: 'INS-2027', applicationId: '#WA-2018', applicant: 'Axie Barnes', city: 'Marikina City', type: 'Commercial', scheduledDate: '12 Jul 2026', status: 'Passed' },
-  { id: 'INS-2026', applicationId: '#WA-2017', applicant: 'Glen Morning', city: 'Caloocan City', type: 'Commercial', scheduledDate: '9 Jul 2026', status: 'Passed' },
-];
-
+// Phase 10 — Inspections + Records Integration. Rows are now built by
+// joining the canonical dataset on its own `applicationId`/`inspection`
+// fields instead of this module's own hardcoded BASE_ROWS — the 6
+// canonical applications carrying an `inspection` are exactly the 6 that
+// were here before (Phase 3 seeded canonical.inspection from this file's
+// original BASE_ROWS verbatim), and filtering CANONICAL_APPLICATIONS
+// (in its APP_ROWS-derived order) down to just those 6 reproduces the
+// exact same row order as before: #WA-2026, 2024, 2020, 2019, 2018, 2017.
+// This module already modeled the applicationId foreign-key pattern the
+// canonical model generalizes — of every module migrated so far, this one
+// needed the least reshaping.
+//
+// `photos` has no canonical equivalent (ApplicationInspection carries no
+// photo field) so it's still derived locally from status, exactly as
+// before.
 function buildRows(): InspectionRow[] {
-  return BASE_ROWS.map((r, i) => ({
-    ...r,
-    checklist: CHECKLIST_TEMPLATE.map((item, j) => ({ item, passed: r.status === 'Passed' || (i + j) % 3 !== 0 })),
-    notes: r.status === 'Needs Correction' ? 'Electrical rough-in does not match approved plan — re-inspection required.' : '',
-    photos: r.status === 'Scheduled' ? [] : ['site-front.jpg', 'foundation.jpg'],
-  }));
+  return CANONICAL_APPLICATIONS.filter((app) => app.inspection).map((app, i) => {
+    const inspection = app.inspection!;
+    const status = inspection.status;
+    return {
+      id: inspection.inspectionReference ?? app.applicationId,
+      applicationId: app.applicationId,
+      applicant: app.applicant.fullName,
+      city: app.property.city,
+      type: app.project.type,
+      scheduledDate: inspection.scheduledDate ?? '',
+      status,
+      checklist: CHECKLIST_TEMPLATE.map((item, j) => ({ item, passed: status === 'Passed' || (i + j) % 3 !== 0 })),
+      notes: inspection.notes ?? '',
+      photos: status === 'Scheduled' ? [] : ['site-front.jpg', 'foundation.jpg'],
+    };
+  });
 }
 
 @Component({
   selector: 'app-tenant-inspections',
-  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState],
+  imports: [Topbar, Icon, Avatar, DonutChart, Pagination, FormsModule, RoleGate, MyQueueStrip, EmptyState, RouterLink],
   templateUrl: './tenant-inspections.html',
   styleUrl: './tenant-inspections.scss',
 })

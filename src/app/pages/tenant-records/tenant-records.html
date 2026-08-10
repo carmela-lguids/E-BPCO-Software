@@ -130,8 +130,14 @@
         <div><dt>Archived Date</dt><dd>{{ row.archivedDate }}</dd></div>
         <div><dt>Archived By</dt><dd>{{ row.archivedBy }}</dd></div>
         <div><dt>Retention Deadline</dt><dd>{{ row.retentionDeadline }}</dd></div>
+        @if (row.applicationId) {
+          <div><dt>Linked Application</dt><dd>{{ row.applicationId }}</dd></div>
+        }
       </dl>
       <div class="modal-actions">
+        @if (row.applicationId) {
+          <a class="modal-btn cancel" [routerLink]="['/tenant/applications', row.applicationId]" (click)="closeModal()">View Application</a>
+        }
         <button type="button" class="modal-btn cancel" (click)="closeModal()">Close</button>
       </div>
     </div>

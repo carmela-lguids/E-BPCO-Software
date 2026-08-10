@@ -290,27 +290,63 @@
   }
 } @else if (view() === 'detail' && selectedDetail(); as detail) {
   <div class="detail-head">
-    <h1>Application Details</h1>
+    <h1>
+      {{ detail.row.permitTrack === 'occupancy' ? 'Certificate of Occupancy' : 'Building Permit' }}
+      Application Details
+    </h1>
     <div class="header-actions">
-      <button type="button" class="btn-primary" (click)="openEvaluations()">Evaluate</button>
+      @if (detail.row.permitTrack !== 'occupancy') {
+        <!-- Phase 9 — only roles that can reach /tenant/evaluations via nav
+             (core/nav-by-role.ts) see this at all; cashier/inspector/
+             releasing/records have no evaluation authority or reason to
+             open this view. -->
+        <button
+          type="button"
+          class="btn-primary"
+          *roleGate="['tenant-admin', 'obo', 'initial-eval', 'zoning', 'fire-safety']"
+          (click)="openEvaluations()"
+        >
+          Evaluate
+        </button>
+      }
       <button type="button" class="btn-primary" (click)="backToList()">Back to List</button>
     </div>
   </div>
 
-  <ol class="progress-tracker" aria-label="Application progress">
-    @for (stage of progressStages(); track stage.key) {
-      <li class="progress-stage" [class]="stage.state">
-        <span class="stage-dot">
-          @if (stage.state === 'done') {
-            <app-icon name="check-circle" [size]="13" />
-          } @else if (stage.state === 'rejected') {
-            <app-icon name="alert-triangle" [size]="13" />
-          }
-        </span>
-        <span class="stage-name">{{ stage.label }}</span>
-      </li>
-    }
-  </ol>
+  @if (relatedApplication(); as related) {
+    <!-- Phase 4 (Separate Building Permit and Occupancy) — the relationship
+         between the two transactions, surfaced both directions off the same
+         canonical link (detail.row.relatedApplicationId). -->
+    <div class="related-application-banner">
+      <app-icon name="workflow" [size]="15" />
+      <span>
+        {{ detail.row.permitTrack === 'occupancy' ? 'Related Building Permit:' : 'Related Certificate of Occupancy:' }}
+      </span>
+      <a [routerLink]="['/tenant/applications', related.applicationId]">{{ related.applicationId }}</a>
+    </div>
+  }
+
+  @if (detail.row.permitTrack === 'occupancy') {
+    <div class="occupancy-stage-banner">
+      <strong>Current Stage:</strong> {{ occupancyStageLabel(detail.row.occupancyStage) }}
+      <span class="status-pill" [class]="detail.row.status.toLowerCase()">{{ detail.row.status }}</span>
+    </div>
+  } @else {
+    <ol class="progress-tracker" aria-label="Application progress">
+      @for (stage of progressStages(); track stage.key) {
+        <li class="progress-stage" [class]="stage.state">
+          <span class="stage-dot">
+            @if (stage.state === 'done') {
+              <app-icon name="check-circle" [size]="13" />
+            } @else if (stage.state === 'rejected') {
+              <app-icon name="alert-triangle" [size]="13" />
+            }
+          </span>
+          <span class="stage-name">{{ stage.label }}</span>
+        </li>
+      }
+    </ol>
+  }
 
   <div class="detail-grid">
     <div class="applicant-card">
@@ -429,7 +465,7 @@
             <div class="card-head">
               <div>
                 <h2>Documents</h2>
-                <p class="muted-sub">Lorem ipsum sit dolor amet consecturer.</p>
+                <p class="muted-sub">Building Permit documentary requirements, grouped per the Municipality of Castilla checklist.</p>
               </div>
               <button type="button" class="btn-outline">
                 Action
@@ -437,47 +473,52 @@
               </button>
             </div>
 
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Category Event</th>
-                    <th>Uploaded Dates</th>
-                    <th>Status</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  @for (d of documents; track d.name) {
+            @for (group of documentGroups(); track group.key) {
+              <div class="table-wrap">
+                <h3 class="doc-group-heading">{{ group.label }}</h3>
+                <table>
+                  <thead>
                     <tr>
-                      <td>
-                        <div class="doc-cell">
-                          <span class="doc-icon"><app-icon name="file-check" [size]="18" /></span>
-                          <div>
-                            <div class="doc-name">{{ d.name }}</div>
-                            <div class="doc-file">{{ d.filename }}</div>
-                            @if (d.version && d.version > 1) {
-                              <div class="doc-version">
-                                Replaces v{{ d.version - 1 }}, uploaded {{ d.previousUploadedDate }}
-                              </div>
-                            }
-                          </div>
-                        </div>
-                      </td>
-                      <td>{{ d.uploadedDate }}</td>
-                      <td>
-                        <span class="status-pill" [class]="d.status.toLowerCase()">{{ d.status }}</span>
-                      </td>
-                      <td>
-                        <button type="button" class="preview-btn" (click)="openDocumentPreview(d)">
-                          Preview
-                        </button>
-                      </td>
+                      <th>Required Document</th>
+                      <th>Uploaded Dates</th>
+                      <th>Status</th>
+                      <th></th>
                     </tr>
-                  }
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    @for (d of group.items; track d.name) {
+                      <tr>
+                        <td>
+                          <div class="doc-cell">
+                            <span class="doc-icon"><app-icon name="file-check" [size]="18" /></span>
+                            <div>
+                              <div class="doc-name">{{ d.name }}</div>
+                              @if (d.filename) {
+                                <div class="doc-file">{{ d.filename }}</div>
+                              }
+                              @if (d.version && d.version > 1) {
+                                <div class="doc-version">
+                                  Replaces v{{ d.version - 1 }}, uploaded {{ d.previousUploadedDate }}
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        </td>
+                        <td>{{ d.uploadedDate || '—' }}</td>
+                        <td>
+                          <span class="status-pill" [class]="d.status.toLowerCase()">{{ d.status }}</span>
+                        </td>
+                        <td>
+                          <button type="button" class="preview-btn" [disabled]="!d.filename" (click)="openDocumentPreview(d)">
+                            Preview
+                          </button>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
           }
 
           @case ('comments') {
@@ -732,8 +773,17 @@
 
     <div class="eval-detail-grid">
       <div class="card eval-left">
-        <h2>{{ cfg.checklistTitle }}</h2>
-        <p class="muted-sub">{{ cfg.checklistSubtitle }}</p>
+        <div class="card-head">
+          <div>
+            <h2>{{ cfg.checklistTitle }}</h2>
+            <p class="muted-sub">{{ cfg.checklistSubtitle }}</p>
+          </div>
+          @if (initialDocumentsComplete() !== null) {
+            <span class="status-pill" [class]="initialDocumentsComplete() ? 'approved' : 'rejected'">{{
+              initialDocumentsComplete() ? 'Complete Documents' : 'Incomplete Documents'
+            }}</span>
+          }
+        </div>
 
         <div class="table-wrap">
           <table class="checklist-table">
@@ -771,6 +821,11 @@
                         <div class="doc-name">{{ item.label }}</div>
                         @if (item.filename) {
                           <div class="doc-file">{{ item.filename }}</div>
+                        }
+                        @if (item.status === 'Return' && item.returnReason) {
+                          <div class="doc-return-reason">
+                            <strong>Return reason:</strong> {{ item.returnReason }}
+                          </div>
                         }
                       </div>
                     </div>
@@ -830,10 +885,32 @@
 
         <div class="eval-action-panel">
           <button type="button" class="msg-send-btn">Send Message to Applicant</button>
-          <button type="button" class="forward-btn">{{ cfg.primaryActionLabel }}</button>
+          <!-- Phase 9 (Super Admin vs Tenant Role Consistency) — these are
+               real evaluation decisions (Phase 6 wired them to the same
+               canonical writes tenant-evaluations.ts's approveReview()/
+               returnReview() perform), so they're gated to exactly the same
+               roles that page already restricts its own approve/return
+               buttons to. tenant-admin is deliberately excluded here too —
+               supervisory, not a processing role, matching Evaluations'
+               own existing restriction. -->
+          <button
+            type="button"
+            class="forward-btn"
+            *roleGate="['obo', 'initial-eval', 'zoning', 'fire-safety']"
+            (click)="advanceEvaluation()"
+          >
+            {{ cfg.primaryActionLabel }}
+          </button>
           <div class="two-col-btns">
-            <button type="button" class="revision-btn">Return for Revision</button>
-            <button type="button" class="reject-btn">Reject</button>
+            <button
+              type="button"
+              class="revision-btn"
+              *roleGate="['obo', 'initial-eval', 'zoning', 'fire-safety']"
+              (click)="returnEvaluationForRevision()"
+            >
+              Return for Revision
+            </button>
+            <button type="button" class="reject-btn" *roleGate="['obo', 'initial-eval', 'zoning', 'fire-safety']">Reject</button>
           </div>
         </div>
       </div>
@@ -922,14 +999,14 @@
 
           <h3 class="section-caps timeline-heading">Shared Evaluation Timeline</h3>
           <div class="shared-timeline">
-            @for (t of sharedTimeline; track t.label) {
+            @for (t of sharedTimeline(); track t.label) {
               <div class="shared-timeline-item">
                 <span class="dot"></span>
                 <div>
                   <strong>{{ t.label }}</strong>
                   <span class="ts">{{ t.date }}</span>
                   <div class="who">
-                    <app-avatar [name]="t.who" [size]="20" />
+                    <app-avatar [name]="t.who ?? ''" [size]="20" />
                     <span>{{ t.who }}<small>{{ t.role }}</small></span>
                   </div>
                 </div>
@@ -940,6 +1017,20 @@
       </div>
     </div>
   }
+} @else if (view() === 'unavailable') {
+  <section class="card">
+    <app-empty-state
+      [icon]="routeAccessState() === 'not-found' ? 'search' : 'lock'"
+      [title]="routeAccessState() === 'not-found' ? 'Application not found' : 'Application unavailable'"
+      [message]="
+        routeAccessState() === 'not-found'
+          ? 'No application matches ' + routeApplicationId() + '.'
+          : routeApplicationId() + ' belongs to a different tenant and cannot be shown here.'
+      "
+    >
+      <button type="button" class="btn-primary" (click)="backToList()">Back to Applications</button>
+    </app-empty-state>
+  </section>
 }
 
 @if (previewItem(); as doc) {

@@ -17,11 +17,19 @@ export interface SearchResult {
 }
 
 // One flat index over the same mock data every list page already renders —
-// no new backend concept, just a client-side aggregation. Every result
-// routes to the module's list page, not a specific record: no list page in
-// the app currently accepts a record-id query param to open one row
-// directly (see Volume III/IV notes), so this is an honest limitation
-// shared with Notifications' click-through, not a new inconsistency.
+// no new backend concept, just a client-side aggregation. Payment/Record/
+// Permit results still route to their module's list page (no page-local
+// deep link exists for those, and "I want to see all payments" remains a
+// genuinely useful destination in its own right — see Notifications'
+// click-through for the same, pre-existing pattern). Application results
+// are the exception: Phase 25 — Records + Dashboard + Search Linking
+// routes them straight to the canonical Application Detail
+// (core/application-store.ts) using the real applicationId, since "click
+// #WA-2026 in search, land on #WA-2026" is exactly what this initiative
+// exists to guarantee. encodeURIComponent() is required here (unlike
+// [routerLink] array syntax elsewhere, which encodes automatically) since
+// Topbar navigates this route string via Router.navigateByUrl(), which
+// does not re-encode it.
 function buildEntries(): SearchResult[] {
   const entries: SearchResult[] = [];
 
@@ -31,7 +39,7 @@ function buildEntries(): SearchResult[] {
       title: row.applicant,
       subtitle: `${row.id} · ${row.type} · ${row.city}`,
       category: 'Application',
-      route: '/tenant/applications',
+      route: `/tenant/applications/${encodeURIComponent(row.id)}`,
       icon: 'user',
     });
   }
